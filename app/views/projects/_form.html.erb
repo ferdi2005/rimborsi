@@ -1,0 +1,27 @@
+<%= bootstrap_form_with(model: project) do |form| %>
+<% if project.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(project.errors.count, "error") %> prohibited this project from being saved:</h2>
+  <ul>
+    <% project.errors.each do |error| %>
+    <li><%= error.full_message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+  <div class="form-group mb-3">
+          <%= form.label :name, class: "form-label" %>
+      <%= form.text_field :name, class:"form-control" %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :budget, class: "form-label" %>
+      <%= form.text_field :budget, class:"form-control" %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :active, class: "form-check-label" %>
+      <%= form.check_box :active, class:"form-check-input" %>
+      </div>
+<div class="form-group mb-3">
+  <%= form.submit class: 'btn btn-primary' %>
+</div>
+<% end %>

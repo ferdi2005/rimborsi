@@ -1,0 +1,29 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>State:</strong></p>
+        <div>
+          <%= @reimboursement.state_id %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>User:</strong></p>
+        <div>
+          <%= @reimboursement.user_id %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Bank account:</strong></p>
+        <div>
+          <%= @reimboursement.bank_account_id %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Paypal account:</strong></p>
+        <div>
+          <%= @reimboursement.paypal_account_id %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_reimboursement_path(@reimboursement), class: "btn btn-primary" %>
+  <%= link_to 'Back', reimboursements_path, class: "btn btn-secondary" %>
+</div>

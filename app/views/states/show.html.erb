@@ -1,0 +1,11 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>Label:</strong></p>
+        <div>
+          <%= @state.label %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_state_path(@state), class: "btn btn-primary" %>
+  <%= link_to 'Back', states_path, class: "btn btn-secondary" %>
+</div>

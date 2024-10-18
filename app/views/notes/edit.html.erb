@@ -1,0 +1,6 @@
+<div class="container-fluid">
+  <h1>Editing Note</h1>
+  <%= render 'form', note: @note %>
+  <%= link_to 'Show', @note, class: "btn btn-success" %>
+  <%= link_to 'Back', notes_path, class: "btn btn-secondary" %>
+</div>

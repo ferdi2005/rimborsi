@@ -1,0 +1,31 @@
+<%= bootstrap_form_with(model: reimboursement) do |form| %>
+<% if reimboursement.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(reimboursement.errors.count, "error") %> prohibited this reimboursement from being saved:</h2>
+  <ul>
+    <% reimboursement.errors.each do |error| %>
+    <li><%= error.full_message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+  <div class="form-group mb-3">
+          <%= form.label :state_id %>
+      <%= form.collection_select :state_id, State.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :user_id %>
+      <%= form.collection_select :user_id, User.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :bank_account_id %>
+      <%= form.collection_select :bank_account_id, BankAccount.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :paypal_account_id %>
+      <%= form.collection_select :paypal_account_id, PaypalAccount.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
+      </div>
+<div class="form-group mb-3">
+  <%= form.submit class: 'btn btn-primary' %>
+</div>
+<% end %>

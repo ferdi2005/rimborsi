@@ -1,0 +1,24 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+  <h1>Fuels</h1>
+  <table class="table">
+    <thead>
+      <tr>
+                  <th>Label</th>
+                <th colspan="3"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @fuels.each do |fuel| %>
+      <tr>
+                  <td><%= fuel.label %></td>
+                <td><%= link_to 'Show', fuel %></td>
+        <td><%= link_to 'Edit', edit_fuel_path(fuel) %></td>
+        <td><%= link_to 'Destroy', fuel, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <br>
+  <%= link_to 'New Fuel', new_fuel_path, class: "btn btn-primary" %>
+</div>

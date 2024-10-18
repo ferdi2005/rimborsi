@@ -1,0 +1,11 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>Label:</strong></p>
+        <div>
+          <%= @fuel.label %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_fuel_path(@fuel), class: "btn btn-primary" %>
+  <%= link_to 'Back', fuels_path, class: "btn btn-secondary" %>
+</div>

@@ -1,0 +1,24 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+  <h1>States</h1>
+  <table class="table">
+    <thead>
+      <tr>
+                  <th>Label</th>
+                <th colspan="3"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @states.each do |state| %>
+      <tr>
+                  <td><%= state.label %></td>
+                <td><%= link_to 'Show', state %></td>
+        <td><%= link_to 'Edit', edit_state_path(state) %></td>
+        <td><%= link_to 'Destroy', state, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <br>
+  <%= link_to 'New State', new_state_path, class: "btn btn-primary" %>
+</div>

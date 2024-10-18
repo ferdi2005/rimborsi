@@ -1,0 +1,28 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+  <h1>Paypal Accounts</h1>
+  <table class="table">
+    <thead>
+      <tr>
+                  <th>Email</th>
+                  <th>User</th>
+                  <th>Default</th>
+                <th colspan="3"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @paypal_accounts.each do |paypal_account| %>
+      <tr>
+                  <td><%= paypal_account.email %></td>
+                  <td><%= paypal_account.user_id %></td>
+                  <td><%= paypal_account.default %></td>
+                <td><%= link_to 'Show', paypal_account %></td>
+        <td><%= link_to 'Edit', edit_paypal_account_path(paypal_account) %></td>
+        <td><%= link_to 'Destroy', paypal_account, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <br>
+  <%= link_to 'New Paypal Account', new_paypal_account_path, class: "btn btn-primary" %>
+</div>

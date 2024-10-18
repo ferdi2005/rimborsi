@@ -1,0 +1,119 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>Reimboursment:</strong></p>
+        <div>
+          <%= @expense.reimboursment_id %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Purpose:</strong></p>
+        <div>
+          <%= @expense.purpose %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Date:</strong></p>
+        <div>
+          <%= @expense.date %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Amount:</strong></p>
+        <div>
+          <%= @expense.amount %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Car:</strong></p>
+        <div>
+          <%= @expense.car %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Calculation date:</strong></p>
+        <div>
+          <%= @expense.calculation_date %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Departure:</strong></p>
+        <div>
+          <%= @expense.departure %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Arrival:</strong></p>
+        <div>
+          <%= @expense.arrival %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Distance:</strong></p>
+        <div>
+          <%= @expense.distance %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Return trip:</strong></p>
+        <div>
+          <%= @expense.return_trip %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>veichle_category:</strong></p>
+        <div>
+          <%= @expense.veichle_category_id %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Brand:</strong></p>
+        <div>
+          <%= @expense.brand %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Model:</strong></p>
+        <div>
+          <%= @expense.model %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Fuel:</strong></p>
+        <div>
+          <%= @expense.fuel_id %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Quota capitale:</strong></p>
+        <div>
+          <%= @expense.quota_capitale %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Carburante:</strong></p>
+        <div>
+          <%= @expense.carburante %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Pneumatici:</strong></p>
+        <div>
+          <%= @expense.pneumatici %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Manutenzione:</strong></p>
+        <div>
+          <%= @expense.manutenzione %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Project:</strong></p>
+        <div>
+          <%= @expense.project_id %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_expense_path(@expense), class: "btn btn-primary" %>
+  <%= link_to 'Back', expenses_path, class: "btn btn-secondary" %>
+</div>

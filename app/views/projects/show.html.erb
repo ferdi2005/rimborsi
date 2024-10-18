@@ -1,0 +1,23 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>Name:</strong></p>
+        <div>
+          <%= @project.name %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Budget:</strong></p>
+        <div>
+          <%= @project.budget %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Active:</strong></p>
+        <div>
+          <%= @project.active %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_project_path(@project), class: "btn btn-primary" %>
+  <%= link_to 'Back', projects_path, class: "btn btn-secondary" %>
+</div>

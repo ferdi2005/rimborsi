@@ -1,4 +1,15 @@
 Rails.application.routes.draw do
+  resources :states
+  resources :paypal_accounts
+  resources :bank_accounts
+  resources :veichle_categories
+  resources :fuels
+  resources :projects
+  resources :expenses
+  resources :notes
+  root to: "reimboursements#index"
+  resources :reimboursements
+  resources :roles
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

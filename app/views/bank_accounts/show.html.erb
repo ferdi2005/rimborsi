@@ -1,0 +1,53 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>User:</strong></p>
+        <div>
+          <%= @bank_account.user_id %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Iban:</strong></p>
+        <div>
+          <%= @bank_account.iban %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Owner:</strong></p>
+        <div>
+          <%= @bank_account.owner %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Address:</strong></p>
+        <div>
+          <%= @bank_account.address %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Cap:</strong></p>
+        <div>
+          <%= @bank_account.cap %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Town:</strong></p>
+        <div>
+          <%= @bank_account.town %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Fiscal code:</strong></p>
+        <div>
+          <%= @bank_account.fiscal_code %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Default:</strong></p>
+        <div>
+          <%= @bank_account.default %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_bank_account_path(@bank_account), class: "btn btn-primary" %>
+  <%= link_to 'Back', bank_accounts_path, class: "btn btn-secondary" %>
+</div>

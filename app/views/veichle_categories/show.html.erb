@@ -1,0 +1,11 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>Label:</strong></p>
+        <div>
+          <%= @veichle_category.label %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_veichle_category_path(@veichle_category), class: "btn btn-primary" %>
+  <%= link_to 'Back', veichle_categories_path, class: "btn btn-secondary" %>
+</div>

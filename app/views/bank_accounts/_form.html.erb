@@ -1,0 +1,47 @@
+<%= bootstrap_form_with(model: bank_account) do |form| %>
+<% if bank_account.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(bank_account.errors.count, "error") %> prohibited this bank_account from being saved:</h2>
+  <ul>
+    <% bank_account.errors.each do |error| %>
+    <li><%= error.full_message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+  <div class="form-group mb-3">
+          <%= form.label :user_id %>
+      <%= form.collection_select :user_id, User.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :iban, class: "form-label" %>
+      <%= form.text_field :iban, class:"form-control" %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :owner, class: "form-label" %>
+      <%= form.text_field :owner, class:"form-control" %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :address, class: "form-label" %>
+      <%= form.text_field :address, class:"form-control" %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :cap, class: "form-label" %>
+      <%= form.text_field :cap, class:"form-control" %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :town, class: "form-label" %>
+      <%= form.text_field :town, class:"form-control" %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :fiscal_code, class: "form-label" %>
+      <%= form.text_field :fiscal_code, class:"form-control" %>
+      </div>
+  <div class="form-group mb-3">
+          <%= form.label :default, class: "form-check-label" %>
+      <%= form.check_box :default, class:"form-check-input" %>
+      </div>
+<div class="form-group mb-3">
+  <%= form.submit class: 'btn btn-primary' %>
+</div>
+<% end %>

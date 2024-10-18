@@ -1,0 +1,24 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+  <h1>Veichle Categories</h1>
+  <table class="table">
+    <thead>
+      <tr>
+                  <th>Label</th>
+                <th colspan="3"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @veichle_categories.each do |veichle_category| %>
+      <tr>
+                  <td><%= veichle_category.label %></td>
+                <td><%= link_to 'Show', veichle_category %></td>
+        <td><%= link_to 'Edit', edit_veichle_category_path(veichle_category) %></td>
+        <td><%= link_to 'Destroy', veichle_category, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <br>
+  <%= link_to 'New Veichle Category', new_veichle_category_path, class: "btn btn-primary" %>
+</div>

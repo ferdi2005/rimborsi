@@ -1,0 +1,11 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>Label:</strong></p>
+        <div>
+          <%= @role.label %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_role_path(@role), class: "btn btn-primary" %>
+  <%= link_to 'Back', roles_path, class: "btn btn-secondary" %>
+</div>

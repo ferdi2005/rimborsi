@@ -1,0 +1,23 @@
+<div class="container-fluid">
+  <p id="notice"><%= notice %></p>
+            <div class="form-group mb-3">
+        <p><strong>Email:</strong></p>
+        <div>
+          <%= @paypal_account.email %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>User:</strong></p>
+        <div>
+          <%= @paypal_account.user_id %>
+        </div>
+      </div>
+                <div class="form-group mb-3">
+        <p><strong>Default:</strong></p>
+        <div>
+          <%= @paypal_account.default %>
+        </div>
+      </div>
+        <%= link_to 'Edit', edit_paypal_account_path(@paypal_account), class: "btn btn-primary" %>
+  <%= link_to 'Back', paypal_accounts_path, class: "btn btn-secondary" %>
+</div>
