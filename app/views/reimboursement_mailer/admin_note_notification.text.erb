@@ -1,0 +1,28 @@
+NUOVA NOTA DA UTENTE - RIMBORSO #<%= @reimboursement.id %>
+=======================================================
+
+Un utente ha aggiunto una nuova nota al rimborso.
+
+INFORMAZIONI UTENTE:
+Nome: <%= @user.name %> <%= @user.surname %>
+Email: <%= @user.email %>
+Username: <%= @user.username %>
+<% if @user.telephone.present? %>
+Telefono: <%= @user.telephone %>
+<% end %>
+
+NOTA AGGIUNTA:
+Data: <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %>
+
+Contenuto:
+<%= @note.content %>
+
+DETTAGLI RIMBORSO:
+Stato attuale: <%= @reimboursement.status_in_italian %>
+Totale: € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
+Metodo di pagamento: <%= @reimboursement.payment_method_type %>
+Numero di spese: <%= @reimboursement.expenses.count %>
+
+Accedi alla piattaforma per visualizzare il rimborso e rispondere alla nota dell'utente.
+
+Gestione Rimborsi - Notifica Amministratori

@@ -39,6 +39,7 @@ it:
     failure:
       already_authenticated: Hai già effettuato l'accesso.
       inactive: Il tuo account non è stato ancora attivato.
+      account_inactive: Il tuo account è stato disattivato. Contatta l'amministrazione per assistenza.
       invalid: Credenziali %{authentication_keys} o password non valide.
       last_attempt: Hai ancora un tentativo prima che l'account venga bloccato.
       locked: Il tuo account è bloccato.

@@ -1,5 +1,17 @@
-<div class="container-fluid">
-  <h1>New Paypal Account</h1>
-  <%= render 'form', paypal_account: @paypal_account %>
-  <%= link_to 'Back', paypal_accounts_path, class: "btn btn-secondary" %>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="mb-0">Nuovo Account PayPal</h2>
+        </div>
+        <div class="card-body">
+          <%= render 'form', paypal_account: @paypal_account %>
+        </div>
+        <div class="card-footer">
+          <%= link_to 'Indietro', paypal_accounts_path, class: "btn btn-secondary" %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

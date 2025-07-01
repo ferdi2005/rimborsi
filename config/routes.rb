@@ -1,16 +1,34 @@
 Rails.application.routes.draw do
-  resources :states
+  resources :vehicles
   resources :paypal_accounts
   resources :bank_accounts
-  resources :veichle_categories
-  resources :fuels
   resources :projects
   resources :expenses
   resources :notes
   root to: "reimboursements#index"
-  resources :reimboursements
+  resources :reimboursements do
+    resources :notes, only: [ :create, :destroy ]
+    member do
+      get :approve_expenses
+      patch :approve_expense
+      patch :deny_expense
+      patch :approve_reimboursement
+    end
+  end
   resources :roles
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: "users/registrations"
+  }
+
+  # Admin routes
+  namespace :admin do
+    resources :users, except: [ :new, :create ] do
+      member do
+        patch :deactivate
+        patch :activate
+      end
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

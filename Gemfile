@@ -66,3 +66,6 @@ group :test do
 end
 
 gem "devise", "~> 4.9"
+
+# Load environment variables from .env file
+gem "dotenv-rails", groups: [ :development, :test ]

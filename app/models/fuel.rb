@@ -1,2 +1,0 @@
-class Fuel < ApplicationRecord
-end

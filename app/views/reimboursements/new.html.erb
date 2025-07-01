@@ -1,5 +1,84 @@
-<div class="container-fluid">
-  <h1>New Reimboursement</h1>
-  <%= render 'form', reimboursement: @reimboursement %>
-  <%= link_to 'Back', reimboursements_path, class: "btn btn-secondary" %>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <!-- Guida step-by-step -->
+      <div class="card mb-4 border-0 bg-light">
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-3 mb-3 mb-md-0">
+              <div class="step-item">
+                <div class="step-circle bg-primary text-white mb-2 mx-auto">
+                  <i class="fas fa-info-circle"></i>
+                </div>
+                <h6 class="mb-1">1. Informazioni</h6>
+                <small class="text-muted">Dati generali e metodo di pagamento</small>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3 mb-md-0">
+              <div class="step-item">
+                <div class="step-circle bg-primary text-white mb-2 mx-auto">
+                  <i class="fas fa-receipt"></i>
+                </div>
+                <h6 class="mb-1">2. Spese</h6>
+                <small class="text-muted">Aggiungi le spese da rimborsare</small>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3 mb-md-0">
+              <div class="step-item">
+                <div class="step-circle bg-warning text-dark mb-2 mx-auto">
+                  <i class="fas fa-save"></i>
+                </div>
+                <h6 class="mb-1">3. Salvataggio</h6>
+                <small class="text-muted">Crea il rimborso (stato: Creato)</small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="step-item">
+                <div class="step-circle bg-success text-white mb-2 mx-auto">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <h6 class="mb-1">4. Revisione</h6>
+                <small class="text-muted">Attesa approvazione amministratore</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header bg-gradient-primary text-white">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-plus-circle fa-2x me-3"></i>
+            <div>
+              <h2 class="mb-1">Nuovo Rimborso</h2>
+              <p class="mb-0 opacity-75">Compila tutti i campi richiesti per creare il tuo rimborso</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <%= render 'form', reimboursement: @reimboursement %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+.step-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.step-item {
+  position: relative;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+</style>

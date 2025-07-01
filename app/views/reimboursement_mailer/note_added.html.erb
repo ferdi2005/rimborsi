@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+      }
+      .content {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border: 1px solid #dee2e6;
+      }
+      .note {
+        background-color: white;
+        padding: 15px;
+        border-left: 4px solid #007bff;
+        margin: 15px 0;
+      }
+      .footer {
+        background-color: #6c757d;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 12px;
+        border-radius: 0 0 5px 5px;
+      }
+      .btn {
+        display: inline-block;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Nuova Nota - Rimborso #<%= @reimboursement.id %></h1>
+    </div>
+    
+    <div class="content">
+      <p>Ciao <strong><%= @user.name %></strong>,</p>
+      
+      <p>È stata aggiunta una nuova nota al tuo rimborso #<%= @reimboursement.id %>.</p>
+      
+      <div class="note">
+        <p><strong>Autore:</strong> <%= @author.name %> <%= @author.surname %></p>
+        <p><strong>Data:</strong> <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %></p>
+        <% if @note.status_change.present? %>
+          <p><strong>Cambio di stato:</strong> <%= Reimboursement.status_translations[@note.status_change] %></p>
+        <% end %>
+        <p><strong>Contenuto:</strong></p>
+        <p><%= simple_format(@note.content) %></p>
+      </div>
+      
+      <p>
+        <strong>Stato attuale del rimborso:</strong> 
+        <%= @reimboursement.status_in_italian %>
+      </p>
+      
+      <p>
+        <strong>Totale rimborso:</strong> 
+        € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
+      </p>
+    </div>
+    
+    <div class="footer">
+      <p><strong>Gestione Rimborsi</strong></p>
+      <% admin_email = ENV['EMAIL_AMMINISTRAZIONE'] || 'admin@rimborsi.app' %>
+      <p>
+        Per chiarimenti contatta: <a href="mailto:<%= admin_email %>" style="color: white;"><%= admin_email %></a><br>
+        Puoi anche rispondere con eventuali note direttamente sulla piattaforma.
+      </p>
+      <p style="margin-top: 15px;">
+        <a href="<%= Rails.application.routes.url_helpers.reimboursement_url(@reimboursement, host: request.base_url rescue 'localhost:3000') %>" style="color: white; text-decoration: underline;">
+          🔗 Vai al Rimborso
+        </a> | 
+        <a href="<%= Rails.application.routes.url_helpers.reimboursements_url(host: request.base_url rescue 'localhost:3000') %>" style="color: white; text-decoration: underline;">
+          📋 Tutti i Rimborsi
+        </a>
+      </p>
+    </div>
+  </body>
+</html>eimboursement#note_added</h1>
+
+<p>
+  <%= @greeting %>, find me in app/views/reimboursement_mailer/note_added.html.erb
+</p>

@@ -1,2 +1,0 @@
-class VeichleCategory < ApplicationRecord
-end

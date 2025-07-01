@@ -1,29 +1,523 @@
-<div class="container-fluid">
-  <p id="notice"><%= notice %></p>
-            <div class="form-group mb-3">
-        <p><strong>State:</strong></p>
-        <div>
-          <%= @reimboursement.state_id %>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center py-3" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+          <div>
+            <h2 class="mb-1">
+              <i class="fas fa-file-invoice-dollar text-primary me-2"></i>
+              Rimborso #<%= @reimboursement.id %>
+            </h2>
+            <small class="text-muted">
+              <i class="fas fa-calendar me-1"></i>
+              Creato il <%= @reimboursement.created_at.strftime("%d/%m/%Y alle %H:%M") %>
+            </small>
+          </div>
+          <% 
+            badge_class = case @reimboursement.status
+                         when 'created' then 'warning'  # Cambiato da 'secondary' a 'warning' per più visibilità
+                         when 'in_process' then 'warning'
+                         when 'approved' then 'success'
+                         when 'paid' then 'primary'
+                         when 'waiting' then 'info'
+                         else 'secondary'
+                         end
+          %>
+          <div class="d-flex align-items-center">
+            <% if @reimboursement.status == 'created' %>
+              <div class="me-3 text-center">
+                <div class="badge bg-warning text-dark fs-4 px-4 py-2 shadow-sm border border-warning" style="border-radius: 25px;">
+                  <i class="fas fa-plus-circle me-2"></i>
+                  <%= @reimboursement.status_in_italian %>
+                </div>
+                <div class="mt-1">
+                  <small class="text-muted">
+                    <i class="fas fa-hourglass-start me-1"></i>In attesa di elaborazione
+                  </small>
+                </div>
+              </div>
+            <% else %>
+              <span class="badge bg-<%= badge_class %> fs-5 px-3 py-2 me-3">
+                <% if @reimboursement.status == 'waiting' %>
+                  <i class="fas fa-clock me-2"></i>
+                <% elsif @reimboursement.status == 'approved' %>
+                  <i class="fas fa-check-circle me-2"></i>
+                <% elsif @reimboursement.status == 'paid' %>
+                  <i class="fas fa-credit-card me-2"></i>
+                <% end %>
+                <%= @reimboursement.status_in_italian %>
+              </span>
+            <% end %>
+            
+            <% if current_user.admin? %>
+              <div class="btn-group">
+                <%= link_to 'Gestisci Status', edit_reimboursement_path(@reimboursement), class: "btn btn-sm btn-outline-primary" %>
+                <% if @reimboursement.expenses.non_car_expenses.any? %>
+                  <%= link_to 'Apri Approvazione Giustificativi', approve_expenses_reimboursement_path(@reimboursement), class: "btn btn-sm btn-warning" %>
+                <% end %>
+                <% if @reimboursement.can_be_approved? %>
+                  <%= link_to 'Approva Rimborso', approve_reimboursement_reimboursement_path(@reimboursement), 
+                              method: :patch, 
+                              data: { confirm: 'Sei sicuro di voler approvare questo rimborso?' },
+                              class: "btn btn-sm btn-success" %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <% if @reimboursement.status == 'created' %>
+            <div class="alert alert-warning border-start border-warning border-4 mb-4">
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  <i class="fas fa-info-circle fa-2x text-warning"></i>
+                </div>
+                <div>
+                  <h6 class="alert-heading mb-1">
+                    <i class="fas fa-rocket me-2"></i>Rimborso Creato con Successo!
+                  </h6>
+                  <p class="mb-2">Il tuo rimborso è stato registrato nel sistema. Ecco cosa succederà ora:</p>
+                  <ul class="mb-2 small">
+                    <li><strong>Revisione:</strong> Un amministratore controllerà i tuoi giustificativi</li>
+                    <li><strong>Approvazione:</strong> Riceverai una notifica email per ogni aggiornamento</li>
+                    <li><strong>Pagamento:</strong> Una volta approvato, il rimborso verrà elaborato</li>
+                  </ul>
+                  <small class="text-muted">
+                    <i class="fas fa-envelope me-1"></i>Ti invieremo aggiornamenti via email per ogni cambio di stato
+                  </small>
+                </div>
+              </div>
+            </div>
+          <% elsif @reimboursement.status == 'waiting' %>
+            <div class="alert alert-info border-start border-info border-4 mb-4">
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  <i class="fas fa-clock fa-2x text-info"></i>
+                </div>
+                <div>
+                  <h6 class="alert-heading mb-1">
+                    <i class="fas fa-hourglass-half me-2"></i>Rimborso in Attesa
+                  </h6>
+                  <p class="mb-0">Il tuo rimborso richiede attenzione. Controlla le note per eventuali richieste di chiarimenti.</p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+          
+          <div class="row">
+            <!-- Informazioni generali -->
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                  <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Informazioni Generali
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar bg-light rounded-circle p-2 me-3">
+                          <i class="fas fa-user text-primary"></i>
+                        </div>
+                        <div>
+                          <small class="text-muted">Richiedente</small>
+                          <div class="fw-bold">
+                            <%= @reimboursement.user&.name %> <%= @reimboursement.user&.surname %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-12">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar bg-light rounded-circle p-2 me-3">
+                          <% 
+                            status_icon_color = case @reimboursement.status
+                                               when 'created' then 'secondary'
+                                               when 'in_process' then 'warning'
+                                               when 'approved' then 'success'
+                                               when 'paid' then 'primary'
+                                               when 'waiting' then 'info'
+                                               else 'secondary'
+                                               end
+                            status_icon = case @reimboursement.status
+                                         when 'created' then 'fas fa-plus-circle'
+                                         when 'in_process' then 'fas fa-spinner'
+                                         when 'approved' then 'fas fa-check-circle'
+                                         when 'paid' then 'fas fa-credit-card'
+                                         when 'waiting' then 'fas fa-clock'
+                                         else 'fas fa-question-circle'
+                                         end
+                          %>
+                          <i class="<%= status_icon %> text-<%= status_icon_color %>"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                          <small class="text-muted">Stato attuale</small>
+                          <div class="d-flex align-items-center">
+                            <span class="badge bg-<%= status_icon_color %> me-2">
+                              <%= @reimboursement.status_in_italian %>
+                            </span>
+                            <% if @reimboursement.status == 'created' %>
+                              <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>In attesa di elaborazione
+                              </small>
+                            <% elsif @reimboursement.status == 'waiting' %>
+                              <small class="text-info">
+                                <i class="fas fa-hourglass-half me-1"></i>Richiede attenzione
+                              </small>
+                            <% elsif @reimboursement.status == 'approved' %>
+                              <small class="text-success">
+                                <i class="fas fa-thumbs-up me-1"></i>Pronto per il pagamento
+                              </small>
+                            <% elsif @reimboursement.status == 'paid' %>
+                              <small class="text-primary">
+                                <i class="fas fa-money-check-alt me-1"></i>Completato
+                              </small>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-12">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar bg-light rounded-circle p-2 me-3">
+                          <i class="fas fa-calendar-plus text-success"></i>
+                        </div>
+                        <div>
+                          <small class="text-muted">Data creazione</small>
+                          <div class="fw-bold">
+                            <%= @reimboursement.created_at.strftime("%d/%m/%Y") %>
+                            <small class="text-muted">alle <%= @reimboursement.created_at.strftime("%H:%M") %></small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-12">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar bg-light rounded-circle p-2 me-3">
+                          <i class="fas fa-edit text-warning"></i>
+                        </div>
+                        <div>
+                          <small class="text-muted">Ultima modifica</small>
+                          <div class="fw-bold">
+                            <%= @reimboursement.updated_at.strftime("%d/%m/%Y") %>
+                            <small class="text-muted">alle <%= @reimboursement.updated_at.strftime("%H:%M") %></small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-12">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar bg-light rounded-circle p-2 me-3">
+                          <i class="fas fa-euro-sign text-success"></i>
+                        </div>
+                        <div>
+                          <small class="text-muted">Importo totale</small>
+                          <div class="fw-bold fs-5 text-success">
+                            € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
+                          </div>
+                          <% if @reimboursement.denied_amount > 0 %>
+                            <small class="text-danger">
+                              (€ <%= number_with_precision(@reimboursement.denied_amount, precision: 2) %> negate)
+                            </small>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Metodo di pagamento -->
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                  <h5 class="mb-0">
+                    <i class="fas fa-credit-card me-2"></i>Metodo di Pagamento
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar bg-light rounded-circle p-2 me-3">
+                          <% if @reimboursement.bank_account.present? %>
+                            <i class="fas fa-university text-primary"></i>
+                          <% elsif @reimboursement.paypal_account.present? %>
+                            <i class="fab fa-paypal text-info"></i>
+                          <% else %>
+                            <i class="fas fa-question text-muted"></i>
+                          <% end %>
+                        </div>
+                        <div>
+                          <small class="text-muted">Tipo di pagamento</small>
+                          <div class="fw-bold">
+                            <%= @reimboursement.payment_method_type %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <% if @reimboursement.bank_account.present? %>
+                      <div class="col-12">
+                        <div class="d-flex align-items-center">
+                          <div class="avatar bg-light rounded-circle p-2 me-3">
+                            <i class="fas fa-hashtag text-primary"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted">IBAN</small>
+                            <div class="fw-bold font-monospace">
+                              <%= @reimboursement.bank_account.iban %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="col-12">
+                        <div class="d-flex align-items-center">
+                          <div class="avatar bg-light rounded-circle p-2 me-3">
+                            <i class="fas fa-user-tie text-secondary"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted">Intestatario</small>
+                            <div class="fw-bold">
+                              <%= @reimboursement.bank_account.owner %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    <% elsif @reimboursement.paypal_account.present? %>
+                      <div class="col-12">
+                        <div class="d-flex align-items-center">
+                          <div class="avatar bg-light rounded-circle p-2 me-3">
+                            <i class="fas fa-envelope text-info"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted">Email PayPal</small>
+                            <div class="fw-bold">
+                              <%= @reimboursement.paypal_account.email %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    <% else %>
+                      <div class="col-12">
+                        <div class="alert alert-warning mb-0">
+                          <i class="fas fa-exclamation-triangle me-2"></i>
+                          Nessun metodo di pagamento configurato
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- Spese -->
+          <div class="row">
+            <div class="col-12">
+              <h5>Spese (<%= pluralize(@reimboursement.expenses.count, 'spesa', 'spese') %>)</h5>
+              
+              <% if @reimboursement.expenses.any? %>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>Data</th>
+                        <th>Descrizione</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th>Importo</th>
+                        <th>Dettagli/Allegato</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% @reimboursement.expenses.each do |expense| %>
+                        <tr class="<%= 'table-danger' if expense.status_denied? %>">
+                          <td><%= expense.date&.strftime("%d/%m/%Y") %></td>
+                          <td><%= expense.purpose %></td>
+                          <td>
+                            <% if expense.car? %>
+                              <span class="badge bg-info">Auto</span>
+                            <% else %>
+                              <span class="badge bg-secondary">Normale</span>
+                            <% end %>
+                          </td>
+                          <td>
+                            <% case expense.status %>
+                            <% when 'created' %>
+                              <span class="badge bg-warning">Creata</span>
+                            <% when 'approved' %>
+                              <span class="badge bg-success">Approvata</span>
+                            <% when 'denied' %>
+                              <span class="badge bg-danger">Negata</span>
+                            <% end %>
+                          </td>
+                          <td class="text-end">
+                            <% if expense.status_denied? %>
+                              <del>€ <%= number_with_precision(expense.amount, precision: 2) %></del>
+                            <% else %>
+                              <strong>€ <%= number_with_precision(expense.amount, precision: 2) %></strong>
+                            <% end %>
+                          </td>
+                          <td>
+                            <% if expense.car? %>
+                              <!-- Dettagli spesa auto -->
+                              <div class="small">
+                                <% if expense.vehicle %>
+                                  <strong>Veicolo:</strong> <%= expense.vehicle.display_name %><br>
+                                <% end %>
+                                <% if expense.departure && expense.arrival %>
+                                  <strong>Percorso:</strong> <%= expense.departure %> → <%= expense.arrival %><br>
+                                <% end %>
+                                <% if expense.distance %>
+                                  <strong>Distanza:</strong> <%= expense.distance %> km
+                                  <% if expense.return_trip? %>
+                                    (A/R)
+                                  <% end %><br>
+                                <% end %>
+                                <% if expense.calculation_date %>
+                                  <strong>Data calcolo:</strong> <%= expense.calculation_date.strftime("%d/%m/%Y") %>
+                                <% end %>
+                              </div>
+                            <% else %>
+                              <!-- Allegato spesa normale -->
+                              <% if expense.attachment.attached? %>
+                                <%= link_to expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" do %>
+                                  <i class="fas fa-file"></i> Visualizza
+                                <% end %>
+                              <% else %>
+                                <span class="text-muted">Nessun allegato</span>
+                              <% end %>
+                            <% end %>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                    <tfoot class="table-light">
+                      <tr>
+                        <th colspan="5">Totale Netto</th>
+                        <th class="text-end">€ <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></th>
+                      </tr>
+                      <% if @reimboursement.denied_amount > 0 %>
+                        <tr class="table-danger">
+                          <th colspan="5">Spese Negate</th>
+                          <th class="text-end">€ <%= number_with_precision(@reimboursement.denied_amount, precision: 2) %></th>
+                        </tr>
+                        <tr>
+                          <th colspan="5">Totale Lordo</th>
+                          <th class="text-end">€ <%= number_with_precision(@reimboursement.gross_total_amount, precision: 2) %></th>
+                        </tr>
+                      <% end %>
+                    </tfoot>
+                  </table>
+                </div>
+              <% else %>
+                <div class="alert alert-info">
+                  Nessuna spesa presente in questo rimborso.
+                </div>
+              <% end %>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- Note -->
+          <div class="row">
+            <div class="col-12">
+              <h5>Note e Comunicazioni</h5>
+              
+              <!-- Form per aggiungere nuova nota -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h6 class="mb-0">Aggiungi Nota</h6>
+                </div>
+                <div class="card-body">
+                  <%= form_with model: [@reimboursement, Note.new], local: true, class: "mb-3" do |form| %>
+                    <div class="mb-3">
+                      <%= form.label :content, "Messaggio", class: "form-label" %>
+                      <%= form.text_area :content, rows: 3, class: "form-control", required: true, placeholder: "Scrivi un messaggio..." %>
+                    </div>
+                    
+                    <% if current_user.admin? %>
+                      <div class="mb-3">
+                        <%= form.label :status_change, "Cambia Stato (opzionale)", class: "form-label" %>
+                        <%= form.select :status_change, 
+                                      options_for_select(
+                                        [['Nessun cambio', '']] + 
+                                        Reimboursement.status_translations.map { |key, value| [value, key] }
+                                      ), 
+                                      {}, 
+                                      { class: "form-select" } %>
+                        <small class="form-text text-muted">Se selezioni un nuovo stato, il rimborso verrà aggiornato automaticamente</small>
+                      </div>
+                    <% end %>
+                    
+                    <div class="d-flex justify-content-end">
+                      <%= form.submit "Aggiungi Nota", class: "btn btn-primary" %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+              
+              <!-- Lista delle note -->
+              <% if @reimboursement.notes.any? %>
+                <div class="notes-list">
+                  <% @reimboursement.notes.recent.each do |note| %>
+                    <div class="card mb-3">
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong><%= note.user.name %> <%= note.user.surname %></strong>
+                          <% if note.user.admin? %>
+                            <span class="badge bg-danger ms-1">Admin</span>
+                          <% end %>
+                          <small class="text-muted ms-2"><%= note.created_at.strftime("%d/%m/%Y alle %H:%M") %></small>
+                        </div>
+                        <% if current_user.admin? || note.user_id == current_user.id %>
+                          <%= link_to [@reimboursement, note], method: :delete, 
+                                      confirm: "Sei sicuro di voler eliminare questa nota?", 
+                                      class: "btn btn-sm btn-outline-danger" do %>
+                            <i class="fas fa-trash"></i>
+                          <% end %>
+                        <% end %>
+                      </div>
+                      <div class="card-body">
+                        <% if note.status_change.present? %>
+                          <div class="alert alert-info mb-2">
+                            <i class="fas fa-info-circle"></i> 
+                            <strong>Stato cambiato in:</strong> <%= Reimboursement.status_translations[note.status_change] %>
+                          </div>
+                        <% end %>
+                        <p class="mb-0"><%= simple_format(note.content) %></p>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                <div class="alert alert-info">
+                  Nessuna nota presente per questo rimborso.
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <% if @reimboursement.user_id == current_user.id || current_user.admin? %>
+            <%= link_to 'Modifica', edit_reimboursement_path(@reimboursement), class: "btn btn-primary" %>
+          <% end %>
+          <%= link_to 'Indietro', reimboursements_path, class: "btn btn-secondary" %>
         </div>
       </div>
-                <div class="form-group mb-3">
-        <p><strong>User:</strong></p>
-        <div>
-          <%= @reimboursement.user_id %>
-        </div>
-      </div>
-                <div class="form-group mb-3">
-        <p><strong>Bank account:</strong></p>
-        <div>
-          <%= @reimboursement.bank_account_id %>
-        </div>
-      </div>
-                <div class="form-group mb-3">
-        <p><strong>Paypal account:</strong></p>
-        <div>
-          <%= @reimboursement.paypal_account_id %>
-        </div>
-      </div>
-        <%= link_to 'Edit', edit_reimboursement_path(@reimboursement), class: "btn btn-primary" %>
-  <%= link_to 'Back', reimboursements_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
 </div>

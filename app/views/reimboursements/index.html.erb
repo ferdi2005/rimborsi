@@ -1,30 +1,78 @@
 <div class="container-fluid">
-  <p id="notice"><%= notice %></p>
-  <h1>Reimboursements</h1>
-  <table class="table">
-    <thead>
-      <tr>
-                  <th>State</th>
-                  <th>User</th>
-                  <th>Bank account</th>
-                  <th>Paypal account</th>
-                <th colspan="3"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @reimboursements.each do |reimboursement| %>
-      <tr>
-                  <td><%= reimboursement.state_id %></td>
-                  <td><%= reimboursement.user_id %></td>
-                  <td><%= reimboursement.bank_account_id %></td>
-                  <td><%= reimboursement.paypal_account_id %></td>
-                <td><%= link_to 'Show', reimboursement %></td>
-        <td><%= link_to 'Edit', edit_reimboursement_path(reimboursement) %></td>
-        <td><%= link_to 'Destroy', reimboursement, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <br>
-  <%= link_to 'New Reimboursement', new_reimboursement_path, class: "btn btn-primary" %>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Rimborsi</h1>
+    <%= link_to 'Nuovo Rimborso', new_reimboursement_path, class: "btn btn-primary" %>
+  </div>
+
+  <div class="row">
+    <% @reimboursements.each do |reimboursement| %>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Rimborso #<%= reimboursement.id %></h6>
+            <% 
+              badge_class = case reimboursement.status
+                           when 'created' then 'secondary'
+                           when 'in_process' then 'warning'
+                           when 'approved' then 'success'
+                           when 'paid' then 'primary'
+                           when 'waiting' then 'info'
+                           else 'secondary'
+                           end
+            %>
+            <span class="badge bg-<%= badge_class %>">
+              <%= reimboursement.status_in_italian %>
+            </span>
+          </div>
+          <div class="card-body">
+            <% if current_user.admin? %>
+              <p class="card-text"><strong>Utente:</strong> <%= reimboursement.user&.name %> <%= reimboursement.user&.surname %></p>
+            <% end %>
+            
+            <p class="card-text">
+              <strong>Metodo di pagamento:</strong><br>
+              <span class="text-muted"><%= reimboursement.payment_method_type %></span><br>
+              <% if reimboursement.bank_account.present? %>
+                <small><%= reimboursement.bank_account.iban %> - <%= reimboursement.bank_account.owner %></small>
+              <% elsif reimboursement.paypal_account.present? %>
+                <small><%= reimboursement.paypal_account.email %></small>
+              <% end %>
+            </p>
+            
+            <p class="card-text">
+              <strong>Totale:</strong> 
+              <span class="h5 text-primary">€ <%= number_with_precision(reimboursement.total_amount, precision: 2) %></span>
+            </p>
+            
+            <p class="card-text">
+              <strong>Spese:</strong> <%= pluralize(reimboursement.expenses.count, 'spesa', 'spese') %>
+            </p>
+            
+            <p class="card-text">
+              <small class="text-muted">Creato il <%= reimboursement.created_at.strftime("%d/%m/%Y alle %H:%M") %></small>
+            </p>
+          </div>
+          <div class="card-footer">
+            <div class="btn-group w-100" role="group">
+              <%= link_to 'Visualizza', reimboursement, class: "btn btn-outline-primary btn-sm" %>
+              <% if reimboursement.user_id == current_user.id || current_user.admin? %>
+                <%= link_to 'Modifica', edit_reimboursement_path(reimboursement), class: "btn btn-outline-secondary btn-sm" %>
+                <%= link_to 'Elimina', reimboursement, method: :delete, 
+                            data: { confirm: 'Sei sicuro di voler eliminare questo rimborso?' }, 
+                            class: "btn btn-outline-danger btn-sm" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  
+  <% if @reimboursements.empty? %>
+    <div class="alert alert-info text-center">
+      <h5>Nessun rimborso trovato</h5>
+      <p>Puoi creare il tuo primo rimborso.</p>
+      <%= link_to 'Crea Nuovo Rimborso', new_reimboursement_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
 </div>

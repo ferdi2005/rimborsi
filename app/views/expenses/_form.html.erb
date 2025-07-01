@@ -85,7 +85,48 @@
           <%= form.label :project_id %>
       <%= form.collection_select :project_id, Project.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
       </div>
+  
+  <!-- Allegato - mostrato solo se NON è una spesa per auto -->
+  <div class="form-group mb-3" id="attachment-field" style="<%= expense.car? ? 'display: none;' : '' %>">
+    <%= form.label :attachment, "Allegato (richiesto per spese non auto)", class: "form-label" %>
+    <%= form.file_field :attachment, class: "form-control", accept: "image/*,application/pdf,.doc,.docx" %>
+    <% if expense.attachment.attached? %>
+      <small class="form-text text-muted">
+        File corrente: <%= link_to expense.attachment.filename, expense.attachment, target: "_blank" %>
+      </small>
+    <% end %>
+  </div>
+
 <div class="form-group mb-3">
   <%= form.submit class: 'btn btn-primary' %>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const carCheckbox = document.querySelector('#expense_car');
+  const attachmentField = document.querySelector('#attachment-field');
+  
+  function toggleAttachmentField() {
+    if (carCheckbox.checked) {
+      attachmentField.style.display = 'none';
+      // Remove required validation when hidden
+      const fileInput = attachmentField.querySelector('input[type="file"]');
+      fileInput.removeAttribute('required');
+    } else {
+      attachmentField.style.display = 'block';
+      // Add required validation when visible
+      const fileInput = attachmentField.querySelector('input[type="file"]');
+      if (!fileInput.files.length && !document.querySelector('small')) {
+        fileInput.setAttribute('required', 'required');
+      }
+    }
+  }
+  
+  // Toggle on page load
+  toggleAttachmentField();
+  
+  // Toggle on checkbox change
+  carCheckbox.addEventListener('change', toggleAttachmentField);
+});
+</script>
 <% end %>

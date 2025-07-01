@@ -1,0 +1,54 @@
+<% if type == :info %>
+  <div class="alert alert-info alert-dismissible fade show m-1" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <%= msg %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<% if type == :warning %>
+  <div class="alert alert-warning alert-dismissible fade show m-1" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <%= msg %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<% if type == :error || type == :alert %>
+  <div class="alert alert-danger alert-dismissible fade show m-1" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <%= msg %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<% if type == :success || type == :notice %>
+  <% 
+    # Controllo se il messaggio riguarda la creazione di un rimborso
+    is_reimbursement_creation = msg.to_s.include?("Rimborso creato con successo") || msg.to_s.include?("🎉")
+  %>
+  <div class="alert <%= is_reimbursement_creation ? 'alert-success border-start border-success border-5' : 'alert-success' %> alert-dismissible fade show m-1" role="alert">
+    <% if is_reimbursement_creation %>
+      <div class="d-flex align-items-start">
+        <div class="me-3">
+          <i class="fas fa-check-circle fa-2x text-success"></i>
+        </div>
+        <div class="flex-grow-1">
+          <h5 class="alert-heading mb-2">
+            <i class="fas fa-trophy me-2"></i>Rimborso Creato!
+          </h5>
+          <p class="mb-2 fw-bold"><%= msg %></p>
+          <hr class="my-2">
+          <p class="mb-0 small">
+            <i class="fas fa-route me-1"></i>
+            <strong>Prossimi passi:</strong> Il tuo rimborso è ora nello stato "Creato" e sarà presto revisionato da un amministratore.
+          </p>
+        </div>
+      </div>
+    <% else %>
+      <i class="fas fa-check-circle me-2"></i>
+      <%= msg %>
+    <% end %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

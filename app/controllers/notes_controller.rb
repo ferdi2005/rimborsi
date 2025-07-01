@@ -1,70 +1,60 @@
 class NotesController < ApplicationController
-  before_action :set_note, only: %i[ show edit update destroy ]
+  before_action :set_reimboursement
+  before_action :set_note, only: [ :destroy ]
+  before_action :check_permissions
 
-  # GET /notes or /notes.json
-  def index
-    @notes = Note.all
-  end
-
-  # GET /notes/1 or /notes/1.json
-  def show
-  end
-
-  # GET /notes/new
-  def new
-    @note = Note.new
-  end
-
-  # GET /notes/1/edit
-  def edit
-  end
-
-  # POST /notes or /notes.json
   def create
-    @note = Note.new(note_params)
+    @note = @reimboursement.notes.build(note_params)
+    @note.user = current_user
+
+    # Se c'è un cambio di stato e l'utente è admin, aggiorna anche il rimborso
+    if @note.status_change.present? && current_user.admin?
+      @reimboursement.update(status: @note.status_change)
+    end
 
     respond_to do |format|
       if @note.save
-        format.html { redirect_to @note, notice: "Note was successfully created." }
-        format.json { render :show, status: :created, location: @note }
+        format.html { redirect_to @reimboursement, notice: "Nota aggiunta con successo." }
+        format.json { render json: { status: "success", message: "Nota aggiunta con successo." } }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @note.errors, status: :unprocessable_entity }
+        format.html { redirect_to @reimboursement, alert: "Errore nel salvare la nota." }
+        format.json { render json: { status: "error", errors: @note.errors.full_messages } }
       end
     end
   end
 
-  # PATCH/PUT /notes/1 or /notes/1.json
-  def update
-    respond_to do |format|
-      if @note.update(note_params)
-        format.html { redirect_to @note, notice: "Note was successfully updated." }
-        format.json { render :show, status: :ok, location: @note }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @note.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /notes/1 or /notes/1.json
   def destroy
-    @note.destroy!
-
+    @note.destroy
     respond_to do |format|
-      format.html { redirect_to notes_path, status: :see_other, notice: "Note was successfully destroyed." }
-      format.json { head :no_content }
+      format.html { redirect_to @reimboursement, notice: "Nota eliminata con successo." }
+      format.json { render json: { status: "success", message: "Nota eliminata con successo." } }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_note
-      @note = Note.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def note_params
-      params.require(:note).permit(:state_id, :reimboursment_id, :user_id, :text)
+  def set_reimboursement
+    @reimboursement = if current_user.admin?
+                       Reimboursement.find(params[:reimboursement_id])
+    else
+                       current_user.reimboursements.find(params[:reimboursement_id])
     end
+  end
+
+  def set_note
+    @note = @reimboursement.notes.find(params[:id])
+  end
+
+  def check_permissions
+    return if current_user.admin?
+    return if @reimboursement.user_id == current_user.id
+
+    redirect_to reimboursements_path, alert: "Non hai i permessi per accedere a questo rimborso."
+  end
+
+  def note_params
+    permitted_params = [ :content ]
+    permitted_params << :status_change if current_user.admin?
+    params.require(:note).permit(permitted_params)
+  end
 end

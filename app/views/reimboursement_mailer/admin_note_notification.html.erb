@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #dc3545;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+      }
+      .content {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border: 1px solid #dee2e6;
+      }
+      .note {
+        background-color: white;
+        padding: 15px;
+        border-left: 4px solid #dc3545;
+        margin: 15px 0;
+      }
+      .user-info {
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+      }
+      .footer {
+        background-color: #6c757d;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 12px;
+        border-radius: 0 0 5px 5px;
+      }
+      .btn {
+        display: inline-block;
+        background-color: #dc3545;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 10px 5px;
+      }
+      .btn-secondary {
+        background-color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🔔 Nuova Nota da Utente</h1>
+      <p>Rimborso #<%= @reimboursement.id %></p>
+    </div>
+    
+    <div class="content">
+      <p><strong>Un utente ha aggiunto una nuova nota al rimborso.</strong></p>
+      
+      <div class="user-info">
+        <h6>Informazioni Utente:</h6>
+        <p><strong>Nome:</strong> <%= @user.name %> <%= @user.surname %></p>
+        <p><strong>Email:</strong> <%= @user.email %></p>
+        <p><strong>Username:</strong> <%= @user.username %></p>
+        <% if @user.telephone.present? %>
+          <p><strong>Telefono:</strong> <%= @user.telephone %></p>
+        <% end %>
+      </div>
+      
+      <div class="note">
+        <p><strong>Nota aggiunta il:</strong> <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %></p>
+        <p><strong>Contenuto:</strong></p>
+        <p><%= simple_format(@note.content) %></p>
+      </div>
+      
+      <div class="user-info">
+        <h6>Dettagli Rimborso:</h6>
+        <p><strong>Stato attuale:</strong> <%= @reimboursement.status_in_italian %></p>
+        <p><strong>Totale:</strong> € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></p>
+        <p><strong>Metodo di pagamento:</strong> <%= @reimboursement.payment_method_type %></p>
+        <p><strong>Numero di spese:</strong> <%= @reimboursement.expenses.count %></p>
+      </div>
+      
+      <p style="text-align: center; margin-top: 20px;">
+        <a href="<%= Rails.application.routes.url_helpers.reimboursement_url(@reimboursement, host: request.base_url rescue 'localhost:3000') %>" class="btn">
+          🔍 Visualizza Rimborso
+        </a>
+        <a href="<%= Rails.application.routes.url_helpers.reimboursements_url(host: request.base_url rescue 'localhost:3000') %>" class="btn btn-secondary">
+          📋 Tutti i Rimborsi
+        </a>
+      </p>
+    </div>
+    
+    <div class="footer">
+      <p><strong>Gestione Rimborsi - Notifica Amministratori</strong></p>
+      <p>Accedi alla piattaforma per rispondere alla nota dell'utente.</p>
+    </div>
+  </body>
+</html>

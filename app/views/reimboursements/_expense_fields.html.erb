@@ -1,0 +1,312 @@
+<div class="expense-row border rounded p-3 mb-3">
+  <div class="row">
+    <!-- Campo importo unificato -->
+    <div class="col-md-3">
+      <%= f.label :amount, f.object.car? ? "Importo calcolato" : "Importo", class: "form-label" %>
+      <div class="input-group">
+        <span class="input-group-text">€</span>
+        <%= f.number_field :amount, 
+            step: 0.01, 
+            min: 0, 
+            readonly: f.object.car?, 
+            class: "form-control #{'calculated-amount' if f.object.car?}", 
+            placeholder: f.object.car? ? "Auto-calcolato" : "Inserisci importo",
+            style: f.object.car? ? "background-color: #f8f9fa;" : "" %>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <%= f.label :purpose, "Descrizione", class: "form-label" %>
+      <%= f.text_field :purpose, class: "form-control", placeholder: "Descrivi la spesa..." %>
+    </div>
+    
+    <div class="col-md-2">
+      <%= f.label :date, "Data", class: "form-label" %>
+      <%= f.date_field :date, class: "form-control", value: Date.current %>
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label">Tipo</label>
+      <div class="form-check">
+        <%= f.radio_button :car, false, class: "form-check-input", id: "#{f.object_name}_car_false", checked: !f.object.car? %>
+        <%= f.label :car, "Normale", class: "form-check-label", for: "#{f.object_name}_car_false" %>
+      </div>
+      <div class="form-check">
+        <%= f.radio_button :car, true, class: "form-check-input car-type", id: "#{f.object_name}_car_true", checked: f.object.car? %>
+        <%= f.label :car, "Auto", class: "form-check-label", for: "#{f.object_name}_car_true" %>
+      </div>
+    </div>
+
+    <div class="col-md-1 d-flex align-items-end">
+      <button type="button" class="btn btn-danger btn-sm remove-expense">
+        <i class="fas fa-trash"></i>
+      </button>
+      <%= f.hidden_field :_destroy %>
+    </div>
+  </div>
+
+  <!-- Status della spesa (solo per admin) -->
+  <% if current_user.admin? %>
+    <div class="row mt-2">
+      <div class="col-md-3">
+        <%= f.label :status, "Status", class: "form-label" %>
+        <%= f.select :status, 
+                    options_for_select(
+                      Expense.status_translations.map { |key, value| [value, key] },
+                      f.object.status
+                    ), 
+                    { prompt: "Seleziona status" }, 
+                    { class: "form-select" } %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Campo allegato per spese non auto -->
+  <div class="row mt-3 attachment-field" style="<%= 'display: none;' if f.object.car? %>">
+    <div class="col-md-6">
+      <%= f.label :attachment, "Allegato", class: "form-label" %>
+      <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf" %>
+      <small class="form-text text-muted">Carica ricevuta o fattura (solo per spese non auto)</small>
+    </div>
+  </div>
+
+  <!-- Campi specifici per spese auto -->
+  <div class="car-fields mt-3" style="<%= 'display: none;' unless f.object.car? %>">
+    <div class="alert alert-info">
+      <strong>Calcolo del rimborso auto</strong><br>
+      Utilizza <a href="https://costikm.aci.it/" target="_blank" class="alert-link">https://costikm.aci.it/</a> per calcolare i parametri necessari.
+    </div>
+    
+    <div class="row">
+      <div class="col-md-4">
+        <%= f.label :calculation_date, "Data di calcolo", class: "form-label" %>
+        <%= f.date_field :calculation_date, class: "form-control" %>
+      </div>
+      
+      <div class="col-md-4">
+        <%= f.label :departure, "Città di partenza", class: "form-label" %>
+        <%= f.text_field :departure, class: "form-control", placeholder: "Es: Milano" %>
+      </div>
+      
+      <div class="col-md-4">
+        <%= f.label :arrival, "Città di arrivo", class: "form-label" %>
+        <%= f.text_field :arrival, class: "form-control", placeholder: "Es: Roma" %>
+      </div>
+    </div>
+    
+    <div class="row mt-2">
+      <div class="col-md-3">
+        <%= f.label :distance, "Distanza (km)", class: "form-label" %>
+        <%= f.number_field :distance, class: "form-control distance-input", min: 0.01, step: 0.01 %>
+      </div>
+      
+      <div class="col-md-3">
+        <%= f.label :vehicle_id, "Veicolo", class: "form-label" %>
+        <%= f.collection_select :vehicle_id, 
+                                (current_user.admin? ? Vehicle.includes(:user).all : current_user.vehicles), 
+                                :id, 
+                                ->(vehicle) { current_user.admin? ? "#{vehicle.display_name} (#{vehicle.user.name} #{vehicle.user.surname})" : vehicle.display_name },
+                                { prompt: "Seleziona veicolo", selected: current_user.default_vehicle&.id },
+                                { class: "form-select" } %>
+        <small class="form-text text-muted">
+          <%= link_to "Aggiungi nuovo veicolo", new_vehicle_path, target: "_blank", class: "text-decoration-none" %>
+        </small>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="form-check mt-4">
+          <%= f.check_box :return_trip, class: "form-check-input return-trip-input" %>
+          <%= f.label :return_trip, "Andata e ritorno", class: "form-check-label" %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mt-2">
+      <div class="col-md-3">
+        <%= f.label :quota_capitale, "Quota capitale", class: "form-label" %>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          <%= f.number_field :quota_capitale, step: 0.01, min: 0, class: "form-control cost-input" %>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <%= f.label :carburante, "Quota carburante", class: "form-label" %>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          <%= f.number_field :carburante, step: 0.01, min: 0, class: "form-control cost-input" %>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <%= f.label :pneumatici, "Pneumatici", class: "form-label" %>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          <%= f.number_field :pneumatici, step: 0.01, min: 0, class: "form-control cost-input" %>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <%= f.label :manutenzione, "Manutenzione", class: "form-label" %>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          <%= f.number_field :manutenzione, step: 0.01, min: 0, class: "form-control cost-input" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Gestione toggle allegato e campi auto basato su tipo spesa
+document.addEventListener('change', function(e) {
+  if (e.target.classList.contains('car-type') || (e.target.name && e.target.name.includes('[car]'))) {
+    const expenseRow = e.target.closest('.expense-row');
+    const attachmentField = expenseRow.querySelector('.attachment-field');
+    const carFields = expenseRow.querySelector('.car-fields');
+    const amountFieldNormal = expenseRow.querySelector('.amount-field-normal');
+    const amountFieldAuto = expenseRow.querySelector('.amount-field-auto');
+    const carRadios = expenseRow.querySelectorAll('input[name*="[car]"]');
+    
+    let isCar = false;
+    carRadios.forEach(radio => {
+      if (radio.checked && radio.value === 'true') {
+        isCar = true;
+      }
+    });
+    
+    if (isCar) {
+      // Mostra campi auto e nasconde allegato
+      attachmentField.style.display = 'none';
+      carFields.style.display = 'block';
+      amountFieldNormal.style.display = 'none';
+      amountFieldAuto.style.display = 'block';
+      
+      const fileInput = attachmentField.querySelector('input[type="file"]');
+      if (fileInput) {
+        fileInput.value = '';
+      }
+      
+      // Calcola importo iniziale se tutti i campi sono già popolati
+      calculateAutoAmount(expenseRow);
+    } else {
+      // Mostra campi normali e nasconde auto
+      attachmentField.style.display = 'block';
+      carFields.style.display = 'none';
+      amountFieldNormal.style.display = 'block';
+      amountFieldAuto.style.display = 'none';
+      
+      // Reset dell'importo calcolato
+      const calculatedField = expenseRow.querySelector('.calculated-amount');
+      if (calculatedField) calculatedField.value = '';
+      
+      // Per spese normali, assicurati che il campo amount normale sia visibile e funzionante
+      const normalAmountField = expenseRow.querySelector('.amount-field-normal input[name*="[amount]"]');
+      if (normalAmountField) {
+        normalAmountField.removeAttribute('readonly');
+        normalAmountField.style.backgroundColor = '';
+        normalAmountField.style.pointerEvents = '';
+      }
+    }
+  }
+});
+
+// Gestione calcolo automatico importo auto
+document.addEventListener('input', function(e) {
+  if (e.target.classList.contains('cost-input') || 
+      e.target.classList.contains('distance-input')) {
+    calculateAutoAmount(e.target.closest('.expense-row'));
+  }
+});
+
+document.addEventListener('change', function(e) {
+  // Gestione checkbox andata e ritorno
+  if (e.target.classList.contains('return-trip-input') || 
+      e.target.name && e.target.name.includes('[return_trip]')) {
+    calculateAutoAmount(e.target.closest('.expense-row'));
+  }
+  
+  // Gestione altri campi auto
+  if (e.target.classList.contains('cost-input') || 
+      e.target.classList.contains('distance-input')) {
+    calculateAutoAmount(e.target.closest('.expense-row'));
+  }
+});
+
+// Event listener specifico per i checkbox return trip
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('return-trip-input') || 
+      (e.target.name && e.target.name.includes('[return_trip]') && e.target.type === 'checkbox')) {
+    calculateAutoAmount(e.target.closest('.expense-row'));
+  }
+});
+
+function calculateAutoAmount(expenseRow) {
+  // Usa la funzione globale se disponibile (quando siamo nel form completo)
+  if (window.calculateAutoAmount && typeof window.calculateAutoAmount === 'function') {
+    window.calculateAutoAmount(expenseRow);
+    return;
+  }
+  
+  // Altrimenti usa la funzione locale (standalone)
+  if (!expenseRow) return;
+  
+  // Verifica che sia effettivamente una spesa auto
+  const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');
+  if (!carRadio || !carRadio.checked) {
+    return;
+  }
+  
+  const quotaCapitale = parseFloat(expenseRow.querySelector('input[name*="[quota_capitale]"]')?.value) || 0;
+  const carburante = parseFloat(expenseRow.querySelector('input[name*="[carburante]"]')?.value) || 0;
+  const pneumatici = parseFloat(expenseRow.querySelector('input[name*="[pneumatici]"]')?.value) || 0;
+  const manutenzione = parseFloat(expenseRow.querySelector('input[name*="[manutenzione]"]')?.value) || 0;
+  const distance = parseFloat(expenseRow.querySelector('input[name*="[distance]"]')?.value) || 0;
+  
+  // Leggi il valore del checkbox return_trip (Rails genera due input, prendiamo quello visible)
+  const returnTripCheckbox = expenseRow.querySelector('input[name*="[return_trip]"]:not([type="hidden"])');
+  const returnTrip = returnTripCheckbox ? returnTripCheckbox.checked : false;
+  
+  if (quotaCapitale > 0 && carburante > 0 && pneumatici > 0 && manutenzione > 0 && distance > 0) {
+    // Somma delle quote (assicura precisione a 2 decimali)
+    const costPerKm = Number((quotaCapitale + carburante + pneumatici + manutenzione).toFixed(2));
+    
+    // Moltiplica per la distanza
+    let totalDistance = distance;
+    
+    // Se andata e ritorno, moltiplica per 2
+    if (returnTrip) {
+      totalDistance *= 2;
+    }
+    
+    // Calcola il totale e dividi sempre per 2 (con precisione a 2 decimali)
+    const calculatedAmount = Number(((costPerKm * totalDistance) / 2).toFixed(2));
+    
+    // Aggiorna i campi
+    const calculatedField = expenseRow.querySelector('.calculated-amount');
+    
+    if (calculatedField) {
+      calculatedField.value = calculatedAmount.toFixed(2);
+      // Trigger change event per aggiornare il totale generale
+      calculatedField.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  } else {
+    // Reset dei campi se non tutti i valori sono inseriti
+    const calculatedField = expenseRow.querySelector('.calculated-amount');
+    if (calculatedField) {
+      calculatedField.value = '';
+    }
+  }
+}
+
+// Calcola automaticamente per le spese auto esistenti al caricamento della pagina
+document.addEventListener('DOMContentLoaded', function() {
+  const existingCarExpenses = document.querySelectorAll('.expense-row');
+  existingCarExpenses.forEach(expenseRow => {
+    const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');
+    if (carRadio && carRadio.checked) {
+      calculateAutoAmount(expenseRow);
+    }
+  });
+});
+</script>

@@ -1,31 +1,390 @@
-<%= bootstrap_form_with(model: reimboursement) do |form| %>
-<% if reimboursement.errors.any? %>
-<div id="error_explanation">
-  <h2><%= pluralize(reimboursement.errors.count, "error") %> prohibited this reimboursement from being saved:</h2>
-  <ul>
-    <% reimboursement.errors.each do |error| %>
-    <li><%= error.full_message %></li>
+<%= form_with(model: reimboursement, local: true) do |form| %>
+  <% if reimboursement.errors.any? %>
+    <div class="alert alert-danger">
+      <h6><%= pluralize(reimboursement.errors.count, "errore", "errori") %> ha impedito il salvataggio:</h6>
+      <ul class="mb-0">
+        <% reimboursement.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <!-- Informazioni di base -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>Informazioni Generali
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if current_user.admin? %>
+            <div class="mb-3">
+              <%= form.label :status, "Stato", class: "form-label" %>
+              <%= form.select :status, 
+                            options_for_select(
+                              Reimboursement.status_translations.map { |key, value| [value, key] },
+                              reimboursement.status
+                            ), 
+                            { prompt: "Seleziona stato" }, 
+                            { class: "form-select" } %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :user_id, "Utente", class: "form-label" %>
+              <%= form.collection_select :user_id, User.all, :id, 
+                                        ->(user) { "#{user.name} #{user.surname}" }, 
+                                        { prompt: "Seleziona utente" }, 
+                                        { class: "form-select" } %>
+            </div>
+          <% else %>
+            <div class="alert alert-info border-start border-info border-4 mb-3">
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  <i class="fas fa-user-circle fa-2x text-info"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1">
+                    <i class="fas fa-id-card me-2"></i>Richiedente
+                  </h6>
+                  <p class="mb-0 fw-bold"><%= current_user.name %> <%= current_user.surname %></p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="alert alert-warning border-start border-warning border-4 mb-0">
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  <i class="fas fa-plus-circle fa-2x text-warning"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1">
+                    <i class="fas fa-clipboard-check me-2"></i>Stato iniziale
+                  </h6>
+                  <p class="mb-2">
+                    <span class="badge bg-warning text-dark fs-6 px-2 py-1">
+                      <i class="fas fa-plus-circle me-1"></i>Creato
+                    </span>
+                  </p>
+                  <small class="text-muted">
+                    Il rimborso verrà sottoposto a revisione e riceverai notifiche via email per ogni aggiornamento
+                  </small>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metodo di pagamento -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Metodo di Pagamento</h5>
+          <div class="btn-group btn-group-sm">
+            <%= link_to "Nuovo Conto", new_bank_account_path, 
+                        class: "btn btn-outline-primary btn-sm", 
+                        target: "_blank", 
+                        title: "Aggiungi nuovo conto bancario" %>
+            <%= link_to "Nuovo PayPal", new_paypal_account_path, 
+                        class: "btn btn-outline-info btn-sm", 
+                        target: "_blank", 
+                        title: "Aggiungi nuovo account PayPal" %>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Tipo di pagamento</label>
+            <div class="btn-group w-100" role="group" id="payment-type-selector">
+              <input type="radio" class="btn-check" name="payment_type" id="bank_payment" value="bank">
+              <label class="btn btn-outline-primary" for="bank_payment">
+                <i class="fas fa-university"></i> Conto Bancario
+              </label>
+              
+              <input type="radio" class="btn-check" name="payment_type" id="paypal_payment" value="paypal">
+              <label class="btn btn-outline-info" for="paypal_payment">
+                <i class="fab fa-paypal"></i> PayPal
+              </label>
+            </div>
+          </div>
+
+          <div id="bank-accounts-section" style="display: none;">
+            <%= form.label :bank_account_id, "Conto Bancario", class: "form-label" %>
+            <%= form.collection_select :bank_account_id, 
+                                      current_user.admin? ? BankAccount.all : current_user.bank_accounts, 
+                                      :id, 
+                                      ->(account) { "#{account.iban} - #{account.owner}#{account.default? ? ' (Predefinito)' : ''}" }, 
+                                      { prompt: "Seleziona conto bancario" }, 
+                                      { class: "form-select" } %>
+          </div>
+
+          <div id="paypal-accounts-section" style="display: none;">
+            <%= form.label :paypal_account_id, "Account PayPal", class: "form-label" %>
+            <%= form.collection_select :paypal_account_id, 
+                                      current_user.admin? ? PaypalAccount.all : current_user.paypal_accounts, 
+                                      :id, 
+                                      ->(account) { "#{account.email}#{account.default? ? ' (Predefinito)' : ''}" }, 
+                                      { prompt: "Seleziona account PayPal" }, 
+                                      { class: "form-select" } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spese -->
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Spese</h5>
+      <button type="button" class="btn btn-primary btn-sm" id="add-expense">
+        <i class="fas fa-plus"></i> Aggiungi Spesa
+      </button>
+    </div>
+    <div class="card-body">
+      <div id="expenses-container">
+        <%= form.fields_for :expenses do |expense_form| %>
+          <%= render 'expense_fields', f: expense_form %>
+        <% end %>
+      </div>
+      
+      <div id="expense-template" style="display: none;">
+        <%= form.fields_for :expenses, Expense.new, child_index: 'NEW_RECORD' do |expense_form| %>
+          <%= render 'expense_fields', f: expense_form %>
+        <% end %>
+      </div>
+      
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h5 class="mb-0">Totale: <span id="total-amount" class="text-primary">€ 0,00</span></h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottoni di azione -->
+  <div class="d-flex justify-content-between">
+    <%= link_to 'Annulla', reimboursements_path, class: 'btn btn-secondary' %>
+    <%= form.submit "Salva Rimborso", class: 'btn btn-success' %>
+  </div>
+<% end %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Gestione selezione metodo di pagamento
+  const paymentTypeInputs = document.querySelectorAll('input[name="payment_type"]');
+  const bankSection = document.getElementById('bank-accounts-section');
+  const paypalSection = document.getElementById('paypal-accounts-section');
+
+  paymentTypeInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      if (this.value === 'bank') {
+        bankSection.style.display = 'block';
+        paypalSection.style.display = 'none';
+        document.getElementById('reimboursement_paypal_account_id').value = '';
+      } else if (this.value === 'paypal') {
+        paypalSection.style.display = 'block';
+        bankSection.style.display = 'none';
+        document.getElementById('reimboursement_bank_account_id').value = '';
+      }
+    });
+  });
+
+  // Inizializza la selezione del metodo di pagamento
+  function initializePaymentMethod() {
+    <% if reimboursement.bank_account.present? %>
+      document.getElementById('bank_payment').checked = true;
+      bankSection.style.display = 'block';
+    <% elsif reimboursement.paypal_account.present? %>
+      document.getElementById('paypal_payment').checked = true;
+      paypalSection.style.display = 'block';
+    <% else %>
+      // Seleziona automaticamente il conto predefinito se esiste
+      <% if current_user.default_bank_account %>
+        document.getElementById('bank_payment').checked = true;
+        bankSection.style.display = 'block';
+        document.getElementById('reimboursement_bank_account_id').value = '<%= current_user.default_bank_account.id %>';
+      <% elsif current_user.default_paypal_account %>
+        document.getElementById('paypal_payment').checked = true;
+        paypalSection.style.display = 'block';
+        document.getElementById('reimboursement_paypal_account_id').value = '<%= current_user.default_paypal_account.id %>';
+      <% end %>
     <% end %>
-  </ul>
-</div>
-<% end %>
-  <div class="form-group mb-3">
-          <%= form.label :state_id %>
-      <%= form.collection_select :state_id, State.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
-      </div>
-  <div class="form-group mb-3">
-          <%= form.label :user_id %>
-      <%= form.collection_select :user_id, User.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
-      </div>
-  <div class="form-group mb-3">
-          <%= form.label :bank_account_id %>
-      <%= form.collection_select :bank_account_id, BankAccount.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
-      </div>
-  <div class="form-group mb-3">
-          <%= form.label :paypal_account_id %>
-      <%= form.collection_select :paypal_account_id, PaypalAccount.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
-      </div>
-<div class="form-group mb-3">
-  <%= form.submit class: 'btn btn-primary' %>
-</div>
-<% end %>
+  }
+  
+  // Inizializza il metodo di pagamento
+  initializePaymentMethod();
+
+  // Gestione calcolo automatico importo auto
+  document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('cost-input') || e.target.classList.contains('distance-input')) {
+      window.calculateAutoAmount(e.target.closest('.expense-row'));
+    }
+    
+    if (e.target.name && (e.target.name.includes('[amount]') || e.target.name.includes('[status]'))) {
+      updateTotal();
+    }
+  });
+
+  document.addEventListener('change', function(e) {
+    if (e.target.name && e.target.name.includes('[status]')) {
+      updateTotal();
+    }
+    
+    // Calcola importo auto per return trip e altri campi auto
+    if (e.target.classList.contains('return-trip-input') || 
+        e.target.name && e.target.name.includes('[return_trip]') ||
+        e.target.classList.contains('cost-input') || 
+        e.target.classList.contains('distance-input')) {
+      window.calculateAutoAmount(e.target.closest('.expense-row'));
+    }
+  });
+
+  // Event listener specifico per i checkbox return trip
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('return-trip-input') || 
+        (e.target.name && e.target.name.includes('[return_trip]') && e.target.type === 'checkbox')) {
+      window.calculateAutoAmount(e.target.closest('.expense-row'));
+    }
+  });
+
+  // Aggiungi nuova spesa
+  document.getElementById('add-expense').addEventListener('click', function() {
+    const container = document.getElementById('expenses-container');
+    const template = document.getElementById('expense-template');
+    const newExpense = template.innerHTML.replace(/NEW_RECORD/g, new Date().getTime());
+    
+    const div = document.createElement('div');
+    div.innerHTML = newExpense;
+    const newExpenseRow = div.firstElementChild;
+    container.appendChild(newExpenseRow);
+    
+    // Assicurati che i campi auto siano nascosti per default
+    const carFields = newExpenseRow.querySelector('.car-fields');
+    const attachmentField = newExpenseRow.querySelector('.attachment-field');
+    if (carFields) carFields.style.display = 'none';
+    if (attachmentField) attachmentField.style.display = 'block';
+    
+    // Seleziona "Normale" per default
+    const normalRadio = newExpenseRow.querySelector('input[name*="[car]"][value="false"]');
+    if (normalRadio) {
+      normalRadio.checked = true;
+    }
+    
+    // Aggiungi animazione di entrata
+    newExpenseRow.style.opacity = '0';
+    newExpenseRow.style.transform = 'translateY(-20px)';
+    setTimeout(() => {
+      newExpenseRow.style.transition = 'all 0.3s ease';
+      newExpenseRow.style.opacity = '1';
+      newExpenseRow.style.transform = 'translateY(0)';
+    }, 10);
+    
+    updateTotal();
+  });
+
+  // Rimuovi spesa
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-expense')) {
+      const expenseRow = e.target.closest('.expense-row');
+      
+      // Animazione di uscita
+      expenseRow.style.transition = 'all 0.3s ease';
+      expenseRow.style.opacity = '0';
+      expenseRow.style.transform = 'translateX(100%)';
+      
+      setTimeout(() => {
+        expenseRow.remove();
+        updateTotal();
+      }, 300);
+    }
+  });
+
+  // Funzione per aggiornare il totale
+  function updateTotal() {
+    const expenseRows = document.querySelectorAll('.expense-row');
+    let total = 0;
+    
+    expenseRows.forEach(row => {
+      const amountInput = row.querySelector('input[name*="[amount]"]');
+      const statusSelect = row.querySelector('select[name*="[status]"]');
+      
+      if (amountInput) {
+        const amount = parseFloat(amountInput.value) || 0;
+        const status = statusSelect ? statusSelect.value : 'created';
+        
+        // Includi nel totale solo se non è negata
+        if (status !== 'denied') {
+          total += amount;
+        }
+      }
+    });
+    
+    document.getElementById('total-amount').textContent = '€ ' + total.toFixed(2).replace('.', ',');
+  }
+
+  // Funzione globale per calcolo automatico spese auto
+  window.calculateAutoAmount = function(expenseRow) {
+    if (!expenseRow) return;
+    
+    // Verifica che sia effettivamente una spesa auto
+    const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');
+    if (!carRadio || !carRadio.checked) {
+      return;
+    }
+    
+    const quotaCapitale = parseFloat(expenseRow.querySelector('input[name*="[quota_capitale]"]')?.value) || 0;
+    const carburante = parseFloat(expenseRow.querySelector('input[name*="[carburante]"]')?.value) || 0;
+    const pneumatici = parseFloat(expenseRow.querySelector('input[name*="[pneumatici]"]')?.value) || 0;
+    const manutenzione = parseFloat(expenseRow.querySelector('input[name*="[manutenzione]"]')?.value) || 0;
+    const distance = parseFloat(expenseRow.querySelector('input[name*="[distance]"]')?.value) || 0;
+    
+    // Leggi il valore del checkbox return_trip (Rails genera due input, prendiamo quello visible)
+    const returnTripCheckbox = expenseRow.querySelector('input[name*="[return_trip]"]:not([type="hidden"])');
+    const returnTrip = returnTripCheckbox ? returnTripCheckbox.checked : false;
+    
+    if (quotaCapitale > 0 && carburante > 0 && pneumatici > 0 && manutenzione > 0 && distance > 0) {
+      // Somma delle quote (assicura precisione a 2 decimali)
+      const costPerKm = Number((quotaCapitale + carburante + pneumatici + manutenzione).toFixed(2));
+      
+      // Moltiplica per la distanza
+      let totalDistance = distance;
+      
+      // Se andata e ritorno, moltiplica per 2
+      if (returnTrip) {
+        totalDistance *= 2;
+      }
+      
+      // Calcola il totale e dividi sempre per 2 (con precisione a 2 decimali)
+      const calculatedAmount = Number(((costPerKm * totalDistance) / 2).toFixed(2));
+      
+      // Aggiorna i campi
+      const calculatedField = expenseRow.querySelector('.calculated-amount');
+      
+      if (calculatedField) {
+        calculatedField.value = calculatedAmount.toFixed(2);
+        // Trigger change event per aggiornare il totale generale
+        calculatedField.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      
+      // Aggiorna il totale
+      updateTotal();
+    } else {
+      // Reset dei campi se non tutti i valori sono inseriti
+      const calculatedField = expenseRow.querySelector('.calculated-amount');
+      if (calculatedField) {
+        calculatedField.value = '';
+      }
+    }
+  };
+  
+  // Calcola il totale iniziale
+  updateTotal();
+});
+</script>

@@ -1,53 +1,82 @@
 <div class="container-fluid">
-  <p id="notice"><%= notice %></p>
-            <div class="form-group mb-3">
-        <p><strong>User:</strong></p>
-        <div>
-          <%= @bank_account.user_id %>
+  <% if notice %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= notice %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% end %>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Dettagli Conto Bancario</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <% if current_user.admin? %>
+        <div class="form-group mb-4">
+          <h5><strong>Proprietario:</strong></h5>
+          <div class="d-flex align-items-center">
+            <i class="fas fa-user me-2 text-primary"></i>
+            <span class="fs-6">
+              <%= @bank_account.user.name %> <%= @bank_account.user.surname %>
+              <small class="text-muted">(<%= @bank_account.user.email %>)</small>
+            </span>
+          </div>
         </div>
-      </div>
-                <div class="form-group mb-3">
-        <p><strong>Iban:</strong></p>
-        <div>
+        <hr>
+      <% end %>
+
+      <div class="form-group mb-3">
+        <p><strong>IBAN:</strong></p>
+        <div class="font-monospace">
           <%= @bank_account.iban %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Owner:</strong></p>
+        <p><strong>Intestatario:</strong></p>
         <div>
           <%= @bank_account.owner %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Address:</strong></p>
+        <p><strong>Indirizzo:</strong></p>
         <div>
           <%= @bank_account.address %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Cap:</strong></p>
+        <p><strong>CAP:</strong></p>
         <div>
           <%= @bank_account.cap %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Town:</strong></p>
+        <p><strong>Città:</strong></p>
         <div>
           <%= @bank_account.town %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Fiscal code:</strong></p>
-        <div>
+        <p><strong>Codice Fiscale:</strong></p>
+        <div class="font-monospace">
           <%= @bank_account.fiscal_code %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Default:</strong></p>
+        <p><strong>Predefinito:</strong></p>
         <div>
-          <%= @bank_account.default %>
+          <% if @bank_account.default %>
+            <span class="badge bg-success">Sì</span>
+          <% else %>
+            <span class="badge bg-secondary">No</span>
+          <% end %>
         </div>
       </div>
-        <%= link_to 'Edit', edit_bank_account_path(@bank_account), class: "btn btn-primary" %>
-  <%= link_to 'Back', bank_accounts_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <%= link_to 'Modifica', edit_bank_account_path(@bank_account), class: "btn btn-primary" %>
+    <%= link_to 'Torna alla Lista', bank_accounts_path, class: "btn btn-secondary" %>
+  </div>
 </div>

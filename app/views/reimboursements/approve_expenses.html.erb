@@ -1,0 +1,204 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Approvazione Giustificativi - Rimborso #<%= @reimboursement.id %></h3>
+          <div>
+            <span class="badge bg-info">
+              Giustificativo <%= @current_expense_index + 1 %> di <%= @total_expenses %>
+            </span>
+            <%= link_to 'Torna al Rimborso', reimboursement_path(@reimboursement), class: "btn btn-sm btn-outline-secondary ms-2" %>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="row">
+            <!-- Dettagli spesa (sinistra) -->
+            <div class="col-md-6">
+              <h5>Dettagli del Giustificativo</h5>
+              
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p><strong>Data:</strong> <%= @current_expense.date&.strftime("%d/%m/%Y") %></p>
+                    </div>
+                    <div class="col-md-6">
+                      <p><strong>Importo:</strong> <span class="h5 text-primary">€ <%= number_with_precision(@current_expense.amount, precision: 2) %></span></p>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <p><strong>Descrizione:</strong></p>
+                    <p class="border rounded p-2 bg-light"><%= @current_expense.purpose %></p>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <p><strong>Tipo di spesa:</strong> 
+                      <% if @current_expense.car? %>
+                        <span class="badge bg-info">Auto</span>
+                      <% else %>
+                        <span class="badge bg-secondary">Normale</span>
+                      <% end %>
+                    </p>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <p><strong>Status attuale:</strong> 
+                      <% case @current_expense.status %>
+                      <% when 'created' %>
+                        <span class="badge bg-warning">In Attesa</span>
+                      <% when 'approved' %>
+                        <span class="badge bg-success">Approvato</span>
+                      <% when 'denied' %>
+                        <span class="badge bg-danger">Rifiutato</span>
+                      <% end %>
+                    </p>
+                  </div>
+                  
+                  <% if @current_expense.car? %>
+                    <hr>
+                    <h6>Dettagli Spesa Auto</h6>
+                    <% if @current_expense.vehicle %>
+                      <p><strong>Veicolo:</strong> <%= @current_expense.vehicle.display_name %></p>
+                    <% end %>
+                    <% if @current_expense.departure && @current_expense.arrival %>
+                      <p><strong>Percorso:</strong> <%= @current_expense.departure %> → <%= @current_expense.arrival %></p>
+                    <% end %>
+                    <% if @current_expense.distance %>
+                      <p><strong>Distanza:</strong> <%= @current_expense.distance %> km
+                        <% if @current_expense.return_trip? %>
+                          (Andata e Ritorno)
+                        <% end %>
+                      </p>
+                    <% end %>
+                    <% if @current_expense.calculation_date %>
+                      <p><strong>Data calcolo:</strong> <%= @current_expense.calculation_date.strftime("%d/%m/%Y") %></p>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Allegato (destra) -->
+            <div class="col-md-6">
+              <h5>Allegato Presentato</h5>
+              
+              <div class="card">
+                <div class="card-body text-center">
+                  <% if @current_expense.attachment.attached? %>
+                    <% if @current_expense.attachment.content_type.start_with?('image/') %>
+                      <!-- Mostra immagine -->
+                      <%= image_tag @current_expense.attachment, class: "img-fluid rounded", style: "max-height: 500px;" %>
+                      <div class="mt-3">
+                        <%= link_to "Visualizza a Schermo Intero", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                      </div>
+                    <% elsif @current_expense.attachment.content_type == 'application/pdf' %>
+                      <!-- Mostra PDF -->
+                      <div class="border rounded p-4 bg-light">
+                        <i class="fas fa-file-pdf fa-5x text-danger mb-3"></i>
+                        <p>Documento PDF</p>
+                        <%= link_to "Apri PDF", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                      </div>
+                    <% else %>
+                      <!-- Altro tipo di file -->
+                      <div class="border rounded p-4 bg-light">
+                        <i class="fas fa-file fa-5x text-secondary mb-3"></i>
+                        <p>Allegato: <%= @current_expense.attachment.filename %></p>
+                        <%= link_to "Scarica File", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                      </div>
+                    <% end %>
+                  <% else %>
+                    <div class="alert alert-warning">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      Nessun allegato presente per questo giustificativo.
+                      <% if @current_expense.car? %>
+                        <br><small>Le spese auto non richiedono allegati.</small>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-md-8">
+              <!-- Azioni di approvazione -->
+              <% if @current_expense.status == 'created' %>
+                <%= form_with url: approve_expense_reimboursement_path(@reimboursement), method: :patch, local: true, class: "d-inline" do |form| %>
+                  <%= form.hidden_field :expense_id, value: @current_expense.id %>
+                  <%= form.hidden_field :next_index, value: @current_expense_index + 1 %>
+                  <%= form.submit "Approva", class: "btn btn-success" %>
+                <% end %>
+                
+                <!-- Bottone Rifiuta con modal -->
+                <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#denyModal">
+                  Rifiuta
+                </button>
+              <% else %>
+                <span class="text-muted">Giustificativo già revisionato</span>
+              <% end %>
+            </div>
+            
+            <div class="col-md-4 text-end">
+              <!-- Navigazione -->
+              <% if @current_expense_index + 1 < @total_expenses %>
+                <%= link_to "Avanti", approve_expenses_reimboursement_path(@reimboursement, expense_index: @current_expense_index + 1), class: "btn btn-primary" %>
+              <% else %>
+                <%= link_to "Fine", reimboursement_path(@reimboursement), class: "btn btn-outline-secondary" %>
+              <% end %>
+              
+              <% if @current_expense_index > 0 %>
+                <%= link_to "Indietro", approve_expenses_reimboursement_path(@reimboursement, expense_index: @current_expense_index - 1), class: "btn btn-outline-secondary ms-1" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal per rifiuto -->
+<div class="modal fade" id="denyModal" tabindex="-1" aria-labelledby="denyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_with url: deny_expense_reimboursement_path(@reimboursement), method: :patch, local: true do |form| %>
+        <div class="modal-header">
+          <h5 class="modal-title" id="denyModalLabel">Rifiuta Giustificativo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <%= form.hidden_field :expense_id, value: @current_expense.id %>
+          <%= form.hidden_field :next_index, value: @current_expense_index + 1 %>
+          
+          <div class="mb-3">
+            <%= form.label :note_content, "Motivo del rifiuto (opzionale)", class: "form-label" %>
+            <%= form.text_area :note_content, rows: 3, class: "form-control", placeholder: "Spiega il motivo del rifiuto..." %>
+          </div>
+          
+          <div class="mb-3">
+            <%= form.label :reimboursement_status, "Cambia stato del rimborso", class: "form-label" %>
+            <%= form.select :reimboursement_status, 
+                          options_for_select([
+                            ['Mantieni stato attuale', ''],
+                            ['In Attesa', 'waiting'],
+                            ['Rifiutato', 'denied']
+                          ]), 
+                          { selected: 'waiting' },
+                          { class: "form-select" } %>
+            <small class="form-text text-muted">Di default il rimborso viene messo "In Attesa"</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+          <%= form.submit "Rifiuta Giustificativo", class: "btn btn-danger" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

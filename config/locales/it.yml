@@ -1,0 +1,303 @@
+it:
+  activerecord:
+    models:
+      expense: "Spesa"
+      reimboursement: "Rimborso"
+      user: "Utente"
+      vehicle: "Veicolo"
+      bank_account: "Conto Bancario"
+      paypal_account: "Account PayPal"
+      project: "Progetto"
+      role: "Ruolo"
+      note: "Nota"
+    
+    attributes:
+      expense:
+        amount: "Importo"
+        purpose: "Descrizione"
+        date: "Data"
+        attachment: "Allegato"
+        car: "Spesa auto"
+        calculation_date: "Data di calcolo"
+        departure: "Città di partenza"
+        arrival: "Città di arrivo"
+        distance: "Distanza (km)"
+        vehicle: "Veicolo"
+        vehicle_id: "Veicolo"
+        quota_capitale: "Quota capitale"
+        carburante: "Quota carburante"
+        pneumatici: "Pneumatici"
+        manutenzione: "Manutenzione"
+        return_trip: "Andata e ritorno"
+        status: "Stato"
+        project: "Progetto"
+        project_id: "Progetto"
+        reimboursement: "Rimborso"
+        reimboursement_id: "Rimborso"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+      
+      reimboursement:
+        status: "Stato"
+        user: "Utente"
+        user_id: "Utente"
+        bank_account: "Conto Bancario"
+        bank_account_id: "Conto Bancario"
+        paypal_account: "Account PayPal"
+        paypal_account_id: "Account PayPal"
+        total_amount: "Importo totale"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+      
+      user:
+        name: "Nome"
+        surname: "Cognome"
+        email: "Email"
+        admin: "Amministratore"
+        default_bank_account: "Conto bancario predefinito"
+        default_paypal_account: "Account PayPal predefinito"
+        default_vehicle: "Veicolo predefinito"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+      
+      vehicle:
+        brand: "Marca"
+        model: "Modello"
+        license_plate: "Targa"
+        user: "Proprietario"
+        user_id: "Proprietario"
+        default: "Predefinito"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+      
+      bank_account:
+        iban: "IBAN"
+        owner: "Intestatario"
+        bank_name: "Nome banca"
+        user: "Utente"
+        user_id: "Utente"
+        default: "Predefinito"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+      
+      paypal_account:
+        email: "Email PayPal"
+        user: "Utente"
+        user_id: "Utente"
+        default: "Predefinito"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+      
+      project:
+        name: "Nome progetto"
+        description: "Descrizione"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+      
+      role:
+        name: "Nome ruolo"
+        description: "Descrizione"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+      
+      note:
+        content: "Contenuto"
+        reimboursement: "Rimborso"
+        reimboursement_id: "Rimborso"
+        user: "Utente"
+        user_id: "Utente"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
+
+    errors:
+      models:
+        expense:
+          attributes:
+            amount:
+              blank: "è obbligatorio"
+              not_a_number: "deve essere un numero"
+              greater_than: "deve essere maggiore di %{count}"
+            purpose:
+              blank: "è obbligatoria"
+            date:
+              blank: "è obbligatoria"
+            attachment:
+              blank: "è obbligatorio per le spese non auto"
+            calculation_date:
+              blank: "è obbligatoria per le spese auto"
+            departure:
+              blank: "è obbligatoria per le spese auto"
+            arrival:
+              blank: "è obbligatoria per le spese auto"
+            distance:
+              blank: "è obbligatoria per le spese auto"
+              greater_than: "deve essere maggiore di 0"
+              not_a_number: "deve essere un numero valido"
+            vehicle:
+              blank: "è obbligatorio per le spese auto"
+            quota_capitale:
+              blank: "è obbligatoria per le spese auto"
+              greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
+              not_a_number: "deve essere un numero valido"
+            carburante:
+              blank: "è obbligatorio per le spese auto"
+              greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
+              not_a_number: "deve essere un numero valido"
+            pneumatici:
+              blank: "sono obbligatori per le spese auto"
+              greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
+              not_a_number: "deve essere un numero valido"
+            manutenzione:
+              blank: "è obbligatoria per le spese auto"
+              greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
+              not_a_number: "deve essere un numero valido"
+        
+        reimboursement:
+          attributes:
+            user:
+              blank: "è obbligatorio"
+            status:
+              blank: "è obbligatorio"
+        
+        user:
+          attributes:
+            name:
+              blank: "è obbligatorio"
+            surname:
+              blank: "è obbligatorio"
+            email:
+              blank: "è obbligatoria"
+              invalid: "non è valida"
+        
+        vehicle:
+          attributes:
+            brand:
+              blank: "è obbligatoria"
+            model:
+              blank: "è obbligatorio"
+            license_plate:
+              blank: "è obbligatoria"
+        
+        bank_account:
+          attributes:
+            iban:
+              blank: "è obbligatorio"
+              invalid: "non è valido"
+            owner:
+              blank: "è obbligatorio"
+        
+        paypal_account:
+          attributes:
+            email:
+              blank: "è obbligatoria"
+              invalid: "non è valida"
+
+      messages:
+        blank: "non può essere vuoto"
+        not_a_number: "deve essere un numero"
+        greater_than: "deve essere maggiore di %{count}"
+        greater_than_or_equal_to: "deve essere maggiore o uguale a %{count}"
+        invalid: "non è valido"
+        taken: "è già in uso"
+        too_short: "è troppo corto (minimo %{count} caratteri)"
+        too_long: "è troppo lungo (massimo %{count} caratteri)"
+        inclusion: "non è incluso nella lista"
+        exclusion: "è riservato"
+        confirmation: "non corrisponde"
+
+  # Traduzioni per enum e status
+  enums:
+    expense:
+      status:
+        created: "Creata"
+        approved: "Approvata"
+        denied: "Negata"
+    
+    reimboursement:
+      status:
+        created: "Creato"
+        pending: "In attesa"
+        approved: "Approvato"
+        paid: "Pagato"
+        denied: "Negato"
+
+  # Traduzioni generali dell'interfaccia
+  common:
+    actions:
+      create: "Crea"
+      edit: "Modifica"
+      update: "Aggiorna"
+      destroy: "Elimina"
+      show: "Mostra"
+      back: "Indietro"
+      cancel: "Annulla"
+      save: "Salva"
+      submit: "Invia"
+      confirm: "Conferma"
+      delete: "Elimina"
+      add: "Aggiungi"
+      remove: "Rimuovi"
+      search: "Cerca"
+      filter: "Filtra"
+      export: "Esporta"
+      import: "Importa"
+      download: "Scarica"
+      upload: "Carica"
+      
+    labels:
+      required: "obbligatorio"
+      optional: "opzionale"
+      yes: "Sì"
+      no: "No"
+      total: "Totale"
+      subtotal: "Subtotale"
+      date: "Data"
+      time: "Ora"
+      description: "Descrizione"
+      notes: "Note"
+      status: "Stato"
+      type: "Tipo"
+      amount: "Importo"
+      currency: "€"
+      
+    messages:
+      confirm_delete: "Sei sicuro di voler eliminare questo elemento?"
+      success_create: "Elemento creato con successo"
+      success_update: "Elemento aggiornato con successo"
+      success_delete: "Elemento eliminato con successo"
+      error_create: "Errore nella creazione dell'elemento"
+      error_update: "Errore nell'aggiornamento dell'elemento"
+      error_delete: "Errore nell'eliminazione dell'elemento"
+      no_data: "Nessun dato disponibile"
+      loading: "Caricamento..."
+
+  # Traduzioni specifiche per l'applicazione rimborsi
+  rimborsi:
+    expense_types:
+      normal: "Normale"
+      car: "Auto"
+    
+    payment_methods:
+      bank: "Conto Bancario"
+      paypal: "PayPal"
+    
+    messages:
+      calculation_help: "Utilizza https://costikm.aci.it/ per calcolare i parametri necessari"
+      attachment_help: "Carica ricevuta o fattura (solo per spese non auto)"
+      return_trip_help: "Seleziona se il viaggio è andata e ritorno"
+      auto_calculated: "Importo calcolato automaticamente"
+      
+    forms:
+      expense:
+        title: "Dettagli Spesa"
+        car_calculation: "Calcolo del rimborso auto"
+        basic_info: "Informazioni di base"
+        car_details: "Dettagli auto"
+        attachment: "Allegato"
+      
+      reimboursement:
+        title: "Nuovo Rimborso"
+        basic_info: "Informazioni Generali"
+        payment_method: "Metodo di Pagamento"
+        expenses: "Spese"
+        summary: "Riepilogo"

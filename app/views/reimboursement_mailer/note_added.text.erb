@@ -1,0 +1,29 @@
+NUOVA NOTA - RIMBORSO #<%= @reimboursement.id %>
+================================================
+
+Ciao <%= @user.name %>,
+
+È stata aggiunta una nuova nota al tuo rimborso #<%= @reimboursement.id %>.
+
+DETTAGLI NOTA:
+Autore: <%= @author.name %> <%= @author.surname %>
+Data: <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %>
+<% if @note.status_change.present? %>
+Cambio di stato: <%= Reimboursement.status_translations[@note.status_change] %>
+<% end %>
+
+Contenuto:
+<%= @note.content %>
+
+STATO ATTUALE: <%= @reimboursement.status_in_italian %>
+TOTALE RIMBORSO: € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
+
+GESTIONE RIMBORSI
+=================
+<% admin_email = ENV['EMAIL_AMMINISTRAZIONE'] || 'admin@rimborsi.app' %>
+Per chiarimenti contatta: <%= admin_email %>
+Puoi anche rispondere con eventuali note direttamente sulla piattaforma.
+
+Link utili:
+- Visualizza questo rimborso: <%= Rails.application.routes.url_helpers.reimboursement_url(@reimboursement, host: request.base_url rescue 'localhost:3000') %>
+- Tutti i rimborsi: <%= Rails.application.routes.url_helpers.reimboursements_url(host: request.base_url rescue 'localhost:3000') %>

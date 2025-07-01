@@ -3,7 +3,11 @@ class ReimboursementsController < ApplicationController
 
   # GET /reimboursements or /reimboursements.json
   def index
-    @reimboursements = Reimboursement.all
+    if current_user.admin?
+      @reimboursements = Reimboursement.order(created_at: :asc)
+    else
+      @reimboursements = current_user.reimboursements.order(created_at: :asc)
+    end
   end
 
   # GET /reimboursements/1 or /reimboursements/1.json
@@ -13,6 +17,7 @@ class ReimboursementsController < ApplicationController
   # GET /reimboursements/new
   def new
     @reimboursement = Reimboursement.new
+    @reimboursement.expenses.build # Crea una spesa vuota per il form
   end
 
   # GET /reimboursements/1/edit
@@ -21,11 +26,17 @@ class ReimboursementsController < ApplicationController
 
   # POST /reimboursements or /reimboursements.json
   def create
-    @reimboursement = Reimboursement.new(reimboursement_params)
+    if current_user.admin?
+      # Gli admin possono creare rimborsi per qualsiasi utente
+      @reimboursement = Reimboursement.new(reimboursement_params)
+    else
+      # Gli utenti normali possono creare solo rimborsi per se stessi
+      @reimboursement = current_user.reimboursements.build(reimboursement_params.except(:user_id))
+    end
 
     respond_to do |format|
       if @reimboursement.save
-        format.html { redirect_to @reimboursement, notice: "Reimboursement was successfully created." }
+        format.html { redirect_to @reimboursement, notice: "🎉 Rimborso creato con successo! Riceverai aggiornamenti via email per ogni cambio di stato." }
         format.json { render :show, status: :created, location: @reimboursement }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -36,9 +47,16 @@ class ReimboursementsController < ApplicationController
 
   # PATCH/PUT /reimboursements/1 or /reimboursements/1.json
   def update
+    old_status = @reimboursement.status
+
     respond_to do |format|
       if @reimboursement.update(reimboursement_params)
-        format.html { redirect_to @reimboursement, notice: "Reimboursement was successfully updated." }
+        # Se lo status è cambiato, invia notifica email
+        if old_status != @reimboursement.status
+          ReimboursementMailer.status_changed(@reimboursement).deliver_later
+        end
+
+        format.html { redirect_to @reimboursement, notice: "Rimborso aggiornato con successo." }
         format.json { render :show, status: :ok, location: @reimboursement }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -57,14 +75,106 @@ class ReimboursementsController < ApplicationController
     end
   end
 
+  # GET /reimboursements/1/approve_expenses
+  def approve_expenses
+    redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
+
+    @current_expense_index = params[:expense_index]&.to_i || 0
+    @expenses = @reimboursement.expenses.non_car_expenses.order(:date)
+
+    if @current_expense_index >= @expenses.count
+      redirect_to reimboursement_path(@reimboursement), notice: "Tutti i giustificativi sono stati revisionati."
+      return
+    end
+
+    @current_expense = @expenses[@current_expense_index]
+    @total_expenses = @expenses.count
+  end
+
+  # PATCH /reimboursements/1/approve_expense
+  def approve_expense
+    redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
+
+    expense = @reimboursement.expenses.find(params[:expense_id])
+    expense.update!(status: "approved")
+
+    redirect_to approve_expenses_reimboursement_path(@reimboursement, expense_index: params[:next_index]),
+                notice: "Giustificativo approvato."
+  end
+
+  # PATCH /reimboursements/1/deny_expense
+  def deny_expense
+    redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
+
+    expense = @reimboursement.expenses.find(params[:expense_id])
+    expense.update!(status: "denied")
+
+    # Crea una nota se fornita
+    if params[:note_content].present?
+      note = @reimboursement.notes.build(
+        content: params[:note_content],
+        user: current_user,
+        status_change: params[:reimboursement_status] || "waiting"
+      )
+
+      if note.save
+        # Aggiorna lo status del rimborso se specificato
+        if params[:reimboursement_status].present?
+          @reimboursement.update!(status: params[:reimboursement_status])
+        end
+      end
+    end
+
+    redirect_to approve_expenses_reimboursement_path(@reimboursement, expense_index: params[:next_index]),
+                notice: "Giustificativo rifiutato."
+  end
+
+  # PATCH /reimboursements/1/approve_reimboursement
+  def approve_reimboursement
+    redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
+
+    if @reimboursement.can_be_approved?
+      @reimboursement.update!(status: "approved")
+
+      # Crea una nota automatica
+      @reimboursement.notes.create!(
+        content: "Rimborso approvato.",
+        user: current_user,
+        status_change: "approved"
+      )
+
+      redirect_to reimboursement_path(@reimboursement), notice: "Rimborso approvato con successo!"
+    else
+      redirect_to reimboursement_path(@reimboursement), alert: "Non è possibile approvare il rimborso: ci sono ancora giustificativi in attesa di approvazione."
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_reimboursement
-      @reimboursement = Reimboursement.find(params[:id])
+      if current_user.admin?
+        @reimboursement = Reimboursement.find(params[:id])
+      else
+        @reimboursement = current_user.reimboursements.find(params[:id])
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def reimboursement_params
-      params.require(:reimboursement).permit(:state_id, :user_id, :bank_account_id, :paypal_account_id)
+      permitted_params = [ :bank_account_id, :paypal_account_id,
+                         expenses_attributes: [
+                           :id, :amount, :purpose, :date, :car, :attachment, :_destroy,
+                           :calculation_date, :departure, :arrival, :distance, :return_trip,
+                           :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione
+                         ] ]
+
+      # Se è admin, può anche modificare user_id e status
+      if current_user.admin?
+        permitted_params << :user_id
+        permitted_params << :status
+        permitted_params[:expenses_attributes] << :status
+      end
+
+      params.require(:reimboursement).permit(permitted_params)
     end
 end

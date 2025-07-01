@@ -1,5 +1,17 @@
-<div class="container-fluid">
-  <h1>New Bank Account</h1>
-  <%= render 'form', bank_account: @bank_account %>
-  <%= link_to 'Back', bank_accounts_path, class: "btn btn-secondary" %>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="mb-0">Nuovo Conto Bancario</h2>
+        </div>
+        <div class="card-body">
+          <%= render 'form', bank_account: @bank_account %>
+        </div>
+        <div class="card-footer">
+          <%= link_to 'Indietro', bank_accounts_path, class: "btn btn-secondary" %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

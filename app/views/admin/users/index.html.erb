@@ -1,0 +1,77 @@
+<div class="container-fluid">
+  <h1>Gestione Utenti</h1>
+  
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Nome</th>
+          <th>Cognome</th>
+          <th>Email</th>
+          <th>Username</th>
+          <th>Telefono</th>
+          <th>Ruolo</th>
+          <th>Stato</th>
+          <th>Rimborsi</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr class="<%= 'table-warning' unless user.active? %>">
+            <td><%= user.name %></td>
+            <td><%= user.surname %></td>
+            <td><%= user.email %></td>
+            <td><%= user.username %></td>
+            <td><%= user.telephone %></td>
+            <td>
+              <%= user.role&.label %>
+              <% if user.admin? %>
+                <span class="badge bg-danger ms-1">Admin</span>
+              <% end %>
+            </td>
+            <td>
+              <% if user.active? %>
+                <span class="badge bg-success">Attivo</span>
+              <% else %>
+                <span class="badge bg-danger">Disattivo</span>
+              <% end %>
+            </td>
+            <td>
+              <span class="badge bg-<%= user.reimboursements.any? ? 'warning' : 'secondary' %>">
+                <%= user.reimboursements.count %>
+              </span>
+            </td>
+            <td>
+              <div class="btn-group" role="group">
+                <%= link_to 'Visualizza', admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
+                <%= link_to 'Modifica', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-warning' %>
+                
+                <% unless user == current_user %>
+                  <% if user.active? %>
+                    <%= link_to 'Disattiva', deactivate_admin_user_path(user), method: :patch,
+                                data: { confirm: 'Sei sicuro di voler disattivare questo utente?' },
+                                class: 'btn btn-sm btn-outline-warning' %>
+                  <% else %>
+                    <%= link_to 'Attiva', activate_admin_user_path(user), method: :patch,
+                                class: 'btn btn-sm btn-outline-success' %>
+                  <% end %>
+                  
+                  <% if user.can_be_deleted? %>
+                    <%= link_to 'Elimina', admin_user_path(user), method: :delete,
+                                data: { confirm: 'Sei sicuro? Questa azione non può essere annullata.' },
+                                class: 'btn btn-sm btn-outline-danger' %>
+                  <% else %>
+                    <span class="btn btn-sm btn-secondary disabled" title="Ha dei rimborsi associati">
+                      <i class="fas fa-ban"></i> Non eliminabile
+                    </span>
+                  <% end %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>I Miei Veicoli</h1>
+    <%= link_to 'Nuovo Veicolo', new_vehicle_path, class: "btn btn-primary" %>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead class="table-dark">
+        <tr>
+          <% if current_user.admin? %>
+            <th>Utente</th>
+          <% end %>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Marca e Modello</th>
+          <th>Carburante</th>
+          <th>Predefinito</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @vehicles.each do |vehicle| %>
+          <tr>
+            <% if current_user.admin? %>
+              <td>
+                <%= vehicle.user&.name %> <%= vehicle.user&.surname %>
+                <br><small class="text-muted"><%= vehicle.user&.email %></small>
+              </td>
+            <% end %>
+            <td><%= vehicle.name %></td>
+            <td><%= vehicle.category_label %></td>
+            <td><%= vehicle.brand %> <%= vehicle.model %></td>
+            <td><%= vehicle.fuel_label %></td>
+            <td>
+              <% if vehicle.default %>
+                <span class="badge bg-success">Predefinito</span>
+              <% else %>
+                <span class="badge bg-secondary">No</span>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to 'Visualizza', vehicle, class: "btn btn-sm btn-outline-primary" %>
+              <%= link_to 'Modifica', edit_vehicle_path(vehicle), class: "btn btn-sm btn-outline-secondary" %>
+              <%= link_to 'Elimina', vehicle, method: :delete, 
+                          data: { confirm: 'Sei sicuro di voler eliminare questo veicolo?' }, 
+                          class: "btn btn-sm btn-outline-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <% if @vehicles.empty? %>
+    <div class="alert alert-info text-center">
+      <h5>Nessun veicolo trovato</h5>
+      <p>Inizia aggiungendo il tuo primo veicolo per le spese auto.</p>
+      <%= link_to 'Aggiungi Veicolo', new_vehicle_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
