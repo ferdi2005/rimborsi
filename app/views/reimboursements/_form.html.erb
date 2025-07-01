@@ -265,11 +265,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const newExpenseRow = div.firstElementChild;
     container.appendChild(newExpenseRow);
     
-    // Assicurati che i campi auto siano nascosti per default
+    // Assicurati che i campi siano configurati correttamente per spese normali (default)
     const carFields = newExpenseRow.querySelector('.car-fields');
     const attachmentField = newExpenseRow.querySelector('.attachment-field');
+    const amountField = newExpenseRow.querySelector('input[name*="[amount]"]');
+    const amountLabel = newExpenseRow.querySelector('label[for*="amount"]');
+    
     if (carFields) carFields.style.display = 'none';
     if (attachmentField) attachmentField.style.display = 'block';
+    
+    // Configura il campo amount per spese normali
+    if (amountField) {
+      amountField.readOnly = false;
+      amountField.className = 'form-control';
+      amountField.placeholder = 'Inserisci importo';
+      amountField.style.backgroundColor = '';
+    }
+    if (amountLabel) {
+      amountLabel.textContent = 'Importo';
+    }
     
     // Seleziona "Normale" per default
     const normalRadio = newExpenseRow.querySelector('input[name*="[car]"][value="false"]');

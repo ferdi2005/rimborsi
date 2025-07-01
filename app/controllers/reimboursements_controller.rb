@@ -22,6 +22,10 @@ class ReimboursementsController < ApplicationController
 
   # GET /reimboursements/1/edit
   def edit
+    unless @reimboursement.can_be_edited_by?(current_user)
+      redirect_to @reimboursement, alert: "Non puoi modificare questo rimborso. I rimborsi possono essere modificati solo se sono in stato 'Creato' o 'In Attesa', oppure se sei un amministratore."
+      nil
+    end
   end
 
   # POST /reimboursements or /reimboursements.json
@@ -47,6 +51,14 @@ class ReimboursementsController < ApplicationController
 
   # PATCH/PUT /reimboursements/1 or /reimboursements/1.json
   def update
+    unless @reimboursement.can_be_edited_by?(current_user)
+      respond_to do |format|
+        format.html { redirect_to @reimboursement, alert: "Non puoi modificare questo rimborso. I rimborsi possono essere modificati solo se sono in stato 'Creato' o 'In Attesa', oppure se sei un amministratore." }
+        format.json { render json: { error: "Non autorizzato" }, status: :forbidden }
+      end
+      return
+    end
+
     old_status = @reimboursement.status
 
     respond_to do |format|

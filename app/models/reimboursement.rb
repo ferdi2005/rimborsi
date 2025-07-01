@@ -74,6 +74,14 @@ class Reimboursement < ApplicationRecord
     expenses.where(status: "denied").sum(:amount) || 0
   end
 
+  # Verifica se il rimborso può essere modificato dall'utente specificato
+  def can_be_edited_by?(user)
+    return true if user.admin?
+    return false unless user == self.user
+    # Gli utenti normali possono modificare solo i rimborsi in stato "created" o "waiting"
+    status.in?([ "created", "waiting" ])
+  end
+
   private
 
   def send_status_change_notification

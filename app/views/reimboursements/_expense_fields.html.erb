@@ -164,8 +164,8 @@ document.addEventListener('change', function(e) {
     const expenseRow = e.target.closest('.expense-row');
     const attachmentField = expenseRow.querySelector('.attachment-field');
     const carFields = expenseRow.querySelector('.car-fields');
-    const amountFieldNormal = expenseRow.querySelector('.amount-field-normal');
-    const amountFieldAuto = expenseRow.querySelector('.amount-field-auto');
+    const amountField = expenseRow.querySelector('input[name*="[amount]"]');
+    const amountLabel = expenseRow.querySelector('label[for*="amount"]');
     const carRadios = expenseRow.querySelectorAll('input[name*="[car]"]');
     
     let isCar = false;
@@ -179,8 +179,17 @@ document.addEventListener('change', function(e) {
       // Mostra campi auto e nasconde allegato
       attachmentField.style.display = 'none';
       carFields.style.display = 'block';
-      amountFieldNormal.style.display = 'none';
-      amountFieldAuto.style.display = 'block';
+      
+      // Configura il campo amount per spese auto
+      if (amountField) {
+        amountField.readOnly = true;
+        amountField.className = 'form-control calculated-amount';
+        amountField.placeholder = 'Auto-calcolato';
+        amountField.style.backgroundColor = '#f8f9fa';
+      }
+      if (amountLabel) {
+        amountLabel.textContent = 'Importo calcolato';
+      }
       
       const fileInput = attachmentField.querySelector('input[type="file"]');
       if (fileInput) {
@@ -193,19 +202,17 @@ document.addEventListener('change', function(e) {
       // Mostra campi normali e nasconde auto
       attachmentField.style.display = 'block';
       carFields.style.display = 'none';
-      amountFieldNormal.style.display = 'block';
-      amountFieldAuto.style.display = 'none';
       
-      // Reset dell'importo calcolato
-      const calculatedField = expenseRow.querySelector('.calculated-amount');
-      if (calculatedField) calculatedField.value = '';
-      
-      // Per spese normali, assicurati che il campo amount normale sia visibile e funzionante
-      const normalAmountField = expenseRow.querySelector('.amount-field-normal input[name*="[amount]"]');
-      if (normalAmountField) {
-        normalAmountField.removeAttribute('readonly');
-        normalAmountField.style.backgroundColor = '';
-        normalAmountField.style.pointerEvents = '';
+      // Configura il campo amount per spese normali
+      if (amountField) {
+        amountField.readOnly = false;
+        amountField.className = 'form-control';
+        amountField.placeholder = 'Inserisci importo';
+        amountField.style.backgroundColor = '';
+        amountField.value = ''; // Reset del valore calcolato
+      }
+      if (amountLabel) {
+        amountLabel.textContent = 'Importo';
       }
     }
   }

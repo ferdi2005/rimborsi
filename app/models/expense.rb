@@ -36,6 +36,9 @@ class Expense < ApplicationRecord
   # Callback per calcolare automaticamente l'importo per le spese auto
   before_save :calculate_auto_amount, if: :car?
 
+  # Callback per aggiornare lo stato del rimborso quando una spesa viene approvata
+  after_update :update_reimboursement_status, if: :saved_change_to_status?
+
   # Scopes
   scope :car_expenses, -> { where(car: true) }
   scope :non_car_expenses, -> { where(car: false) }
@@ -75,5 +78,18 @@ class Expense < ApplicationRecord
 
   def status_in_italian
     self.class.status_translations[status] || status.humanize
+  end
+
+  private
+
+  # Aggiorna lo stato del rimborso quando una spesa viene approvata
+  def update_reimboursement_status
+    return unless status_approved? && reimboursement
+
+    # Se questa è la prima spesa approvata e il rimborso è ancora in "created",
+    # passa il rimborso a "in_process"
+    if reimboursement.status_created? && reimboursement.expenses.status_approved.count == 1
+      reimboursement.update!(status: "in_process")
+    end
   end
 end
