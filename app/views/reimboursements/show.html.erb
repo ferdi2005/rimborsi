@@ -51,7 +51,6 @@
             
             <% if current_user.admin? %>
               <div class="btn-group">
-                <%= link_to 'Gestisci Status', edit_reimboursement_path(@reimboursement), class: "btn btn-sm btn-outline-primary" %>
                 <% if @reimboursement.expenses.non_car_expenses.any? %>
                   <%= link_to 'Apri Approvazione Giustificativi', approve_expenses_reimboursement_path(@reimboursement), class: "btn btn-sm btn-warning" %>
                 <% end %>

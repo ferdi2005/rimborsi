@@ -96,10 +96,18 @@
                       </div>
                     <% elsif @current_expense.attachment.content_type == 'application/pdf' %>
                       <!-- Mostra PDF -->
-                      <div class="border rounded p-4 bg-light">
-                        <i class="fas fa-file-pdf fa-5x text-danger mb-3"></i>
-                        <p>Documento PDF</p>
-                        <%= link_to "Apri PDF", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                      <div class="border rounded">
+                        <iframe src="<%= url_for(@current_expense.attachment) %>" 
+                                width="100%" 
+                                height="600" 
+                                style="border: none;" 
+                                class="rounded">
+                          Il tuo browser non supporta la visualizzazione di PDF.
+                        </iframe>
+                        <div class="p-2 bg-light border-top">
+                          <%= link_to "Apri in Nuova Scheda", @current_expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+                          <%= link_to "Scarica PDF", @current_expense.attachment, download: true, class: "btn btn-sm btn-outline-secondary ms-2" %>
+                        </div>
                       </div>
                     <% else %>
                       <!-- Altro tipo di file -->

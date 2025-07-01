@@ -39,7 +39,12 @@
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><%= link_to 'Profilo', edit_user_registration_path, class: 'dropdown-item' %></li>
               <li><hr class="dropdown-divider"></li>
-              <li><%= link_to 'Logout', destroy_user_session_path, method: :delete, class: 'dropdown-item' %></li>
+              <li>
+                <%= button_to 'Logout', destroy_user_session_path, 
+                    method: :delete, 
+                    class: 'dropdown-item btn btn-link border-0 text-start w-100', 
+                    style: 'background: none; padding: 0.25rem 1rem;' %>
+              </li>
             </ul>
           </li>
         <% else %>

@@ -89,6 +89,9 @@ class ReimboursementsController < ApplicationController
 
   # GET /reimboursements/1/approve_expenses
   def approve_expenses
+    @reimboursement = Reimboursement.find(params[:id])
+    redirect_to root_path and return unless @reimboursement
+
     redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
 
     @current_expense_index = params[:expense_index]&.to_i || 0
@@ -184,7 +187,7 @@ class ReimboursementsController < ApplicationController
       if current_user.admin?
         permitted_params << :user_id
         permitted_params << :status
-        permitted_params[:expenses_attributes] << :status
+        permitted_params[2][:expenses_attributes].push :status
       end
 
       params.require(:reimboursement).permit(permitted_params)
