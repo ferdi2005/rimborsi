@@ -95,7 +95,8 @@ class ReimboursementsController < ApplicationController
     redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
 
     @current_expense_index = params[:expense_index]&.to_i || 0
-    @expenses = @reimboursement.expenses.non_car_expenses.order(:date)
+    # Include sia spese normali che auto, ordinate per data
+    @expenses = @reimboursement.expenses.order(:date)
 
     if @current_expense_index >= @expenses.count
       redirect_to reimboursement_path(@reimboursement), notice: "Tutti i giustificativi sono stati revisionati."
@@ -187,7 +188,9 @@ class ReimboursementsController < ApplicationController
       if current_user.admin?
         permitted_params << :user_id
         permitted_params << :status
-        permitted_params[2][:expenses_attributes].push :status
+        # Trova l'hash expenses_attributes e aggiungi :status
+        expenses_hash = permitted_params.find { |param| param.is_a?(Hash) && param.key?(:expenses_attributes) }
+        expenses_hash[:expenses_attributes] << :status if expenses_hash
       end
 
       params.require(:reimboursement).permit(permitted_params)

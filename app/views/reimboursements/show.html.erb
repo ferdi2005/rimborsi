@@ -51,7 +51,7 @@
             
             <% if current_user.admin? %>
               <div class="btn-group">
-                <% if @reimboursement.expenses.non_car_expenses.any? %>
+                <% if @reimboursement.expenses.any? %>
                   <%= link_to 'Apri Approvazione Giustificativi', approve_expenses_reimboursement_path(@reimboursement), class: "btn btn-sm btn-warning" %>
                 <% end %>
                 <% if @reimboursement.can_be_approved? %>
