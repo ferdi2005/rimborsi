@@ -1,7 +1,7 @@
 class Expense < ApplicationRecord
   belongs_to :reimboursement
   belongs_to :vehicle, optional: true
-  belongs_to :project, optional: true
+  belongs_to :project
 
   has_one_attached :attachment
 
@@ -17,6 +17,7 @@ class Expense < ApplicationRecord
   validates :amount, numericality: { greater_than: 0 }, allow_blank: true
   validates :purpose, presence: true
   validates :date, presence: true
+  validates :project, presence: true
 
   # Validation: attachment is required only if not car expense
   validates :attachment, presence: true, unless: :car?

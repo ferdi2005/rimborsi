@@ -1,5 +1,7 @@
 <div class="container-fluid">
-  <h1>New Project</h1>
-  <%= render 'form', project: @project %>
-  <%= link_to 'Back', projects_path, class: "btn btn-secondary" %>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <%= render 'form', project: @project %>
+    </div>
+  </div>
 </div>

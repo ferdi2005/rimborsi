@@ -18,6 +18,7 @@ class ReimboursementsController < ApplicationController
   def new
     @reimboursement = Reimboursement.new
     @reimboursement.expenses.build # Crea una spesa vuota per il form
+    @projects = Project.active.order(:name)
   end
 
   # GET /reimboursements/1/edit
@@ -26,6 +27,7 @@ class ReimboursementsController < ApplicationController
       redirect_to @reimboursement, alert: "Non puoi modificare questo rimborso. I rimborsi possono essere modificati solo se sono in stato 'Creato' o 'In Attesa', oppure se sei un amministratore."
       nil
     end
+    @projects = Project.active.order(:name)
   end
 
   # POST /reimboursements or /reimboursements.json
@@ -92,7 +94,7 @@ class ReimboursementsController < ApplicationController
     @reimboursement = Reimboursement.find(params[:id])
     redirect_to root_path and return unless @reimboursement
 
-    redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
+    return admin_required unless current_user.admin?
 
     @current_expense_index = params[:expense_index]&.to_i || 0
     # Include sia spese normali che auto, ordinate per data
@@ -109,7 +111,7 @@ class ReimboursementsController < ApplicationController
 
   # PATCH /reimboursements/1/approve_expense
   def approve_expense
-    redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
+    return admin_required unless current_user.admin?
 
     expense = @reimboursement.expenses.find(params[:expense_id])
     expense.update!(status: "approved")
@@ -120,7 +122,7 @@ class ReimboursementsController < ApplicationController
 
   # PATCH /reimboursements/1/deny_expense
   def deny_expense
-    redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
+    return admin_required unless current_user.admin?
 
     expense = @reimboursement.expenses.find(params[:expense_id])
     expense.update!(status: "denied")
@@ -147,7 +149,7 @@ class ReimboursementsController < ApplicationController
 
   # PATCH /reimboursements/1/approve_reimboursement
   def approve_reimboursement
-    redirect_to reimboursement_path(@reimboursement) unless current_user.admin?
+    return admin_required unless current_user.admin?
 
     if @reimboursement.can_be_approved?
       @reimboursement.update!(status: "approved")

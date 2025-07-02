@@ -16,6 +16,9 @@
           <li class="nav-item">
             <%= link_to 'Veicoli', vehicles_path, class: 'nav-link' %>
           </li>
+          <li class="nav-item">
+            <%= link_to 'Progetti', projects_path, class: 'nav-link' %>
+          </li>
           <% if current_user.admin? %>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -24,7 +27,6 @@
               <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                 <li><%= link_to 'Gestione Utenti', admin_users_path, class: 'dropdown-item' %></li>
                 <li><%= link_to 'Gestione Ruoli', roles_path, class: 'dropdown-item' %></li>
-                <li><%= link_to 'Gestione Progetti', projects_path, class: 'dropdown-item' %></li>
               </ul>
             </li>
           <% end %>

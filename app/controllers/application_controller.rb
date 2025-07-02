@@ -19,4 +19,21 @@ class ApplicationController < ActionController::Base
       devise_parameter_sanitizer.permit(:account_update, keys: [:name, :surname, :telephone, :username])
     end
   end
+
+  # Helper methods for admin access control
+  def ensure_admin
+    unless current_user&.admin?
+      redirect_back(fallback_location: root_path, alert: "Accesso negato. Solo gli amministratori possono accedere a questa sezione.")
+    end
+  end
+
+  def admin_required
+    redirect_to root_path, alert: "Accesso negato." unless current_user&.admin?
+  end
+
+  def ensure_admin_or_redirect_to(path, message = "Solo gli amministratori possono accedere a questa funzionalità.")
+    unless current_user&.admin?
+      redirect_to path, alert: message
+    end
+  end
 end

@@ -15,9 +15,17 @@
       </div>
     </div>
     
-    <div class="col-md-4">
+    <div class="col-md-3">
       <%= f.label :purpose, "Descrizione", class: "form-label" %>
       <%= f.text_field :purpose, class: "form-control", placeholder: "Descrivi la spesa..." %>
+    </div>
+    
+    <div class="col-md-2">
+      <%= f.label :project_id, "Progetto", class: "form-label" %>
+      <%= f.select :project_id, 
+          options_from_collection_for_select(Project.active.order(:name), :id, :name, f.object.project_id),
+          { prompt: "Seleziona progetto" },
+          { class: "form-select", required: true } %>
     </div>
     
     <div class="col-md-2">
