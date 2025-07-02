@@ -22,10 +22,10 @@ class User < ApplicationRecord
   validates :username, presence: true, uniqueness: true, length: { minimum: 3, maximum: 30 },
             format: { with: /\A[a-zA-Z0-9_]+\z/, message: "può contenere solo lettere, numeri e underscore" }
 
-  # Validazione telefono italiano (opzionale ma se presente deve essere valido, senza spazi)
+  # Validazione telefono italiano (opzionale ma se presente deve essere valido, senza spazi e senza prefisso)
   validates :telephone, format: {
-    with: /\A(\+39)?[0-9]{6,13}\z/,
-    message: "deve essere un numero di telefono italiano valido senza spazi"
+    with: /\A[0-9]{6,13}\z/,
+    message: "deve essere un numero di telefono italiano valido senza spazi e senza prefisso +39"
   }, allow_blank: true
 
   # Validazione email più rigorosa
