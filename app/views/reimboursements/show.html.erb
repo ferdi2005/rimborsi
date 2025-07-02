@@ -479,6 +479,11 @@
                           <% if note.user.admin? %>
                             <span class="badge bg-danger ms-1">Admin</span>
                           <% end %>
+                          <% if (note.created_at - @reimboursement.created_at) < 60 %>
+                            <span class="badge bg-info ms-1">
+                              <i class="fas fa-sticky-note me-1"></i>Nota Iniziale
+                            </span>
+                          <% end %>
                           <small class="text-muted ms-2"><%= note.created_at.strftime("%d/%m/%Y alle %H:%M") %></small>
                         </div>
                         <% if current_user.admin? || note.user_id == current_user.id %>

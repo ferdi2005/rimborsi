@@ -168,6 +168,32 @@
     </div>
   </div>
 
+  <!-- Sezione Note Iniziale -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-sticky-note me-2"></i>Nota iniziale (opzionale)
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <%= form.label :initial_note, "Aggiungi una nota al rimborso", class: "form-label" %>
+            <%= form.text_area :initial_note, 
+                class: "form-control", 
+                rows: 4, 
+                placeholder: "Inserisci qui eventuali informazioni aggiuntive sul rimborso..." %>
+            <div class="form-text">
+              <i class="fas fa-info-circle me-1"></i>
+              Questa nota sarà visibile agli amministratori e potrà aiutarli nella valutazione del rimborso.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Bottoni di azione -->
   <div class="d-flex justify-content-between">
     <%= link_to 'Annulla', reimboursements_path, class: 'btn btn-secondary' %>
@@ -177,6 +203,63 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Funzione centralizzata per il calcolo delle spese auto
+  window.calculateAutoExpenseAmount = function(expenseRow) {
+    const quotaCapitaleField = expenseRow.querySelector('input[name*="[quota_capitale]"]');
+    const carburanteField = expenseRow.querySelector('input[name*="[carburante]"]');
+    const pneumaticiField = expenseRow.querySelector('input[name*="[pneumatici]"]');
+    const manutenzioneField = expenseRow.querySelector('input[name*="[manutenzione]"]');
+    const distanceField = expenseRow.querySelector('input[name*="[distance]"]');
+    const returnTripCheckbox = expenseRow.querySelector('input[name*="[return_trip]"]');
+    
+    if (!quotaCapitaleField || !carburanteField || !pneumaticiField || !manutenzioneField || !distanceField) {
+      return;
+    }
+    
+    const quotaCapitale = parseFloat(quotaCapitaleField.value) || 0;
+    const carburante = parseFloat(carburanteField.value) || 0;
+    const pneumatici = parseFloat(pneumaticiField.value) || 0;
+    const manutenzione = parseFloat(manutenzioneField.value) || 0;
+    const distance = parseFloat(distanceField.value) || 0;
+    const returnTrip = returnTripCheckbox ? returnTripCheckbox.checked : false;
+    
+    if (quotaCapitale > 0 && carburante > 0 && pneumatici > 0 && manutenzione > 0 && distance > 0) {
+      // Somma delle quote (assicura precisione a 2 decimali)
+      const costPerKm = Number((quotaCapitale + carburante + pneumatici + manutenzione).toFixed(2));
+      
+      // Moltiplica per la distanza
+      let totalDistance = distance;
+      
+      // Se andata e ritorno, moltiplica per 2
+      if (returnTrip) {
+        totalDistance *= 2;
+      }
+      
+      // Calcola il totale e dividi sempre per 2 (con precisione a 2 decimali)
+      const calculatedAmount = Number(((costPerKm * totalDistance) / 2).toFixed(2));
+      
+      // Aggiorna i campi
+      const calculatedField = expenseRow.querySelector('.calculated-amount');
+      
+      if (calculatedField) {
+        calculatedField.value = calculatedAmount.toFixed(2);
+        // Trigger change event per aggiornare il totale generale
+        calculatedField.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      
+      // Aggiorna il totale se la funzione esiste
+      if (typeof updateTotal === 'function') {
+        updateTotal();
+      }
+    } else {
+      // Reset dei campi se non tutti i valori sono inseriti
+      const calculatedField = expenseRow.querySelector('.calculated-amount');
+      if (calculatedField) {
+        calculatedField.value = '';
+      }
+    }
+  };
+
   // Gestione selezione metodo di pagamento
   const paymentTypeInputs = document.querySelectorAll('input[name="payment_type"]');
   const bankSection = document.getElementById('bank-accounts-section');
@@ -224,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Gestione calcolo automatico importo auto
   document.addEventListener('input', function(e) {
     if (e.target.classList.contains('cost-input') || e.target.classList.contains('distance-input')) {
-      window.calculateAutoAmount(e.target.closest('.expense-row'));
+      window.calculateAutoExpenseAmount(e.target.closest('.expense-row'));
     }
     
     if (e.target.name && (e.target.name.includes('[amount]') || e.target.name.includes('[status]'))) {
@@ -242,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.name && e.target.name.includes('[return_trip]') ||
         e.target.classList.contains('cost-input') || 
         e.target.classList.contains('distance-input')) {
-      window.calculateAutoAmount(e.target.closest('.expense-row'));
+      window.calculateAutoExpenseAmount(e.target.closest('.expense-row'));
     }
   });
 
@@ -250,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('click', function(e) {
     if (e.target.classList.contains('return-trip-input') || 
         (e.target.name && e.target.name.includes('[return_trip]') && e.target.type === 'checkbox')) {
-      window.calculateAutoAmount(e.target.closest('.expense-row'));
+      window.calculateAutoExpenseAmount(e.target.closest('.expense-row'));
     }
   });
 
@@ -343,62 +426,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('total-amount').textContent = '€ ' + total.toFixed(2).replace('.', ',');
   }
 
-  // Funzione globale per calcolo automatico spese auto
-  window.calculateAutoAmount = function(expenseRow) {
-    if (!expenseRow) return;
-    
-    // Verifica che sia effettivamente una spesa auto
-    const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');
-    if (!carRadio || !carRadio.checked) {
-      return;
-    }
-    
-    const quotaCapitale = parseFloat(expenseRow.querySelector('input[name*="[quota_capitale]"]')?.value) || 0;
-    const carburante = parseFloat(expenseRow.querySelector('input[name*="[carburante]"]')?.value) || 0;
-    const pneumatici = parseFloat(expenseRow.querySelector('input[name*="[pneumatici]"]')?.value) || 0;
-    const manutenzione = parseFloat(expenseRow.querySelector('input[name*="[manutenzione]"]')?.value) || 0;
-    const distance = parseFloat(expenseRow.querySelector('input[name*="[distance]"]')?.value) || 0;
-    
-    // Leggi il valore del checkbox return_trip (Rails genera due input, prendiamo quello visible)
-    const returnTripCheckbox = expenseRow.querySelector('input[name*="[return_trip]"]:not([type="hidden"])');
-    const returnTrip = returnTripCheckbox ? returnTripCheckbox.checked : false;
-    
-    if (quotaCapitale > 0 && carburante > 0 && pneumatici > 0 && manutenzione > 0 && distance > 0) {
-      // Somma delle quote (assicura precisione a 2 decimali)
-      const costPerKm = Number((quotaCapitale + carburante + pneumatici + manutenzione).toFixed(2));
-      
-      // Moltiplica per la distanza
-      let totalDistance = distance;
-      
-      // Se andata e ritorno, moltiplica per 2
-      if (returnTrip) {
-        totalDistance *= 2;
-      }
-      
-      // Calcola il totale e dividi sempre per 2 (con precisione a 2 decimali)
-      const calculatedAmount = Number(((costPerKm * totalDistance) / 2).toFixed(2));
-      
-      // Aggiorna i campi
-      const calculatedField = expenseRow.querySelector('.calculated-amount');
-      
-      if (calculatedField) {
-        calculatedField.value = calculatedAmount.toFixed(2);
-        // Trigger change event per aggiornare il totale generale
-        calculatedField.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-      
-      // Aggiorna il totale
-      updateTotal();
-    } else {
-      // Reset dei campi se non tutti i valori sono inseriti
-      const calculatedField = expenseRow.querySelector('.calculated-amount');
-      if (calculatedField) {
-        calculatedField.value = '';
-      }
-    }
-  };
-  
   // Calcola il totale iniziale
   updateTotal();
+
 });
 </script>

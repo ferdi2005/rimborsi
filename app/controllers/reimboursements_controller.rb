@@ -30,21 +30,31 @@ class ReimboursementsController < ApplicationController
     @projects = Project.active.order(:name)
   end
 
-  # POST /reimboursements or /reimboursements.json
+  # POST /rimboursements or /rimboursements.json
   def create
     if current_user.admin?
       # Gli admin possono creare rimborsi per qualsiasi utente
-      @reimboursement = Reimboursement.new(reimboursement_params)
+      @reimboursement = Reimboursement.new(reimboursement_params.except(:initial_note))
     else
       # Gli utenti normali possono creare solo rimborsi per se stessi
-      @reimboursement = current_user.reimboursements.build(reimboursement_params.except(:user_id))
+      @reimboursement = current_user.reimboursements.build(reimboursement_params.except(:user_id, :initial_note))
     end
 
     respond_to do |format|
       if @reimboursement.save
+        # Crea la nota iniziale se presente
+        if params[:reimboursement][:initial_note].present?
+          @reimboursement.notes.create!(
+            content: params[:reimboursement][:initial_note],
+            user: current_user,
+            status_change: false
+          )
+        end
+
         format.html { redirect_to @reimboursement, notice: "🎉 Rimborso creato con successo! Riceverai aggiornamenti via email per ogni cambio di stato." }
         format.json { render :show, status: :created, location: @reimboursement }
       else
+        @projects = Project.active.order(:name)
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
       end
@@ -64,15 +74,25 @@ class ReimboursementsController < ApplicationController
     old_status = @reimboursement.status
 
     respond_to do |format|
-      if @reimboursement.update(reimboursement_params)
+      if @reimboursement.update(reimboursement_params.except(:initial_note))
+        # Crea una nuova nota se è presente il campo initial_note
+        if params[:reimboursement][:initial_note].present?
+          @reimboursement.notes.create!(
+            content: params[:reimboursement][:initial_note],
+            user: current_user,
+            status_change: false
+          )
+        end
+
         # Se lo status è cambiato, invia notifica email
         if old_status != @reimboursement.status
           ReimboursementMailer.status_changed(@reimboursement).deliver_later
         end
 
         format.html { redirect_to @reimboursement, notice: "Rimborso aggiornato con successo." }
-        format.json { render :show, status: :ok, location: @reimboursement }
+        format.json { render :show, status: :ok, location: @rimboursement }
       else
+        @projects = Project.active.order(:name)
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
       end
@@ -179,11 +199,12 @@ class ReimboursementsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def reimboursement_params
-      permitted_params = [ :bank_account_id, :paypal_account_id,
+      permitted_params = [ :bank_account_id, :paypal_account_id, :initial_note,
                          expenses_attributes: [
                            :id, :amount, :purpose, :date, :car, :attachment, :_destroy,
                            :calculation_date, :departure, :arrival, :distance, :return_trip,
-                           :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione
+                           :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione,
+                           :project_id
                          ] ]
 
       # Se è admin, può anche modificare user_id e status
