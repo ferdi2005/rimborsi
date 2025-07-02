@@ -55,7 +55,7 @@
                   <%= link_to 'Apri Approvazione Giustificativi', approve_expenses_reimboursement_path(@reimboursement), class: "btn btn-sm btn-warning" %>
                 <% end %>
                 <% if @reimboursement.can_be_approved? %>
-                  <%= link_to 'Approva Rimborso', approve_reimboursement_reimboursement_path(@reimboursement), 
+                  <%= button_to 'Approva Rimborso', approve_reimboursement_reimboursement_path(@reimboursement), 
                               method: :patch, 
                               data: { confirm: 'Sei sicuro di voler approvare questo rimborso?' },
                               class: "btn btn-sm btn-success" %>
@@ -404,7 +404,7 @@
                     </tbody>
                     <tfoot class="table-light">
                       <tr>
-                        <th colspan="5">Totale Netto</th>
+                        <th colspan="5">Totale</th>
                         <th class="text-end">€ <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></th>
                       </tr>
                       <% if @reimboursement.denied_amount > 0 %>
@@ -501,7 +501,7 @@
                             <strong>Stato cambiato in:</strong> <%= Reimboursement.status_translations[note.status_change] %>
                           </div>
                         <% end %>
-                        <p class="mb-0"><%= simple_format(note.content) %></p>
+                        <p class="mb-0"><%= simple_format(note.text) %></p>
                       </div>
                     </div>
                   <% end %>

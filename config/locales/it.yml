@@ -101,7 +101,7 @@ it:
         updated_at: "Aggiornato il"
       
       note:
-        content: "Contenuto"
+        text: "Testo"
         reimboursement: "Rimborso"
         reimboursement_id: "Rimborso"
         user: "Utente"

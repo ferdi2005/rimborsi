@@ -1,0 +1,84 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><i class="fas fa-money-bill-wave me-2"></i>Pagamenti</h1>
+    <%= link_to new_admin_payment_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus me-2"></i>Nuovo Pagamento
+    <% end %>
+  </div>
+
+  <div class="row">
+    <% @payments.each do |payment| %>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Pagamento #<%= payment.id %></h6>
+            <% 
+              status_config = case payment.status
+                             when 'created' then { class: 'warning', icon: 'fas fa-edit' }
+                             when 'paid' then { class: 'success', icon: 'fas fa-check-circle' }
+                             else { class: 'secondary', icon: 'fas fa-question' }
+                             end
+            %>
+            <span class="badge bg-<%= status_config[:class] %>">
+              <i class="<%= status_config[:icon] %> me-1"></i><%= payment.status_in_italian %>
+            </span>
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              <strong><i class="fas fa-euro-sign me-2"></i>Totale:</strong> 
+              <span class="h5 text-primary">€ <%= number_with_precision(payment.total, precision: 2) %></span>
+            </p>
+            
+            <p class="card-text">
+              <strong><i class="fas fa-file-invoice-dollar me-2"></i>Rimborsi:</strong> 
+              <%= pluralize(payment.reimboursements.count, 'rimborso', 'rimborsi') %>
+            </p>
+            
+            <% if payment.payment_date %>
+              <p class="card-text">
+                <strong><i class="fas fa-calendar me-2"></i>Data pagamento:</strong><br>
+                <span class="text-muted"><%= payment.payment_date.strftime('%d/%m/%Y') %></span>
+              </p>
+            <% end %>
+            
+            <p class="card-text">
+              <strong><i class="fas fa-clock me-2"></i>Creato:</strong><br>
+              <span class="text-muted"><%= payment.created_at.strftime('%d/%m/%Y alle %H:%M') %></span>
+            </p>
+            
+            <% if payment.has_failed_reimboursements? %>
+              <div class="alert alert-warning py-2">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <small>Alcuni rimborsi hanno fallito il processing</small>
+              </div>
+            <% end %>
+          </div>
+          <div class="card-footer">
+            <div class="btn-group w-100" role="group">
+              <%= link_to admin_payment_path(payment), class: "btn btn-outline-primary btn-sm" do %>
+                <i class="fas fa-eye me-1"></i>Dettagli
+              <% end %>
+              
+              <% if payment.can_be_modified? %>
+                <%= link_to edit_admin_payment_path(payment), class: "btn btn-outline-secondary btn-sm" do %>
+                  <i class="fas fa-edit me-1"></i>Modifica
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @payments.empty? %>
+    <div class="alert alert-info text-center">
+      <i class="fas fa-info-circle fa-2x mb-3"></i>
+      <h5>Nessun pagamento trovato</h5>
+      <p>Inizia creando il primo pagamento per i rimborsi approvati.</p>
+      <%= link_to new_admin_payment_path, class: "btn btn-primary" do %>
+        <i class="fas fa-plus me-2"></i>Crea Primo Pagamento
+      <% end %>
+    </div>
+  <% end %>
+</div>

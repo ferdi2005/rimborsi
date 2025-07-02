@@ -22,6 +22,9 @@ class Expense < ApplicationRecord
   # Validation: attachment is required only if not car expense
   validates :attachment, presence: true, unless: :car?
 
+  # Validazione del formato dell'allegato
+  validate :validate_attachment_format, if: -> { attachment.attached? }
+
   # Validazioni specifiche per spese auto
   validates :calculation_date, presence: true, if: :car?
   validates :departure, presence: true, if: :car?
@@ -82,6 +85,64 @@ class Expense < ApplicationRecord
   end
 
   private
+
+  # Validazione del formato dell'allegato
+  def validate_attachment_format
+    return unless attachment.attached?
+
+    # Tipi MIME consentiti
+    allowed_content_types = [
+      # Immagini
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/tiff',
+      'image/webp',
+      # PDF
+      'application/pdf',
+      # XML
+      'application/xml',
+      'text/xml',
+      # XML.P7M (firma digitale)
+      'application/pkcs7-mime',
+      'application/x-pkcs7-mime'
+    ]
+
+    # Estensioni consentite
+    allowed_extensions = %w[.jpg .jpeg .png .gif .bmp .tiff .webp .pdf .xml .p7m]
+
+    content_type = attachment.content_type
+    filename = attachment.filename.to_s.downcase
+    file_extension = File.extname(filename)
+
+    # Controllo del content type
+    unless allowed_content_types.include?(content_type)
+      errors.add(:attachment, "deve essere un'immagine, un PDF o un file XML. Formato ricevuto: #{content_type}")
+      return
+    end
+
+    # Controllo dell'estensione del file
+    unless allowed_extensions.include?(file_extension)
+      errors.add(:attachment, "deve avere un'estensione valida: #{allowed_extensions.join(', ')}")
+      return
+    end
+
+    # Controllo dimensione file (massimo 20MB)
+    max_size = 20.megabytes
+    if attachment.byte_size > max_size
+      errors.add(:attachment, "non può essere più grande di #{max_size / 1.megabyte}MB")
+    end
+
+    # Controllo specifico per file .p7m
+    if file_extension == '.p7m'
+      # Verifica che il nome file contenga .xml.p7m
+      unless filename.include?('.xml.p7m')
+        errors.add(:attachment, "i file P7M devono avere estensione .xml.p7m")
+      end
+    end
+  end
 
   # Aggiorna lo stato del rimborso quando una spesa viene approvata
   def update_reimboursement_status

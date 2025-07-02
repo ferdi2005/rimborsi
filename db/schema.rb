@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_02_120001) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_02_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -53,6 +53,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_02_120001) do
     t.boolean "default"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "bank_name"
     t.index ["user_id"], name: "index_bank_accounts_on_user_id"
   end
 
@@ -153,7 +154,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_02_120001) do
     t.datetime "remember_created_at"
     t.string "name"
     t.string "surname"
-    t.integer "telephone"
+    t.string "telephone"
     t.string "username"
     t.boolean "admin"
     t.bigint "role_id"

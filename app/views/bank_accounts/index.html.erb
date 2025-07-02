@@ -1,7 +1,9 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Conti Bancari</h1>
-    <%= link_to 'Nuovo Conto Bancario', new_bank_account_path, class: "btn btn-primary" %>
+    <h1><i class="fas fa-university me-2"></i>Conti Bancari</h1>
+    <%= link_to new_bank_account_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus me-2"></i>Nuovo Conto Bancario
+    <% end %>
   </div>
 
   <div class="table-responsive">
@@ -9,16 +11,16 @@
       <thead class="table-dark">
         <tr>
           <% if current_user.admin? %>
-            <th>Utente</th>
+            <th><i class="fas fa-user me-2"></i>Utente</th>
           <% end %>
-          <th>IBAN</th>
-          <th>Intestatario</th>
-          <th>Indirizzo</th>
-          <th>CAP</th>
-          <th>Città</th>
-          <th>Codice Fiscale</th>
-          <th>Predefinito</th>
-          <th>Azioni</th>
+          <th><i class="fas fa-credit-card me-2"></i>IBAN</th>
+          <th><i class="fas fa-id-card me-2"></i>Intestatario</th>
+          <th><i class="fas fa-map-marker-alt me-2"></i>Indirizzo</th>
+          <th><i class="fas fa-mail-bulk me-2"></i>CAP</th>
+          <th><i class="fas fa-city me-2"></i>Città</th>
+          <th><i class="fas fa-id-badge me-2"></i>Codice Fiscale</th>
+          <th><i class="fas fa-star me-2"></i>Predefinito</th>
+          <th><i class="fas fa-cogs me-2"></i>Azioni</th>
         </tr>
       </thead>
       <tbody>
@@ -38,17 +40,23 @@
             <td><%= bank_account.fiscal_code %></td>
             <td>
               <% if bank_account.default %>
-                <span class="badge bg-success">Predefinito</span>
+                <span class="badge bg-success"><i class="fas fa-star me-1"></i>Predefinito</span>
               <% else %>
                 <span class="badge bg-secondary">No</span>
               <% end %>
             </td>
             <td>
-              <%= link_to 'Visualizza', bank_account, class: "btn btn-sm btn-outline-primary" %>
-              <%= link_to 'Modifica', edit_bank_account_path(bank_account), class: "btn btn-sm btn-outline-secondary" %>
-              <%= link_to 'Elimina', bank_account, method: :delete, 
+              <%= link_to bank_account, class: "btn btn-sm btn-outline-primary" do %>
+                <i class="fas fa-eye me-1"></i>Visualizza
+              <% end %>
+              <%= link_to edit_bank_account_path(bank_account), class: "btn btn-sm btn-outline-secondary" do %>
+                <i class="fas fa-edit me-1"></i>Modifica
+              <% end %>
+              <%= link_to bank_account, method: :delete, 
                           data: { confirm: 'Sei sicuro di voler eliminare questo conto bancario?' }, 
-                          class: "btn btn-sm btn-outline-danger" %>
+                          class: "btn btn-sm btn-outline-danger" do %>
+                <i class="fas fa-trash me-1"></i>Elimina
+              <% end %>
             </td>
           </tr>
         <% end %>
@@ -58,9 +66,12 @@
   
   <% if @bank_accounts.empty? %>
     <div class="alert alert-info text-center">
+      <i class="fas fa-info-circle fa-2x mb-3"></i>
       <h5>Nessun conto bancario trovato</h5>
       <p>Inizia aggiungendo il tuo primo conto bancario.</p>
-      <%= link_to 'Aggiungi Conto Bancario', new_bank_account_path, class: "btn btn-primary" %>
+      <%= link_to new_bank_account_path, class: "btn btn-primary" do %>
+        <i class="fas fa-plus me-2"></i>Aggiungi Conto Bancario
+      <% end %>
     </div>
   <% end %>
 </div>

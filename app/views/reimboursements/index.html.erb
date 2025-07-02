@@ -1,7 +1,9 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Rimborsi</h1>
-    <%= link_to 'Nuovo Rimborso', new_reimboursement_path, class: "btn btn-primary" %>
+    <h1><i class="fas fa-file-invoice-dollar me-2"></i>Rimborsi</h1>
+    <%= link_to new_reimboursement_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus me-2"></i>Nuovo Rimborso
+    <% end %>
   </div>
 
   <div class="row">
@@ -11,17 +13,17 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h6 class="mb-0">Rimborso #<%= reimboursement.id %></h6>
             <% 
-              badge_class = case reimboursement.status
-                           when 'created' then 'secondary'
-                           when 'in_process' then 'warning'
-                           when 'approved' then 'success'
-                           when 'paid' then 'primary'
-                           when 'waiting' then 'info'
-                           else 'secondary'
-                           end
+              status_config = case reimboursement.status
+                             when 'created' then { class: 'secondary', icon: 'fas fa-edit' }
+                             when 'in_process' then { class: 'warning', icon: 'fas fa-clock' }
+                             when 'approved' then { class: 'success', icon: 'fas fa-check' }
+                             when 'paid' then { class: 'primary', icon: 'fas fa-money-bill-wave' }
+                             when 'waiting' then { class: 'info', icon: 'fas fa-hourglass-half' }
+                             else { class: 'secondary', icon: 'fas fa-question' }
+                             end
             %>
-            <span class="badge bg-<%= badge_class %>">
-              <%= reimboursement.status_in_italian %>
+            <span class="badge bg-<%= status_config[:class] %>">
+              <i class="<%= status_config[:icon] %> me-1"></i><%= reimboursement.status_in_italian %>
             </span>
           </div>
           <div class="card-body">
@@ -30,22 +32,30 @@
             <% end %>
             
             <p class="card-text">
-              <strong>Metodo di pagamento:</strong><br>
-              <span class="text-muted"><%= reimboursement.payment_method_type %></span><br>
+              <strong><i class="fas fa-credit-card me-2"></i>Metodo di pagamento:</strong><br>
+              <span class="text-muted">
+                <% if reimboursement.bank_account.present? %>
+                  <i class="fas fa-university me-1"></i><%= reimboursement.payment_method_type %>
+                <% elsif reimboursement.paypal_account.present? %>
+                  <i class="fab fa-paypal me-1"></i><%= reimboursement.payment_method_type %>
+                <% else %>
+                  <i class="fas fa-question-circle me-1"></i><%= reimboursement.payment_method_type %>
+                <% end %>
+              </span><br>
               <% if reimboursement.bank_account.present? %>
-                <small><%= reimboursement.bank_account.iban %> - <%= reimboursement.bank_account.owner %></small>
+                <small><i class="fas fa-credit-card me-1"></i><%= reimboursement.bank_account.iban %> - <%= reimboursement.bank_account.owner %></small>
               <% elsif reimboursement.paypal_account.present? %>
-                <small><%= reimboursement.paypal_account.email %></small>
+                <small><i class="fas fa-envelope me-1"></i><%= reimboursement.paypal_account.email %></small>
               <% end %>
             </p>
             
             <p class="card-text">
-              <strong>Totale:</strong> 
+              <strong><i class="fas fa-euro-sign me-2"></i>Totale:</strong> 
               <span class="h5 text-primary">€ <%= number_with_precision(reimboursement.total_amount, precision: 2) %></span>
             </p>
             
             <p class="card-text">
-              <strong>Spese:</strong> <%= pluralize(reimboursement.expenses.count, 'spesa', 'spese') %>
+              <strong><i class="fas fa-receipt me-2"></i>Spese:</strong> <%= pluralize(reimboursement.expenses.count, 'spesa', 'spese') %>
             </p>
             
             <p class="card-text">

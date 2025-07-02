@@ -63,12 +63,12 @@
         </span>
       </p>
       
-      <% if @note&.content.present? %>
+      <% if @note&.text.present? %>
         <div class="note">
           <p><strong>Nota dell'amministratore:</strong></p>
           <p><strong>Autore:</strong> <%= @author.name %> <%= @author.surname %></p>
           <p><strong>Data:</strong> <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %></p>
-          <p><%= simple_format(@note.content) %></p>
+          <p><%= simple_format(@note.text) %></p>
         </div>
       <% end %>
       

@@ -1,0 +1,148 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><i class="fas fa-plus-circle me-2"></i>Nuovo Pagamento</h1>
+    <%= link_to admin_payments_path, class: "btn btn-secondary" do %>
+      <i class="fas fa-arrow-left me-2"></i>Torna ai Pagamenti
+    <% end %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <%= form_with(model: [:admin, @payment], local: true, class: "card") do |form| %>
+        <div class="card-header">
+          <h5><i class="fas fa-file-invoice me-2"></i>Dettagli Pagamento</h5>
+        </div>
+        <div class="card-body">
+          <% if @payment.errors.any? %>
+            <div class="alert alert-danger">
+              <h6><i class="fas fa-exclamation-triangle me-2"></i><%= pluralize(@payment.errors.count, "errore ha", "errori hanno") %> impedito il salvataggio:</h6>
+              <ul class="mb-0">
+                <% @payment.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= form.label :status, "Stato", class: "form-label" %>
+            <%= form.select :status, 
+                          options_for_select([
+                            ['Creato', 'created']
+                          ], @payment.status), 
+                          {}, 
+                          { class: "form-select", readonly: true } %>
+            <small class="form-text text-muted">I nuovi pagamenti vengono sempre creati con stato "Creato"</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-list me-2"></i>Rimborsi da Includere</label>
+            <% if @available_reimboursements.any? %>
+              <div class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
+                <% @available_reimboursements.each do |reimboursement| %>
+                  <div class="form-check mb-2">
+                    <%= check_box_tag "payment[reimboursement_ids][]", reimboursement.id, 
+                                      @payment.reimboursement_ids.include?(reimboursement.id),
+                                      { class: "form-check-input", id: "reimboursement_#{reimboursement.id}" } %>
+                    <%= label_tag "reimboursement_#{reimboursement.id}", class: "form-check-label" do %>
+                      <strong>Rimborso #<%= reimboursement.id %></strong> - 
+                      <%= reimboursement.user.name %> <%= reimboursement.user.surname %>
+                      <br>
+                      <small class="text-muted">
+                        <i class="fas fa-euro-sign me-1"></i>€ <%= number_with_precision(reimboursement.total_amount, precision: 2) %> |
+                        <i class="fas fa-credit-card me-1"></i><%= reimboursement.bank_account.iban %> |
+                        <i class="fas fa-user me-1"></i><%= reimboursement.bank_account.owner %>
+                      </small>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+              <small class="form-text text-muted">
+                Seleziona i rimborsi da includere in questo pagamento. Solo i rimborsi approvati con un conto bancario sono disponibili.
+              </small>
+            <% else %>
+              <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Nessun rimborso disponibile</strong><br>
+                Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento.
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="card-footer">
+          <% if @available_reimboursements.any? %>
+            <%= form.submit "Crea Pagamento", class: "btn btn-primary" %>
+          <% end %>
+          <%= link_to "Annulla", admin_payments_path, class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h6><i class="fas fa-info-circle me-2"></i>Informazioni</h6>
+        </div>
+        <div class="card-body">
+          <p class="small">
+            <strong>Come funziona:</strong><br>
+            1. Seleziona i rimborsi approvati da includere<br>
+            2. Il totale verrà calcolato automaticamente<br>
+            3. Il pagamento viene creato con stato "Creato"<br>
+            4. Segna il pagamento come "Pagato" per il caricamento dei dati in Nextcloud<br/>
+            5. Scarica il flusso e caricalo in banca per i pagamenti
+          </p>
+          
+          <% if @available_reimboursements.any? %>
+            <hr>
+            <p class="small">
+              <strong>Disponibili:</strong><br>
+              <%= @available_reimboursements.count %> rimborsi per un totale di 
+              €<%= number_with_precision(@available_reimboursements.sum(&:total_amount), precision: 2) %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const checkboxes = document.querySelectorAll('input[name="payment[reimboursement_ids][]"]');
+  const updateTotal = () => {
+    let total = 0;
+    checkboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+        const label = document.querySelector(`label[for="${checkbox.id}"]`);
+        const amountText = label.textContent.match(/€\s*([\d,]+\.?\d*)/);
+        if (amountText) {
+          total += parseFloat(amountText[1].replace(',', ''));
+        }
+      }
+    });
+    
+    // Aggiorna o crea l'elemento totale
+    let totalElement = document.getElementById('selected-total');
+    if (!totalElement) {
+      totalElement = document.createElement('div');
+      totalElement.id = 'selected-total';
+      totalElement.className = 'alert alert-info mt-3';
+      document.querySelector('.card-body').appendChild(totalElement);
+    }
+    
+    if (total > 0) {
+      totalElement.innerHTML = `<i class="fas fa-calculator me-2"></i><strong>Totale selezionato:</strong> €${total.toFixed(2)}`;
+      totalElement.style.display = 'block';
+    } else {
+      totalElement.style.display = 'none';
+    }
+  };
+  
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateTotal);
+  });
+  
+  updateTotal(); // Calcolo iniziale
+});
+</script>

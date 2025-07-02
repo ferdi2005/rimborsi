@@ -25,7 +25,7 @@
       <%= f.select :project_id, 
           options_from_collection_for_select(Project.active.order(:name), :id, :name, f.object.project_id),
           { prompt: "Seleziona progetto" },
-          { class: "form-select", required: true } %>
+          { class: "form-select" } %>
     </div>
     
     <div class="col-md-2">
@@ -73,7 +73,7 @@
   <div class="row mt-3 attachment-field" style="<%= 'display: none;' if f.object.car? %>">
     <div class="col-md-6">
       <%= f.label :attachment, "Allegato", class: "form-label" %>
-      <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf" %>
+      <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m" %>
       <small class="form-text text-muted">Carica ricevuta o fattura (solo per spese non auto)</small>
     </div>
   </div>

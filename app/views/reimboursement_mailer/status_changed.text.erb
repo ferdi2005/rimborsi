@@ -7,12 +7,12 @@ Lo stato del tuo rimborso #<%= @reimboursement.id %> è stato aggiornato.
 
 NUOVO STATO: <%= @reimboursement.status_in_italian %>
 
-<% if @note&.content.present? %>
+<% if @note&.text.present? %>
 NOTA DELL'AMMINISTRATORE:
 Autore: <%= @author.name %> <%= @author.surname %>
 Data: <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %>
 
-<%= @note.content %>
+<%= @note.text %>
 <% end %>
 
 TOTALE RIMBORSO: € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>

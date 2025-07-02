@@ -26,12 +26,27 @@
 
   <div class="col-md-6">
     <%= form.label :iban, "IBAN", class: "form-label" %>
-    <%= form.text_field :iban, class: "form-control", required: true %>
+    <%= form.text_field :iban, class: "form-control", required: true,
+                        pattern: "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
+                        title: "IBAN valido (es: IT60X0542811101000000123456)",
+                        placeholder: "IT60X0542811101000000123456",
+                        style: "text-transform: uppercase;" %>
+    <small class="form-text text-muted">Inserisci l'IBAN senza spazi (verrà formattato automaticamente)</small>
   </div>
 
   <div class="col-md-6">
     <%= form.label :owner, "Intestatario", class: "form-label" %>
-    <%= form.text_field :owner, class: "form-control", required: true %>
+    <%= form.text_field :owner, class: "form-control", required: true,
+                        minlength: 2, maxlength: 100 %>
+    <small class="form-text text-muted">Nome completo del titolare del conto</small>
+  </div>
+
+  <div class="col-md-6">
+    <%= form.label :bank_name, "Nome Banca", class: "form-label" %>
+    <%= form.text_field :bank_name, class: "form-control",
+                        minlength: 2, maxlength: 100,
+                        placeholder: "es: Banca Intesa Sanpaolo" %>
+    <small class="form-text text-muted">Nome dell'istituto bancario (opzionale)</small>
   </div>
 
   <div class="col-md-8">

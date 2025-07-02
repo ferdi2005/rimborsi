@@ -65,7 +65,7 @@
           <p><strong>Cambio di stato:</strong> <%= Reimboursement.status_translations[@note.status_change] %></p>
         <% end %>
         <p><strong>Contenuto:</strong></p>
-        <p><%= simple_format(@note.content) %></p>
+        <p><%= simple_format(@note.text) %></p>
       </div>
       
       <p>

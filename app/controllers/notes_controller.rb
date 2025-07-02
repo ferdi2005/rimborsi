@@ -53,7 +53,7 @@ class NotesController < ApplicationController
   end
 
   def note_params
-    permitted_params = [ :content ]
+    permitted_params = [ :text ]
     permitted_params << :status_change if current_user.admin?
     params.require(:note).permit(permitted_params)
   end

@@ -8,7 +8,6 @@ class Payment < ApplicationRecord
   }, prefix: true
 
   # Validazioni
-  validates :total, presence: true, numericality: { greater_than: 0 }
   validate :payment_date_present_if_paid
   validate :reimboursements_have_bank_accounts
 
@@ -77,7 +76,7 @@ class Payment < ApplicationRecord
   def generate_xml_flow
     require 'builder'
 
-    xml = Builder::XmlMarkup.new(indent: 2)
+    xml = ::Builder::XmlMarkup.new(indent: 2)
     xml.instruct!
 
     xml.PaymentFlow do |flow|
@@ -104,6 +103,12 @@ class Payment < ApplicationRecord
     end
 
     xml.target!
+  end
+
+  # Ricalcola e salva il totale del pagamento
+  def recalculate_total!
+    calculate_total
+    save!
   end
 
   private

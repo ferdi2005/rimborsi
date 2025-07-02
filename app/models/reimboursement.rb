@@ -49,7 +49,7 @@ class Reimboursement < ApplicationRecord
   def can_be_approved?
     # Tutte le spese devono essere approvate o negate (non in created)
     # e deve esserci almeno una spesa approvata
-    expenses.any? && expenses.all? { |expense| expense.status != "created" } && expenses.any? { |expense| expense.status == "approved" }
+    expenses.any? && expenses.all? { |expense| expense.status != "created" } && expenses.any? { |expense| expense.status == "approved" } && status != "approved" && status != "paid"
   end
 
   # Metodi di utilità

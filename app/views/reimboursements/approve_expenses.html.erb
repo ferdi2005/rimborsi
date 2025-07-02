@@ -111,28 +111,28 @@
                     <% if @current_expense.quota_capitale %>
                       <div class="row mb-1">
                         <div class="col-sm-6">Quota capitale:</div>
-                        <div class="col-sm-6">€ <%= number_with_precision(@current_expense.quota_capitale, precision: 4) %></div>
+                        <div class="col-sm-6">€ <%= number_with_precision(@current_expense.quota_capitale, precision: 2) %></div>
                       </div>
                     <% end %>
                     
                     <% if @current_expense.carburante %>
                       <div class="row mb-1">
                         <div class="col-sm-6">Carburante:</div>
-                        <div class="col-sm-6">€ <%= number_with_precision(@current_expense.carburante, precision: 4) %></div>
+                        <div class="col-sm-6">€ <%= number_with_precision(@current_expense.carburante, precision: 2) %></div>
                       </div>
                     <% end %>
                     
                     <% if @current_expense.pneumatici %>
                       <div class="row mb-1">
                         <div class="col-sm-6">Pneumatici:</div>
-                        <div class="col-sm-6">€ <%= number_with_precision(@current_expense.pneumatici, precision: 4) %></div>
+                        <div class="col-sm-6">€ <%= number_with_precision(@current_expense.pneumatici, precision: 2) %></div>
                       </div>
                     <% end %>
                     
                     <% if @current_expense.manutenzione %>
                       <div class="row mb-1">
                         <div class="col-sm-6">Manutenzione:</div>
-                        <div class="col-sm-6">€ <%= number_with_precision(@current_expense.manutenzione, precision: 4) %></div>
+                        <div class="col-sm-6">€ <%= number_with_precision(@current_expense.manutenzione, precision: 2) %></div>
                       </div>
                     <% end %>
                     
@@ -140,7 +140,7 @@
                     <div class="row">
                       <div class="col-sm-6"><strong>Totale per Km:</strong></div>
                       <div class="col-sm-6">
-                        <strong>€ <%= number_with_precision((@current_expense.quota_capitale || 0) + (@current_expense.carburante || 0) + (@current_expense.pneumatici || 0) + (@current_expense.manutenzione || 0), precision: 4) %></strong>
+                        <strong>€ <%= number_with_precision((@current_expense.quota_capitale || 0) + (@current_expense.carburante || 0) + (@current_expense.pneumatici || 0) + (@current_expense.manutenzione || 0), precision: 2) %></strong>
                       </div>
                     </div>
                     

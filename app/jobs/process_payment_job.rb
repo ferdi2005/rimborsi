@@ -65,7 +65,7 @@ class ProcessPaymentJob < ApplicationJob
       if reimboursement.notes.any?
         pdf.text "Note:", size: 14, style: :bold
         reimboursement.notes.each do |note|
-          pdf.text "- #{note.content}", size: 10
+          pdf.text "- #{note.text}", size: 10
         end
         pdf.move_down 15
       end
@@ -137,7 +137,7 @@ class ProcessPaymentJob < ApplicationJob
       if reimboursement.bank_account
         pdf.text "Coordinate Bancarie:", size: 14, style: :bold
         pdf.text "IBAN: #{reimboursement.bank_account.iban}", size: 12
-        pdf.text "Intestatario: #{reimboursement.bank_account.account_holder}", size: 12
+        pdf.text "Intestatario: #{reimboursement.bank_account.owner}", size: 12
       end
 
       # Footer con data generazione

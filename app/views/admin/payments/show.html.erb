@@ -1,0 +1,180 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><i class="fas fa-file-invoice me-2"></i>Pagamento #<%= @payment.id %></h1>
+    <div>
+      <%= link_to admin_payments_path, class: "btn btn-secondary me-2" do %>
+        <i class="fas fa-arrow-left me-2"></i>Torna ai Pagamenti
+      <% end %>
+      
+      <% if @payment.can_be_modified? %>
+        <%= link_to edit_admin_payment_path(@payment), class: "btn btn-outline-primary" do %>
+          <i class="fas fa-edit me-2"></i>Modifica
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5><i class="fas fa-info-circle me-2"></i>Dettagli Pagamento</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>ID:</strong> #<%= @payment.id %></p>
+              <p><strong>Stato:</strong> 
+                <% 
+                  status_config = case @payment.status
+                                 when 'created' then { class: 'warning', icon: 'fas fa-edit' }
+                                 when 'paid' then { class: 'success', icon: 'fas fa-check-circle' }
+                                 else { class: 'secondary', icon: 'fas fa-question' }
+                                 end
+                %>
+                <span class="badge bg-<%= status_config[:class] %>">
+                  <i class="<%= status_config[:icon] %> me-1"></i><%= @payment.status_in_italian %>
+                </span>
+              </p>
+              <p><strong>Totale:</strong> <span class="h5 text-primary">€ <%= number_with_precision(@payment.total, precision: 2) %></span></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Data creazione:</strong> <%= @payment.created_at.strftime('%d/%m/%Y alle %H:%M') %></p>
+              <% if @payment.payment_date %>
+                <p><strong>Data pagamento:</strong> <%= @payment.payment_date.strftime('%d/%m/%Y') %></p>
+              <% end %>
+              <p><strong>Rimborsi inclusi:</strong> <%= @payment.reimboursements.count %></p>
+            </div>
+          </div>
+          
+          <% if @payment.has_failed_reimboursements? %>
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <strong>Attenzione:</strong> <%= @payment.failed_processing_count %> rimborsi hanno fallito il processing e sono stati riportati a "creato".
+              Processati con successo: <%= @payment.successfully_processed_count %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5><i class="fas fa-list me-2"></i>Rimborsi Inclusi</h5>
+        </div>
+        <div class="card-body">
+          <% if @payment.reimboursements.any? %>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Utente</th>
+                    <th>Totale</th>
+                    <th>IBAN</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @payment.reimboursements.includes(:user, :bank_account).each do |reimboursement| %>
+                    <tr>
+                      <td>#<%= reimboursement.id %></td>
+                      <td>
+                        <%= reimboursement.user.name %> <%= reimboursement.user.surname %>
+                        <br><small class="text-muted"><%= reimboursement.user.email %></small>
+                      </td>
+                      <td>€ <%= number_with_precision(reimboursement.total_amount, precision: 2) %></td>
+                      <td>
+                        <% if reimboursement.bank_account %>
+                          <%= reimboursement.bank_account.iban %>
+                          <br><small class="text-muted"><%= reimboursement.bank_account.owner %></small>
+                        <% else %>
+                          <span class="text-muted">N/D</span>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% 
+                          status_config = case reimboursement.status
+                                         when 'created' then { class: 'secondary', icon: 'fas fa-edit' }
+                                         when 'approved' then { class: 'success', icon: 'fas fa-check' }
+                                         when 'paid' then { class: 'primary', icon: 'fas fa-money-bill-wave' }
+                                         else { class: 'secondary', icon: 'fas fa-question' }
+                                         end
+                        %>
+                        <span class="badge bg-<%= status_config[:class] %>">
+                          <i class="<%= status_config[:icon] %> me-1"></i><%= reimboursement.status_in_italian %>
+                        </span>
+                      </td>
+                      <td>
+                        <%= link_to reimboursement_path(reimboursement), class: "btn btn-sm btn-outline-primary" do %>
+                          <i class="fas fa-eye me-1"></i>Dettagli
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <p class="text-muted">Nessun rimborso associato a questo pagamento.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5><i class="fas fa-cogs me-2"></i>Azioni</h5>
+        </div>
+        <div class="card-body">
+          <% if @payment.status_created? %>
+            <%= link_to mark_as_paid_admin_payment_path(@payment), method: :patch, 
+                        class: "btn btn-success w-100 mb-2",
+                        data: { confirm: "Sei sicuro di voler marcare questo pagamento come pagato? Questa azione avvierà il processo di generazione PDF e caricamento." } do %>
+              <i class="fas fa-check-circle me-2"></i>Marca come Pagato
+            <% end %>
+          <% elsif @payment.status_paid? %>
+            <%= link_to revert_to_created_admin_payment_path(@payment), method: :patch,
+                        class: "btn btn-warning w-100 mb-2",
+                        data: { confirm: "Sei sicuro di voler riportare questo pagamento a 'creato'? I rimborsi torneranno allo stato 'approvato'." } do %>
+              <i class="fas fa-undo me-2"></i>Riporta a Creato
+            <% end %>
+          <% end %>
+
+          <%= link_to export_flow_admin_payment_path(@payment), class: "btn btn-info w-100 mb-2" do %>
+            <i class="fas fa-download me-2"></i>Esporta Flusso XML
+          <% end %>
+
+          <% if @payment.can_be_modified? %>
+            <%= link_to edit_admin_payment_path(@payment), class: "btn btn-outline-primary w-100 mb-2" do %>
+              <i class="fas fa-edit me-2"></i>Modifica Pagamento
+            <% end %>
+          <% end %>
+
+          <%= link_to admin_payment_path(@payment), method: :delete,
+                      class: "btn btn-outline-danger w-100",
+                      data: { confirm: "Sei sicuro di voler eliminare questo pagamento? Questa azione non può essere annullata." } do %>
+            <i class="fas fa-trash me-2"></i>Elimina Pagamento
+          <% end %>
+        </div>
+      </div>
+
+      <% if @available_reimboursements.any? && @payment.can_be_modified? %>
+        <div class="card mt-3">
+          <div class="card-header">
+            <h6><i class="fas fa-plus-circle me-2"></i>Rimborsi Disponibili</h6>
+          </div>
+          <div class="card-body">
+            <p class="small text-muted">
+              Ci sono <%= @available_reimboursements.count %> rimborsi approvati disponibili per l'inclusione in pagamenti.
+            </p>
+            <%= link_to edit_admin_payment_path(@payment), class: "btn btn-sm btn-outline-primary" do %>
+              <i class="fas fa-edit me-1"></i>Modifica per Aggiungere
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

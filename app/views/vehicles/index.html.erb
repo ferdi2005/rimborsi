@@ -1,7 +1,9 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>I Miei Veicoli</h1>
-    <%= link_to 'Nuovo Veicolo', new_vehicle_path, class: "btn btn-primary" %>
+    <h1><i class="fas fa-car me-2"></i>I Miei Veicoli</h1>
+    <%= link_to new_vehicle_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus me-2"></i>Nuovo Veicolo
+    <% end %>
   </div>
 
   <div class="table-responsive">
@@ -9,14 +11,14 @@
       <thead class="table-dark">
         <tr>
           <% if current_user.admin? %>
-            <th>Utente</th>
+            <th><i class="fas fa-user me-2"></i>Utente</th>
           <% end %>
-          <th>Nome</th>
-          <th>Categoria</th>
-          <th>Marca e Modello</th>
-          <th>Carburante</th>
-          <th>Predefinito</th>
-          <th>Azioni</th>
+          <th><i class="fas fa-tag me-2"></i>Nome</th>
+          <th><i class="fas fa-layer-group me-2"></i>Categoria</th>
+          <th><i class="fas fa-car me-2"></i>Marca e Modello</th>
+          <th><i class="fas fa-gas-pump me-2"></i>Carburante</th>
+          <th><i class="fas fa-star me-2"></i>Predefinito</th>
+          <th><i class="fas fa-cogs me-2"></i>Azioni</th>
         </tr>
       </thead>
       <tbody>
@@ -34,17 +36,23 @@
             <td><%= vehicle.fuel_label %></td>
             <td>
               <% if vehicle.default %>
-                <span class="badge bg-success">Predefinito</span>
+                <span class="badge bg-success"><i class="fas fa-star me-1"></i>Predefinito</span>
               <% else %>
                 <span class="badge bg-secondary">No</span>
               <% end %>
             </td>
             <td>
-              <%= link_to 'Visualizza', vehicle, class: "btn btn-sm btn-outline-primary" %>
-              <%= link_to 'Modifica', edit_vehicle_path(vehicle), class: "btn btn-sm btn-outline-secondary" %>
-              <%= link_to 'Elimina', vehicle, method: :delete, 
+              <%= link_to vehicle, class: "btn btn-sm btn-outline-primary" do %>
+                <i class="fas fa-eye me-1"></i>Visualizza
+              <% end %>
+              <%= link_to edit_vehicle_path(vehicle), class: "btn btn-sm btn-outline-secondary" do %>
+                <i class="fas fa-edit me-1"></i>Modifica
+              <% end %>
+              <%= link_to vehicle, method: :delete, 
                           data: { confirm: 'Sei sicuro di voler eliminare questo veicolo?' }, 
-                          class: "btn btn-sm btn-outline-danger" %>
+                          class: "btn btn-sm btn-outline-danger" do %>
+                <i class="fas fa-trash me-1"></i>Elimina
+              <% end %>
             </td>
           </tr>
         <% end %>
@@ -54,9 +62,12 @@
   
   <% if @vehicles.empty? %>
     <div class="alert alert-info text-center">
+      <i class="fas fa-car fa-2x mb-3"></i>
       <h5>Nessun veicolo trovato</h5>
       <p>Inizia aggiungendo il tuo primo veicolo per le spese auto.</p>
-      <%= link_to 'Aggiungi Veicolo', new_vehicle_path, class: "btn btn-primary" %>
+      <%= link_to new_vehicle_path, class: "btn btn-primary" do %>
+        <i class="fas fa-plus me-2"></i>Aggiungi Veicolo
+      <% end %>
     </div>
   <% end %>
 </div>

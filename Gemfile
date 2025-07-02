@@ -72,3 +72,6 @@ gem "dotenv-rails", groups: [ :development, :test ]
 
 # PDF generation
 gem "prawn", "~> 2.4"
+
+# IBAN validation
+gem "iban-tools"

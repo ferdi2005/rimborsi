@@ -13,7 +13,7 @@ Cambio di stato: <%= Reimboursement.status_translations[@note.status_change] %>
 <% end %>
 
 Contenuto:
-<%= @note.content %>
+<%= @note.text %>
 
 STATO ATTUALE: <%= @reimboursement.status_in_italian %>
 TOTALE RIMBORSO: € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
