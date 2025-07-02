@@ -1,7 +1,7 @@
 class RemoveVehicleFieldsFromExpensesAndAddAutoFields < ActiveRecord::Migration[7.2]
   def change
     # Rimuovi i campi veicolo esistenti se esistono
-    remove_column :expenses, :veichle_category_id, :integer if column_exists?(:expenses, :veichle_category_id)
+    remove_column :expenses, :vehicle_category_id, :integer if column_exists?(:expenses, :vehicle_category_id)
     remove_column :expenses, :brand, :string if column_exists?(:expenses, :brand)
     remove_column :expenses, :model, :string if column_exists?(:expenses, :model)
     remove_column :expenses, :fuel_id, :integer if column_exists?(:expenses, :fuel_id)

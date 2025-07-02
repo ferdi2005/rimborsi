@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_02_120001) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -40,7 +43,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
   end
 
   create_table "bank_accounts", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.string "iban"
     t.string "owner"
     t.string "address"
@@ -54,7 +57,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
   end
 
   create_table "expenses", force: :cascade do |t|
-    t.integer "reimboursement_id", null: false
+    t.bigint "reimboursement_id", null: false
     t.text "purpose"
     t.date "date"
     t.decimal "amount"
@@ -68,7 +71,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
     t.decimal "carburante"
     t.decimal "pneumatici"
     t.decimal "manutenzione"
-    t.integer "project_id"
+    t.bigint "project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
@@ -78,15 +81,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
     t.index ["vehicle_id"], name: "index_expenses_on_vehicle_id"
   end
 
-  create_table "fuels", force: :cascade do |t|
-    t.string "label"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "notes", force: :cascade do |t|
-    t.integer "reimboursement_id", null: false
-    t.integer "user_id", null: false
+    t.bigint "reimboursement_id", null: false
+    t.bigint "user_id", null: false
     t.text "text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -95,9 +92,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
+  create_table "payments", force: :cascade do |t|
+    t.date "payment_date"
+    t.decimal "total", precision: 8, scale: 2
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["payment_date"], name: "index_payments_on_payment_date"
+    t.index ["status"], name: "index_payments_on_status"
+  end
+
   create_table "paypal_accounts", force: :cascade do |t|
     t.string "email"
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.boolean "default"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -113,13 +120,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
   end
 
   create_table "reimboursements", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "bank_account_id"
-    t.integer "paypal_account_id"
+    t.bigint "user_id", null: false
+    t.bigint "bank_account_id"
+    t.bigint "paypal_account_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
+    t.bigint "payment_id"
     t.index ["bank_account_id"], name: "index_reimboursements_on_bank_account_id"
+    t.index ["payment_id"], name: "index_reimboursements_on_payment_id"
     t.index ["paypal_account_id"], name: "index_reimboursements_on_paypal_account_id"
     t.index ["user_id"], name: "index_reimboursements_on_user_id"
   end
@@ -147,7 +156,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
     t.integer "telephone"
     t.string "username"
     t.boolean "admin"
-    t.integer "role_id"
+    t.bigint "role_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "confirmation_token"
@@ -167,7 +176,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
     t.string "brand"
     t.string "model"
     t.boolean "default"
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_vehicles_on_user_id"
@@ -182,6 +191,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_01_222357) do
   add_foreign_key "notes", "users"
   add_foreign_key "paypal_accounts", "users"
   add_foreign_key "reimboursements", "bank_accounts"
+  add_foreign_key "reimboursements", "payments"
   add_foreign_key "reimboursements", "paypal_accounts"
   add_foreign_key "reimboursements", "users"
   add_foreign_key "vehicles", "users"

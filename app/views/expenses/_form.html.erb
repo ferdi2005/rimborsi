@@ -10,8 +10,8 @@
 </div>
 <% end %>
   <div class="form-group mb-3">
-          <%= form.label :reimboursment_id %>
-      <%= form.collection_select :reimboursment_id, Reimboursment.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
+          <%= form.label :reimboursement_id %>
+      <%= form.collection_select :reimboursement_id, Reimboursment.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
       </div>
   <div class="form-group mb-3">
           <%= form.label :purpose, class: "form-label" %>
@@ -50,8 +50,8 @@
       <%= form.check_box :return_trip, class:"form-check-input" %>
       </div>
   <div class="form-group mb-3">
-          <%= form.label :veichle_category_id %>
-      <%= form.collection_select :veichle_category_id, veichle_category.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
+          <%= form.label :vehicle_category_id %>
+      <%= form.collection_select :vehicle_category_id, vehicle_category.all, :id, :name, { prompt: true }, { class: "form-select" }  %>
       </div>
   <div class="form-group mb-3">
           <%= form.label :brand, class: "form-label" %>

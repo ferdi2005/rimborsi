@@ -14,7 +14,7 @@ class NotesTest < ApplicationSystemTestCase
     visit notes_url
     click_on "New note"
 
-    fill_in "Reimboursment", with: @note.reimboursment_id
+    fill_in "Reimboursment", with: @note.reimboursement_id
     fill_in "State", with: @note.state_id
     fill_in "Text", with: @note.text
     fill_in "User", with: @note.user_id
@@ -28,7 +28,7 @@ class NotesTest < ApplicationSystemTestCase
     visit note_url(@note)
     click_on "Edit this note", match: :first
 
-    fill_in "Reimboursment", with: @note.reimboursment_id
+    fill_in "Reimboursment", with: @note.reimboursement_id
     fill_in "State", with: @note.state_id
     fill_in "Text", with: @note.text
     fill_in "User", with: @note.user_id

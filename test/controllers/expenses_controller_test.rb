@@ -17,7 +17,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create expense" do
     assert_difference("Expense.count") do
-      post expenses_url, params: { expense: { amount: @expense.amount, arrival: @expense.arrival, brand: @expense.brand, calculation_date: @expense.calculation_date, car: @expense.car, carburante: @expense.carburante, veichle_category_id: @expense.veichle_category_id, date: @expense.date, departure: @expense.departure, distance: @expense.distance, fuel_id: @expense.fuel_id, manutenzione: @expense.manutenzione, model: @expense.model, pneumatici: @expense.pneumatici, project_id: @expense.project_id, purpose: @expense.purpose, quota_capitale: @expense.quota_capitale, reimboursment_id: @expense.reimboursment_id, return_trip: @expense.return_trip } }
+      post expenses_url, params: { expense: { amount: @expense.amount, arrival: @expense.arrival, brand: @expense.brand, calculation_date: @expense.calculation_date, car: @expense.car, carburante: @expense.carburante, vehicle_category_id: @expense.vehicle_category_id, date: @expense.date, departure: @expense.departure, distance: @expense.distance, fuel_id: @expense.fuel_id, manutenzione: @expense.manutenzione, model: @expense.model, pneumatici: @expense.pneumatici, project_id: @expense.project_id, purpose: @expense.purpose, quota_capitale: @expense.quota_capitale, reimboursement_id: @expense.reimboursement_id, return_trip: @expense.return_trip } }
     end
 
     assert_redirected_to expense_url(Expense.last)
@@ -34,7 +34,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update expense" do
-    patch expense_url(@expense), params: { expense: { amount: @expense.amount, arrival: @expense.arrival, brand: @expense.brand, calculation_date: @expense.calculation_date, car: @expense.car, carburante: @expense.carburante, veichle_category_id: @expense.veichle_category_id, date: @expense.date, departure: @expense.departure, distance: @expense.distance, fuel_id: @expense.fuel_id, manutenzione: @expense.manutenzione, model: @expense.model, pneumatici: @expense.pneumatici, project_id: @expense.project_id, purpose: @expense.purpose, quota_capitale: @expense.quota_capitale, reimboursment_id: @expense.reimboursment_id, return_trip: @expense.return_trip } }
+    patch expense_url(@expense), params: { expense: { amount: @expense.amount, arrival: @expense.arrival, brand: @expense.brand, calculation_date: @expense.calculation_date, car: @expense.car, carburante: @expense.carburante, vehicle_category_id: @expense.vehicle_category_id, date: @expense.date, departure: @expense.departure, distance: @expense.distance, fuel_id: @expense.fuel_id, manutenzione: @expense.manutenzione, model: @expense.model, pneumatici: @expense.pneumatici, project_id: @expense.project_id, purpose: @expense.purpose, quota_capitale: @expense.quota_capitale, reimboursement_id: @expense.reimboursement_id, return_trip: @expense.return_trip } }
     assert_redirected_to expense_url(@expense)
   end
 

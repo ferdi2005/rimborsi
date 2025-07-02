@@ -20,7 +20,7 @@ class ExpensesTest < ApplicationSystemTestCase
     fill_in "Calculation date", with: @expense.calculation_date
     check "Car" if @expense.car
     fill_in "Carburante", with: @expense.carburante
-    fill_in "veichle_category", with: @expense.veichle_category_id
+    fill_in "vehicle_category", with: @expense.vehicle_category_id
     fill_in "Date", with: @expense.date
     fill_in "Departure", with: @expense.departure
     fill_in "Distance", with: @expense.distance
@@ -31,7 +31,7 @@ class ExpensesTest < ApplicationSystemTestCase
     fill_in "Project", with: @expense.project_id
     fill_in "Purpose", with: @expense.purpose
     fill_in "Quota capitale", with: @expense.quota_capitale
-    fill_in "Reimboursment", with: @expense.reimboursment_id
+    fill_in "Reimboursment", with: @expense.reimboursement_id
     check "Return trip" if @expense.return_trip
     click_on "Create Expense"
 
@@ -49,7 +49,7 @@ class ExpensesTest < ApplicationSystemTestCase
     fill_in "Calculation date", with: @expense.calculation_date
     check "Car" if @expense.car
     fill_in "Carburante", with: @expense.carburante
-    fill_in "veichle_category", with: @expense.veichle_category_id
+    fill_in "vehicle_category", with: @expense.vehicle_category_id
     fill_in "Date", with: @expense.date
     fill_in "Departure", with: @expense.departure
     fill_in "Distance", with: @expense.distance
@@ -60,7 +60,7 @@ class ExpensesTest < ApplicationSystemTestCase
     fill_in "Project", with: @expense.project_id
     fill_in "Purpose", with: @expense.purpose
     fill_in "Quota capitale", with: @expense.quota_capitale
-    fill_in "Reimboursment", with: @expense.reimboursment_id
+    fill_in "Reimboursment", with: @expense.reimboursement_id
     check "Return trip" if @expense.return_trip
     click_on "Update Expense"
 
