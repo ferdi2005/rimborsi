@@ -28,6 +28,14 @@ Rails.application.routes.draw do
         patch :activate
       end
     end
+
+    resources :payments do
+      member do
+        patch :mark_as_paid
+        patch :revert_to_created
+        get :export_flow
+      end
+    end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

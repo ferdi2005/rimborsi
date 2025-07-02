@@ -2,6 +2,7 @@ class Reimboursement < ApplicationRecord
   belongs_to :user
   belongs_to :bank_account, optional: true
   belongs_to :paypal_account, optional: true
+  belongs_to :payment, optional: true
   has_many :expenses, dependent: :destroy
   has_many :notes, dependent: :destroy
 
@@ -20,6 +21,11 @@ class Reimboursement < ApplicationRecord
 
   # Nested attributes per le spese
   accepts_nested_attributes_for :expenses, reject_if: :all_blank, allow_destroy: true
+
+  # Scopes
+  scope :approved_with_bank_account, -> { where(status: :approved).joins(:bank_account) }
+  scope :payable, -> { approved_with_bank_account.where(payment: nil) }
+  scope :unpaid, -> { where.not(status: :paid) }
 
   # Callbacks
   after_update :send_status_change_notification, if: :saved_change_to_status?
