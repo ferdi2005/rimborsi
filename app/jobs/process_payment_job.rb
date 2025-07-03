@@ -1,16 +1,9 @@
 class ProcessPaymentJob < ApplicationJob
   queue_as :default
 
-  # Classe personalizzata per richieste MKCOL WebDAV
-  class MkcolRequest < Net::HTTPRequest
-    METHOD = 'MKCOL'
-    REQUEST_HAS_BODY = false
-    RESPONSE_HAS_BODY = true
-  end
-
   def perform(payment_id)
     payment = Payment.find(payment_id)
-    return unless payment.paid?
+    return unless payment.status_paid?
 
     failed_reimboursements = []
 
@@ -22,20 +15,24 @@ class ProcessPaymentJob < ApplicationJob
         Rails.logger.error "Error processing reimboursement #{reimboursement.id}: #{e.message}"
         Rails.logger.error e.backtrace.join("\n")
 
-        # Riporta il rimborso a creato in caso di errore
-        reimboursement.update!(status: :created)
+        # Aggiungi il rimborso alla lista dei falliti
         failed_reimboursements << reimboursement.id
       end
     end
 
-    # Se ci sono stati errori, log i rimborsi falliti
+    # Se ci sono stati errori, riporta l'intero pagamento a "created"
     if failed_reimboursements.any?
       Rails.logger.error "Failed to process reimboursements: #{failed_reimboursements.join(', ')}"
-      # Opzionalmente potresti voler notificare gli amministratori
+      Rails.logger.error "Reverting payment #{payment.id} to 'created' status"
+
+      # Riporta l'intero pagamento allo stato "created"
+      payment.revert_to_created!
+
+      # Inserire eventuale notifica
     end
   end
 
-  private
+  # private
 
   def process_reimboursement(reimboursement)
     # Genera il PDF per il rimborso
@@ -56,9 +53,8 @@ class ProcessPaymentJob < ApplicationJob
       # Informazioni utente
       pdf.text "Utente: #{reimboursement.user.name}", size: 14
       pdf.text "Email: #{reimboursement.user.email}", size: 12
-      pdf.text "Progetto: #{reimboursement.project.title}", size: 12
       pdf.text "Data creazione: #{reimboursement.created_at.strftime('%d/%m/%Y')}", size: 12
-      pdf.text "Totale: €#{reimboursement.total}", size: 14, style: :bold
+      pdf.text "Totale: €#{reimboursement.total_amount}", size: 14, style: :bold
       pdf.move_down 20
 
       # Note del rimborso se presenti
@@ -76,18 +72,18 @@ class ProcessPaymentJob < ApplicationJob
 
       # Dettaglio di ogni spesa con informazioni specifiche
       reimboursement.expenses.each_with_index do |expense, index|
-        pdf.text "#{index + 1}. #{expense.purpose}", size: 14, style: :bold
+        pdf.text "#{index + 1}. #{expense.id} #{expense.purpose}", size: 14, style: :bold
         pdf.move_down 5
 
         # Informazioni base
         pdf.text "Data: #{expense.date.strftime('%d/%m/%Y')}", size: 11
         pdf.text "Importo: €#{expense.amount}", size: 11
-        pdf.text "Progetto: #{expense.project.title}", size: 11
+        pdf.text "Progetto: #{expense.project.name}", size: 11
 
         # Se è una spesa auto, mostra i dettagli specifici
         if expense.car?
           pdf.move_down 5
-          pdf.text "SPESA AUTO - Dettagli:", size: 12, style: :bold, color: '0066CC'
+          pdf.text "RIMBORSO SPESE CHILOMETRICO PER TRASPORTO IN AUTO - Dettagli:", size: 12, style: :bold, color: '0066CC'
           pdf.text "Data calcolo: #{expense.calculation_date&.strftime('%d/%m/%Y')}", size: 10
           pdf.text "Partenza: #{expense.departure}", size: 10
           pdf.text "Arrivo: #{expense.arrival}", size: 10
@@ -95,7 +91,7 @@ class ProcessPaymentJob < ApplicationJob
           pdf.text "Andata e ritorno: #{expense.return_trip? ? 'Sì' : 'No'}", size: 10
 
           if expense.vehicle
-            pdf.text "Veicolo: #{expense.vehicle.brand} #{expense.vehicle.model}", size: 10
+            pdf.text "Veicolo:  #{expense.vehicle.category_label} #{expense.vehicle.brand} #{expense.vehicle.brand} #{expense.vehicle.model} #{expense.vehicle.fuel_label}", size: 10
           end
 
           # Dettaglio costi
@@ -150,6 +146,7 @@ class ProcessPaymentJob < ApplicationJob
   def upload_files_to_nextcloud(reimboursement, pdf_content)
     require 'net/http'
     require 'uri'
+    require 'base64'
 
     nextcloud_url = ENV['NEXTCLOUD_WEBDAV_URL']
     username = ENV['NEXTCLOUD_USERNAME']
@@ -239,14 +236,9 @@ class ProcessPaymentJob < ApplicationJob
       http.use_ssl = dir_uri.scheme == 'https'
 
       # Prova a creare la directory (MKCOL)
-      request = MkcolRequest.new(dir_uri.path)
-      request.basic_auth(username, password)
-
-      response = http.request(request)
+      http.send_request('MKCOL', dir_uri.path, '', {
+        'Authorization' => "Basic #{Base64.strict_encode64("#{username}:#{password}")}"
+      })
       # Ignora se la directory esiste già (405) o è stata creata con successo (201)
     end
-  rescue StandardError => e
-    Rails.logger.warn "Could not ensure directory exists: #{e.message}"
-    # Continua comunque, potrebbe essere che la directory esista già
-  end
 end

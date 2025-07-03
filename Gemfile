@@ -49,6 +49,15 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+    gem 'capistrano',         require: false
+  gem 'capistrano-yarn',     require: false
+  gem 'capistrano-rvm',     require: false
+  gem 'capistrano-rails',   require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano3-puma', '~> 6.2.0',   require: false
+  gem 'capistrano-sidekiq', require: false
+
 end
 
 group :development do
@@ -75,3 +84,5 @@ gem "prawn", "~> 2.4"
 
 # IBAN validation
 gem "iban-tools"
+
+gem "sidekiq", "~> 7.3"

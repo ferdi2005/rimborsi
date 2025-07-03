@@ -129,13 +129,13 @@
         </div>
         <div class="card-body">
           <% if @payment.status_created? %>
-            <%= link_to mark_as_paid_admin_payment_path(@payment), method: :patch, 
+            <%= button_to mark_as_paid_admin_payment_path(@payment), method: :patch, 
                         class: "btn btn-success w-100 mb-2",
                         data: { confirm: "Sei sicuro di voler marcare questo pagamento come pagato? Questa azione avvierà il processo di generazione PDF e caricamento." } do %>
               <i class="fas fa-check-circle me-2"></i>Marca come Pagato
             <% end %>
           <% elsif @payment.status_paid? %>
-            <%= link_to revert_to_created_admin_payment_path(@payment), method: :patch,
+            <%= button_to revert_to_created_admin_payment_path(@payment), method: :patch,
                         class: "btn btn-warning w-100 mb-2",
                         data: { confirm: "Sei sicuro di voler riportare questo pagamento a 'creato'? I rimborsi torneranno allo stato 'approvato'." } do %>
               <i class="fas fa-undo me-2"></i>Riporta a Creato

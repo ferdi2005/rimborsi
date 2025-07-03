@@ -49,10 +49,21 @@ class Expense < ApplicationRecord
   scope :approved_expenses, -> { where(status: "approved") }
   scope :denied_expenses, -> { where(status: "denied") }
 
+  # Metodi per la traduzione degli status
+  def self.status_translations
+    {
+      "created" => "Creata",
+      "approved" => "Approvata",
+      "denied" => "Negata"
+    }
+  end
+
+  def status_in_italian
+    self.class.status_translations[status] || status.humanize
+  end
+
   private
-
-
-  # Metodo per calcolare l'importo delle spese auto
+    # Metodo per calcolare l'importo delle spese auto
   def calculate_auto_amount
     return unless car? && quota_capitale && carburante && pneumatici && manutenzione && distance
 
@@ -70,21 +81,6 @@ class Expense < ApplicationRecord
 
     self.amount = calculated_amount.round(2)
   end
-
-  # Metodi per la traduzione degli status
-  def self.status_translations
-    {
-      "created" => "Creata",
-      "approved" => "Approvata",
-      "denied" => "Negata"
-    }
-  end
-
-  def status_in_italian
-    self.class.status_translations[status] || status.humanize
-  end
-
-  private
 
   # Validazione del formato dell'allegato
   def validate_attachment_format
