@@ -241,4 +241,5 @@ class ProcessPaymentJob < ApplicationJob
       })
       # Ignora se la directory esiste già (405) o è stata creata con successo (201)
     end
+  end
 end
