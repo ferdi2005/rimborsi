@@ -91,7 +91,7 @@ class ProcessPaymentJob < ApplicationJob
           pdf.text "Andata e ritorno: #{expense.return_trip? ? 'Sì' : 'No'}", size: 10
 
           if expense.vehicle
-            pdf.text "Veicolo:  #{expense.vehicle.category_label} #{expense.vehicle.brand} #{expense.vehicle.brand} #{expense.vehicle.model} #{expense.vehicle.fuel_label}", size: 10
+            pdf.text "Veicolo:  #{expense.vehicle.brand} #{expense.vehicle.brand} #{expense.vehicle.brand} #{expense.vehicle.model} #{expense.vehicle.fuel_label}", size: 10
           end
 
           # Dettaglio costi
