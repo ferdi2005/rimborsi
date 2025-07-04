@@ -1,4 +1,4 @@
-statesclass AddStatusToReimboursementsAndExpenses < ActiveRecord::Migration[7.2]
+class AddStatusToReimboursementsAndExpenses < ActiveRecord::Migration[7.2]
   def change
     # Aggiungi status ai rimborsi
     add_column :reimboursements, :status, :integer, default: 0, null: false
