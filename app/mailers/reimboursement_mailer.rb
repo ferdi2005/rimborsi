@@ -31,7 +31,7 @@ class ReimboursementMailer < ApplicationMailer
     @user = @reimboursement.user
     @author = note.user
 
-    admin_email = ENV["EMAIL_AMMINISTRAZIONE"] || "admin@rimborsi.app"
+    admin_email = ENV["EMAIL_AMMINISTRAZIONE"] || ENV["ADDRESS"]
 
     mail(
       to: admin_email,

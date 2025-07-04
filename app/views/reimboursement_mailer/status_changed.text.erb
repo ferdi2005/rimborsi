@@ -19,7 +19,7 @@ TOTALE RIMBORSO: € <%= number_with_precision(@reimboursement.total_amount, pre
 
 GESTIONE RIMBORSI
 =================
-<% admin_email = ENV['EMAIL_AMMINISTRAZIONE'] || 'admin@rimborsi.app' %>
+<% admin_email = ENV['EMAIL_AMMINISTRAZIONE'] || ENV["ADDRESS"] %>
 Per chiarimenti contatta: <%= admin_email %>
 Puoi anche rispondere con eventuali note direttamente sulla piattaforma.
 
