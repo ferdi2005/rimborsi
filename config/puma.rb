@@ -33,11 +33,3 @@ plugin :tmp_restart
 if ENV["RAILS_ENV"] == "production"
   bind "unix://#{ENV.fetch('PUMA_SOCKET', 'tmp/sockets/puma.sock')}"
 end
-
-# Enable systemd notify support
-if ENV["NOTIFY_SOCKET"] == "1"
-  on_booted do
-    require 'sd_notify'
-    SdNotify.ready
-  end
-end
