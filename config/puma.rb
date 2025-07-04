@@ -35,7 +35,7 @@ if ENV["RAILS_ENV"] == "production"
 end
 
 # Enable systemd notify support
-if ENV["NOTIFY_SOCKET"]
+if ENV["NOTIFY_SOCKET"] == "1"
   on_booted do
     require 'sd_notify'
     SdNotify.ready
