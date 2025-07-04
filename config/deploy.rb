@@ -76,16 +76,6 @@ namespace :deploy do
     end
 end
 
-namespace :deploy do
-    namespace :check do
-      before :linked_files, :set_master_key do
-        on roles(:app), in: :sequence, wait: 10 do
-            puts "Uploading config file file..."
-            upload! 'config/puma.rb', "#{shared_path}/config/puma.rb"
-        end
-      end
-    end
-  end
 
 namespace :bundler do
   task :set_force_ruby_platform do
