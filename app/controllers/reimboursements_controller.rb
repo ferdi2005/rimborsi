@@ -1,5 +1,5 @@
 class ReimboursementsController < ApplicationController
-  before_action :set_reimboursement, only: %i[ show edit update destroy ]
+  before_action :set_reimboursement, only: %i[ show edit update destroy download_pdf ]
 
   # GET /reimboursements or /reimboursements.json
   def index
@@ -187,8 +187,22 @@ class ReimboursementsController < ApplicationController
     end
   end
 
+  # GET /reimboursements/1/download_pdf
+  def download_pdf
+    begin
+      pdf_content = @reimboursement.generate_pdf
+
+      send_data pdf_content,
+                filename: "rimborso_#{@reimboursement.id}_#{Date.current.strftime('%Y%m%d')}.pdf",
+                type: 'application/pdf',
+                disposition: 'attachment'
+    rescue => e
+      Rails.logger.error "Error generating PDF for reimboursement #{@reimboursement.id}: #{e.message}"
+      redirect_to @reimboursement, alert: "Errore nella generazione del PDF. Riprova più tardi."
+    end
+  end
+
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_reimboursement
       if current_user.admin?
         @reimboursement = Reimboursement.find(params[:id])
@@ -197,7 +211,6 @@ class ReimboursementsController < ApplicationController
       end
     end
 
-    # Only allow a list of trusted parameters through.
     def reimboursement_params
       permitted_params = [ :bank_account_id, :paypal_account_id, :initial_note,
                          expenses_attributes: [

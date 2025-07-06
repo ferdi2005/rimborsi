@@ -65,6 +65,9 @@
           <div class="card-footer">
             <div class="btn-group w-100" role="group">
               <%= link_to 'Visualizza', reimboursement, class: "btn btn-outline-primary btn-sm" %>
+              <%= link_to download_pdf_reimboursement_path(reimboursement), class: "btn btn-outline-danger btn-sm" do %>
+                <i class="fas fa-file-pdf"></i>
+              <% end %>
               <% if reimboursement.user_id == current_user.id || current_user.admin? %>
                 <%= link_to 'Modifica', edit_reimboursement_path(reimboursement), class: "btn btn-outline-secondary btn-sm" %>
                 <%= link_to 'Elimina', reimboursement, method: :delete, 

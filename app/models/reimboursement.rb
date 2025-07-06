@@ -1,4 +1,6 @@
 class Reimboursement < ApplicationRecord
+  include PdfGeneratable
+
   belongs_to :user
   belongs_to :bank_account, optional: true
   belongs_to :paypal_account, optional: true

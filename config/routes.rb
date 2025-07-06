@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       patch :approve_expense
       patch :deny_expense
       patch :approve_reimboursement
+      get :download_pdf
     end
   end
   resources :roles
