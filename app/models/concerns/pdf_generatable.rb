@@ -14,7 +14,7 @@ module PdfGeneratable
       pdf.text "Utente autenticato con username: #{user.username}", size: 12
       pdf.text "Email: #{user.email}", size: 12
       pdf.text "Data creazione: #{created_at.strftime('%d/%m/%Y')}", size: 12
-      pdf.text "Totale: €#{total_amount}", size: 14, style: :bold
+      pdf.text "Totale: € #{total_amount}", size: 14, style: :bold
       pdf.move_down 20
 
       # Note del rimborso se presenti
