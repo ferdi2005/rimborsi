@@ -10,7 +10,8 @@ module PdfGeneratable
       pdf.move_down 20
 
       # Informazioni utente
-      pdf.text "Utente: #{user.name}", size: 14
+      pdf.text "Richiedente: #{user.name} #{user.surname}", size: 14
+      pdf.text "Utente autenticato con username: #{user.username}", size: 12
       pdf.text "Email: #{user.email}", size: 12
       pdf.text "Data creazione: #{created_at.strftime('%d/%m/%Y')}", size: 12
       pdf.text "Totale: €#{total_amount}", size: 14, style: :bold
@@ -36,7 +37,7 @@ module PdfGeneratable
 
         # Informazioni base
         pdf.text "Data: #{expense.date.strftime('%d/%m/%Y')}", size: 11
-        pdf.text "Importo: €#{expense.amount}", size: 11
+        pdf.text "Importo: € #{expense.amount}", size: 11
         pdf.text "Progetto: #{expense.project.name}", size: 11
 
         # Se è una spesa auto, mostra i dettagli specifici
@@ -66,7 +67,7 @@ module PdfGeneratable
           pdf.text "Totale per km: €#{total_per_km}", size: 9, style: :bold
           pdf.text "Distanza totale: #{total_distance} km", size: 9
         else
-            pdf.text "Fornitore: #{expense.supplier}", size: 10, color: '0066CC'
+            pdf.text "Fornitore: #{expense.supplier}", size: 10
           if expense.attachment.attached?
             pdf.text "Ricevuta allegata: #{expense.attachment.filename}", size: 10, color: '008800'
           end
@@ -85,7 +86,7 @@ module PdfGeneratable
       pdf.move_down 15
 
       # Totale rimborso
-      pdf.text "Totale rimborso: €#{total_amount}", size: 14, style: :bold
+      pdf.text "Totale rimborso: € #{total_amount}", size: 14, style: :bold
       pdf.move_down 15
 
       # Informazioni pagamento
