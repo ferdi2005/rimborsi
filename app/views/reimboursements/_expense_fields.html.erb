@@ -25,7 +25,7 @@
       <%= f.select :project_id, 
           options_from_collection_for_select(Project.active.order(:name), :id, :name, f.object.project_id),
           { prompt: "Seleziona progetto" },
-          { class: "form-select" } %>
+          { class: "form-select", required: true } %>
     </div>
     
     <div class="col-md-2">
@@ -73,7 +73,7 @@
   <div class="row mt-3 attachment-field" style="<%= 'display: none;' if f.object.car? %>">
     <div class="col-md-6">
       <%= f.label :attachment, "Allegato", class: "form-label" %>
-      <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m" %>
+      <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf" %>
       <small class="form-text text-muted">Carica ricevuta o fattura (solo per spese non auto)</small>
     </div>
   </div>
@@ -257,11 +257,77 @@ document.addEventListener('click', function(e) {
 });
 
 function calculateAutoAmount(expenseRow) {
-  if (window.calculateAutoExpenseAmount && typeof window.calculateAutoExpenseAmount === 'function') {
-    window.calculateAutoExpenseAmount(expenseRow);
+  // Usa la funzione globale se disponibile (quando siamo nel form completo)
+  if (window.calculateAutoAmount && typeof window.calculateAutoAmount === 'function') {
+    window.calculateAutoAmount(expenseRow);
     return;
   }
   
+  // Usa la funzione centralizzata di calcolo
+  if (window.updateCarExpenseAmount && typeof window.updateCarExpenseAmount === 'function') {
+    window.updateCarExpenseAmount(expenseRow);
+    
+    // Trigger change event per aggiornare il totale generale se necessario
+    const calculatedField = expenseRow.querySelector('.calculated-amount');
+    if (calculatedField && calculatedField.value) {
+      calculatedField.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    return;
+  }
+  
+  // Fallback locale (standalone) - dovrebbe essere rimosso dopo la migrazione
+  if (!expenseRow) return;
+  
+  console.warn('Using fallback car expense calculation - consider loading car_expense_calculator.js');
+  
+  // ... resto del codice locale come fallback ...
+  
+  // Verifica che sia effettivamente una spesa auto
+  const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');
+  if (!carRadio || !carRadio.checked) {
+    return;
+  }
+  
+  const quotaCapitale = parseFloat(expenseRow.querySelector('input[name*="[quota_capitale]"]')?.value) || 0;
+  const carburante = parseFloat(expenseRow.querySelector('input[name*="[carburante]"]')?.value) || 0;
+  const pneumatici = parseFloat(expenseRow.querySelector('input[name*="[pneumatici]"]')?.value) || 0;
+  const manutenzione = parseFloat(expenseRow.querySelector('input[name*="[manutenzione]"]')?.value) || 0;
+  const distance = parseFloat(expenseRow.querySelector('input[name*="[distance]"]')?.value) || 0;
+  
+  // Leggi il valore del checkbox return_trip (Rails genera due input, prendiamo quello visible)
+  const returnTripCheckbox = expenseRow.querySelector('input[name*="[return_trip]"]:not([type="hidden"])');
+  const returnTrip = returnTripCheckbox ? returnTripCheckbox.checked : false;
+  
+  if (quotaCapitale > 0 && carburante > 0 && pneumatici > 0 && manutenzione > 0 && distance > 0) {
+    // Somma delle quote (assicura precisione a 2 decimali)
+    const costPerKm = Number((quotaCapitale + carburante + pneumatici + manutenzione).toFixed(2));
+    
+    // Moltiplica per la distanza
+    let totalDistance = distance;
+    
+    // Se andata e ritorno, moltiplica per 2
+    if (returnTrip) {
+      totalDistance *= 2;
+    }
+    
+    // Calcola il totale e dividi sempre per 2 (con precisione a 2 decimali)
+    const calculatedAmount = Number(((costPerKm * totalDistance) / 2).toFixed(2));
+    
+    // Aggiorna i campi
+    const calculatedField = expenseRow.querySelector('.calculated-amount');
+    
+    if (calculatedField) {
+      calculatedField.value = calculatedAmount.toFixed(2);
+      // Trigger change event per aggiornare il totale generale
+      calculatedField.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  } else {
+    // Reset dei campi se non tutti i valori sono inseriti
+    const calculatedField = expenseRow.querySelector('.calculated-amount');
+    if (calculatedField) {
+      calculatedField.value = '';
+    }
+  }
 }
 
 // Calcola automaticamente per le spese auto esistenti al caricamento della pagina

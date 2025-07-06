@@ -1,0 +1,27 @@
+<GrpHdr>
+    <MsgId>#{pagamento.id}</MsgId>
+    <CreDtTm>#{DateTime.now.iso8601}</CreDtTm>
+    <NbOfTxs>#{pagamento.reimboursments.count}</NbOfTxs>
+    <CtrlSum>#{pagamento.total}</CtrlSum>
+    <InitgPty>
+        <Id>
+            <OrgId>
+                <Othr>
+                    <Id>
+                        IT05599740965
+                    </Id>
+                    <Issr>
+                        CBI
+                    </Issr>
+                </Othr>
+            </OrgId>
+        </Id>
+    </InitgPty>
+</GrpHdr>
+<PmtInf>
+    <PmtInfId>
+        #{pagamento.id}
+    </PmtInfId>
+    <PmtMtd>TRF</PmtMtd>
+    
+</PmtInf>

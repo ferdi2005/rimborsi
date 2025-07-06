@@ -1,5 +1,5 @@
 class ReimboursementsController < ApplicationController
-  before_action :set_reimboursement, only: %i[ show edit update destroy approve_expenses approve_expense deny_expense approve_reimboursement]
+  before_action :set_reimboursement, only: %i[ show edit update destroy ]
 
   # GET /reimboursements or /reimboursements.json
   def index
@@ -45,7 +45,7 @@ class ReimboursementsController < ApplicationController
         # Crea la nota iniziale se presente
         if params[:reimboursement][:initial_note].present?
           @reimboursement.notes.create!(
-            text: params[:reimboursement][:initial_note],
+            content: params[:reimboursement][:initial_note],
             user: current_user,
             status_change: false
           )
@@ -78,7 +78,7 @@ class ReimboursementsController < ApplicationController
         # Crea una nuova nota se è presente il campo initial_note
         if params[:reimboursement][:initial_note].present?
           @reimboursement.notes.create!(
-            text: params[:reimboursement][:initial_note],
+            content: params[:reimboursement][:initial_note],
             user: current_user,
             status_change: false
           )
@@ -111,6 +111,7 @@ class ReimboursementsController < ApplicationController
 
   # GET /reimboursements/1/approve_expenses
   def approve_expenses
+    @reimboursement = Reimboursement.find(params[:id])
     redirect_to root_path and return unless @reimboursement
 
     return admin_required unless current_user.admin?
@@ -149,7 +150,7 @@ class ReimboursementsController < ApplicationController
     # Crea una nota se fornita
     if params[:note_content].present?
       note = @reimboursement.notes.build(
-        text: params[:note_content],
+        content: params[:note_content],
         user: current_user,
         status_change: params[:reimboursement_status] || "waiting"
       )
@@ -175,7 +176,7 @@ class ReimboursementsController < ApplicationController
 
       # Crea una nota automatica
       @reimboursement.notes.create!(
-        text: "Rimborso approvato.",
+        content: "Rimborso approvato.",
         user: current_user,
         status_change: "approved"
       )
