@@ -30,6 +30,4 @@ preload_app!
 plugin :tmp_restart
 
 # Bind to unix socket for Nginx (production)
-if ENV["RAILS_ENV"] == "production"
-  bind "unix://#{ENV.fetch('PUMA_SOCKET', 'home/deploy/apps/rimborsi/shared/tmp/sockets/rimborsi-puma.sock')}"
-end
+bind "unix:///home/deploy/apps/rimborsi/shared/tmp/sockets/rimborsi-puma.sock"
