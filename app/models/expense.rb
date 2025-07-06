@@ -19,8 +19,9 @@ class Expense < ApplicationRecord
   validates :date, presence: true
   validates :project, presence: true
 
-  # Validation: attachment is required only if not car expense
+  # Validation: attachment and supplier are required only if not car expense
   validates :attachment, presence: true, unless: :car?
+  validates :supplier, presence: true, unless: :car?
 
   # Validazione del formato dell'allegato
   validate :validate_attachment_format, if: -> { attachment.attached? }

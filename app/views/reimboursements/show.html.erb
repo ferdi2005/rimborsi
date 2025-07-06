@@ -389,14 +389,18 @@
                                 <% end %>
                               </div>
                             <% else %>
-                              <!-- Allegato spesa normale -->
-                              <% if expense.attachment.attached? %>
-                                <%= link_to expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" do %>
-                                  <i class="fas fa-file"></i> Visualizza
+                              <!-- Dettagli spesa normale -->
+                              <div class="small">
+                                <strong>Fornitore:</strong> <%= expense.supplier %><br>
+                                <!-- Allegato spesa normale -->
+                                <% if expense.attachment.attached? %>
+                                  <%= link_to expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" do %>
+                                    <i class="fas fa-file"></i> Visualizza
+                                  <% end %>
+                                <% else %>
+                                  <span class="text-muted">Nessun allegato</span>
                                 <% end %>
-                              <% else %>
-                                <span class="text-muted">Nessun allegato</span>
-                              <% end %>
+                              </div>
                             <% end %>
                           </td>
                         </tr>
