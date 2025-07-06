@@ -30,7 +30,7 @@ class ReimboursementsController < ApplicationController
     @projects = Project.active.order(:name)
   end
 
-  # POST /rimboursements or /rimboursements.json
+  # POST /reimboursements or /reimboursements.json
   def create
     if current_user.admin?
       # Gli admin possono creare rimborsi per qualsiasi utente
@@ -90,7 +90,7 @@ class ReimboursementsController < ApplicationController
         end
 
         format.html { redirect_to @reimboursement, notice: "Rimborso aggiornato con successo." }
-        format.json { render :show, status: :ok, location: @rimboursement }
+        format.json { render :show, status: :ok, location: @reimboursement }
       else
         @projects = Project.active.order(:name)
         format.html { render :edit, status: :unprocessable_entity }

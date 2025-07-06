@@ -505,7 +505,7 @@
                             <strong>Stato cambiato in:</strong> <%= Reimboursement.status_translations[note.status_change] %>
                           </div>
                         <% end %>
-                        <p class="mb-0"><%= simple_format(note.content) %></p>
+                        <p class="mb-0"><%= simple_format(note.text) %></p>
                       </div>
                     </div>
                   <% end %>
@@ -526,7 +526,7 @@
           <% if @reimboursement.can_be_edited_by?(current_user) %>
             <%= link_to 'Modifica', edit_reimboursement_path(@reimboursement), class: "btn btn-primary" %>
           <% end %>
-          <%= link_to 'Indietro', rimboursements_path, class: "btn btn-secondary" %>
+          <%= link_to 'Indietro', reimboursements_path, class: "btn btn-secondary" %>
         </div>
       </div>
     </div>
