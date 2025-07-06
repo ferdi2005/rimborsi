@@ -217,7 +217,7 @@ class ReimboursementsController < ApplicationController
                            :id, :amount, :purpose, :date, :car, :attachment, :_destroy,
                            :calculation_date, :departure, :arrival, :distance, :return_trip,
                            :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione,
-                           :project_id
+                           :project_id, :supplier
                          ] ]
 
       # Se è admin, può anche modificare user_id e status
