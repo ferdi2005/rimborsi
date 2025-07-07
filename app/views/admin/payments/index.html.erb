@@ -16,6 +16,7 @@
               status_config = case payment.status
                              when 'created' then { class: 'warning', icon: 'fas fa-edit' }
                              when 'paid' then { class: 'success', icon: 'fas fa-check-circle' }
+                             when 'error' then { class: 'danger', icon: 'fas fa-exclamation-triangle' }
                              else { class: 'secondary', icon: 'fas fa-question' }
                              end
             %>
@@ -62,6 +63,14 @@
               <% if payment.can_be_modified? %>
                 <%= link_to edit_admin_payment_path(payment), class: "btn btn-outline-secondary btn-sm" do %>
                   <i class="fas fa-edit me-1"></i>Modifica
+                <% end %>
+              <% end %>
+
+              <% if payment.can_be_retried? %>
+                <%= link_to retry_admin_payment_path(payment), method: :patch, 
+                    class: "btn btn-outline-warning btn-sm", 
+                    data: { confirm: "Sei sicuro di voler ritentare il processamento?" } do %>
+                  <i class="fas fa-redo me-1"></i>Riprova
                 <% end %>
               <% end %>
             </div>

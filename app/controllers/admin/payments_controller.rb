@@ -1,6 +1,6 @@
 class Admin::PaymentsController < ApplicationController
   before_action :ensure_admin
-  before_action :set_payment, only: %i[ show edit update destroy export_flow mark_as_paid revert_to_created ]
+  before_action :set_payment, only: %i[ show edit update destroy export_flow mark_as_paid revert_to_created retry ]
 
   # GET /admin/payments/1 or /admin/payments/1.json
   def show
@@ -16,7 +16,7 @@ class Admin::PaymentsController < ApplicationController
   # GET /admin/payments/1/edit
   def edit
     unless @payment.can_be_modified?
-      redirect_to [:admin, @payment], alert: "Non puoi modificare un pagamento già eseguito."
+      redirect_to [ :admin, @payment ], alert: "Non puoi modificare un pagamento già eseguito."
       return
     end
     @available_reimboursements = Reimboursement.payable.where(payment_id: nil).includes(:user, :bank_account)
@@ -36,8 +36,8 @@ class Admin::PaymentsController < ApplicationController
       if @payment.save
         # Associa i rimborsi selezionati al pagamento
         update_payment_reimboursements(@payment, payment_params[:reimboursement_ids])
-        format.html { redirect_to [:admin, @payment], notice: "Pagamento creato con successo." }
-        format.json { render :show, status: :created, location: [:admin, @payment] }
+        format.html { redirect_to [ :admin, @payment ], notice: "Pagamento creato con successo." }
+        format.json { render :show, status: :created, location: [ :admin, @payment ] }
       else
         @available_reimboursements = Reimboursement.payable.where(payment_id: nil).includes(:user, :bank_account)
         format.html { render :new, status: :unprocessable_entity }
@@ -50,7 +50,7 @@ class Admin::PaymentsController < ApplicationController
   def update
     unless @payment.can_be_modified?
       respond_to do |format|
-        format.html { redirect_to [:admin, @payment], alert: "Non puoi modificare un pagamento già eseguito." }
+        format.html { redirect_to [ :admin, @payment ], alert: "Non puoi modificare un pagamento già eseguito." }
         format.json { render json: { error: "Non autorizzato" }, status: :forbidden }
       end
       return
@@ -60,8 +60,8 @@ class Admin::PaymentsController < ApplicationController
       if @payment.update(payment_params.except(:reimboursement_ids))
         # Aggiorna i rimborsi associati al pagamento
         update_payment_reimboursements(@payment, payment_params[:reimboursement_ids])
-        format.html { redirect_to [:admin, @payment], notice: "Pagamento aggiornato con successo." }
-        format.json { render :show, status: :ok, location: [:admin, @payment] }
+        format.html { redirect_to [ :admin, @payment ], notice: "Pagamento aggiornato con successo." }
+        format.json { render :show, status: :ok, location: [ :admin, @payment ] }
       else
         @available_reimboursements = Reimboursement.payable.where(payment_id: nil).includes(:user, :bank_account)
         format.html { render :edit, status: :unprocessable_entity }
@@ -86,17 +86,17 @@ class Admin::PaymentsController < ApplicationController
 
     send_data xml_content,
               filename: "flusso_pagamento_#{@payment.id}_#{Date.current.strftime('%Y%m%d')}.xml",
-              type: 'application/xml',
-              disposition: 'attachment'
+              type: "application/xml",
+              disposition: "attachment"
   end
 
   # PATCH /payments/1/mark_as_paid
   def mark_as_paid
     begin
       @payment.mark_as_paid!(params[:payment_date]&.to_date || Date.current)
-      redirect_to [:admin, @payment], notice: "Pagamento contrassegnato come eseguito."
+      redirect_to [ :admin, @payment ], notice: "Pagamento contrassegnato come eseguito."
     rescue => e
-      redirect_to [:admin, @payment], alert: "Errore: #{e.message}"
+      redirect_to [ :admin, @payment ], alert: "Errore: #{e.message}"
     end
   end
 
@@ -104,9 +104,24 @@ class Admin::PaymentsController < ApplicationController
   def revert_to_created
     begin
       @payment.revert_to_created!
-      redirect_to [:admin, @payment], notice: "Pagamento riportato allo stato 'Creato'."
+      redirect_to [ :admin, @payment ], notice: "Pagamento riportato allo stato 'Creato'."
     rescue => e
-      redirect_to [:admin, @payment], alert: "Errore: #{e.message}"
+      redirect_to [ :admin, @payment ], alert: "Errore: #{e.message}"
+    end
+  end
+
+  # PATCH /payments/1/retry
+  def retry
+    unless @payment.can_be_retried?
+      redirect_to [ :admin, @payment ], alert: "Il pagamento non può essere ritentato."
+      return
+    end
+
+    begin
+      @payment.retry_processing!
+      redirect_to [ :admin, @payment ], notice: "Processamento riavviato. Il pagamento verrà processato nuovamente."
+    rescue => e
+      redirect_to [ :admin, @payment ], alert: "Errore durante il retry: #{e.message}"
     end
   end
 

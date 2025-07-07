@@ -4,7 +4,8 @@ class Payment < ApplicationRecord
   # Enumerativo per gli status
   enum :status, {
     created: 0,
-    paid: 1
+    paid: 1,
+    error: 2
   }, prefix: true
 
   # Validazioni
@@ -60,11 +61,28 @@ class Payment < ApplicationRecord
     end
   end
 
+  def mark_as_error!
+    update!(status: :error)
+  end
+
+  def retry_processing!
+    return unless status_error?
+
+    # Mantieni lo stato paid e riavvia il job di processamento
+    update!(status: :paid)
+    ProcessPaymentJob.perform_later(id)
+  end
+
+  def can_be_retried?
+    status_error?
+  end
+
   # Metodi per la traduzione degli status
   def self.status_translations
     {
       "created" => "Creato",
-      "paid" => "Pagato"
+      "paid" => "Pagato",
+      "error" => "Errore"
     }
   end
 
@@ -184,6 +202,9 @@ class Payment < ApplicationRecord
       ProcessPaymentJob.perform_later(id) if saved_change_to_status? && status_paid?
     when "created"
       reimboursements.update_all(status: :approved)
+    when "error"
+      # Non modificare lo stato dei rimborsi quando il pagamento è in errore
+      # I rimborsi mantengono il loro stato attuale
     end
   end
 

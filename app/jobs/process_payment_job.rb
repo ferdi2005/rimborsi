@@ -20,13 +20,13 @@ class ProcessPaymentJob < ApplicationJob
       end
     end
 
-    # Se ci sono stati errori, riporta l'intero pagamento a "created"
+    # Se ci sono stati errori, marca il pagamento come in errore
     if failed_reimboursements.any?
       Rails.logger.error "Failed to process reimboursements: #{failed_reimboursements.join(', ')}"
-      Rails.logger.error "Reverting payment #{payment.id} to 'created' status"
+      Rails.logger.error "Marking payment #{payment.id} as 'error' status"
 
-      # Riporta l'intero pagamento allo stato "created"
-      payment.revert_to_created!
+      # Marca il pagamento in stato di errore (i rimborsi mantengono il loro stato)
+      payment.mark_as_error!
 
       # Inserire eventuale notifica
     end
@@ -43,20 +43,20 @@ class ProcessPaymentJob < ApplicationJob
   end
 
   def upload_files_to_nextcloud(reimboursement, pdf_content)
-    require 'net/http'
-    require 'uri'
-    require 'base64'
+    require "net/http"
+    require "uri"
+    require "base64"
 
-    nextcloud_url = ENV['NEXTCLOUD_WEBDAV_URL']
-    username = ENV['NEXTCLOUD_USERNAME']
-    password = ENV['NEXTCLOUD_PASSWORD']
-    admin_folder = ENV['CARTELLA_AMMINISTRAZIONE']
+    nextcloud_url = ENV["NEXTCLOUD_WEBDAV_URL"]
+    username = ENV["NEXTCLOUD_USERNAME"]
+    password = ENV["NEXTCLOUD_PASSWORD"]
+    admin_folder = ENV["CARTELLA_AMMINISTRAZIONE"]
 
-    raise 'NextCloud configuration missing' if [nextcloud_url, username, password, admin_folder].any?(&:blank?)
+    raise "NextCloud configuration missing" if [ nextcloud_url, username, password, admin_folder ].any?(&:blank?)
 
     # Costruisci il path di destinazione con cartella data
-    user_folder = reimboursement.user.email.split('@').first # username dall'email
-    date_folder = Date.current.strftime('%Y-%m-%d')
+    user_folder = reimboursement.user.email.split("@").first # username dall'email
+    date_folder = Date.current.strftime("%Y-%m-%d")
     rimborso_folder = "rimborso_#{reimboursement.id}"
 
     base_path = "#{admin_folder}/#{user_folder}/#{date_folder}/#{rimborso_folder}"
@@ -67,7 +67,7 @@ class ProcessPaymentJob < ApplicationJob
 
     # Carica il PDF del rimborso
     pdf_path = "#{base_path}/rimborso_#{reimboursement.id}.pdf"
-    upload_file_to_nextcloud(nextcloud_url, pdf_path, pdf_content, 'application/pdf', username, password)
+    upload_file_to_nextcloud(nextcloud_url, pdf_path, pdf_content, "application/pdf", username, password)
 
     Rails.logger.info "Successfully uploaded PDF for reimboursement #{reimboursement.id} to #{pdf_path}"
 
@@ -80,7 +80,7 @@ class ProcessPaymentJob < ApplicationJob
           attachment_content = expense.attachment.download
 
           # Determina il tipo di contenuto
-          content_type = expense.attachment.content_type || 'application/octet-stream'
+          content_type = expense.attachment.content_type || "application/octet-stream"
 
           # Costruisci il nome del file con prefisso spesa
           filename = "spesa_#{expense.id}_#{expense.attachment.filename}"
@@ -107,11 +107,11 @@ class ProcessPaymentJob < ApplicationJob
     uri = URI(webdav_url)
 
     http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = uri.scheme == 'https'
+    http.use_ssl = uri.scheme == "https"
 
     request = Net::HTTP::Put.new(uri)
     request.basic_auth(username, password)
-    request['Content-Type'] = content_type
+    request["Content-Type"] = content_type
     request.body = content
 
     response = http.request(request)
@@ -122,8 +122,8 @@ class ProcessPaymentJob < ApplicationJob
   end
 
   def ensure_directory_exists(base_uri, username, password, directory_path)
-    path_parts = directory_path.split('/')
-    current_path = ''
+    path_parts = directory_path.split("/")
+    current_path = ""
 
     path_parts.each do |part|
       next if part.blank?
@@ -132,11 +132,11 @@ class ProcessPaymentJob < ApplicationJob
       dir_uri = URI("#{base_uri.scheme}://#{base_uri.host}:#{base_uri.port}#{base_uri.path.split('/')[0..-2].join('/')}#{current_path}")
 
       http = Net::HTTP.new(dir_uri.host, dir_uri.port)
-      http.use_ssl = dir_uri.scheme == 'https'
+      http.use_ssl = dir_uri.scheme == "https"
 
       # Prova a creare la directory (MKCOL)
-      http.send_request('MKCOL', dir_uri.path, '', {
-        'Authorization' => "Basic #{Base64.strict_encode64("#{username}:#{password}")}"
+      http.send_request("MKCOL", dir_uri.path, "", {
+        "Authorization" => "Basic #{Base64.strict_encode64("#{username}:#{password}")}"
       })
       # Ignora se la directory esiste già (405) o è stata creata con successo (201)
     end

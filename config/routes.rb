@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       member do
         patch :mark_as_paid
         patch :revert_to_created
+        patch :retry
         get :export_flow
       end
     end

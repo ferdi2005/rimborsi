@@ -11,6 +11,14 @@
           <i class="fas fa-edit me-2"></i>Modifica
         <% end %>
       <% end %>
+
+      <% if @payment.can_be_retried? %>
+        <%= link_to retry_admin_payment_path(@payment), method: :patch, 
+            class: "btn btn-warning ms-2", 
+            data: { confirm: "Sei sicuro di voler ritentare il processamento?" } do %>
+          <i class="fas fa-redo me-2"></i>Riprova Processamento
+        <% end %>
+      <% end %>
     </div>
   </div>
 
@@ -29,6 +37,7 @@
                   status_config = case @payment.status
                                  when 'created' then { class: 'warning', icon: 'fas fa-edit' }
                                  when 'paid' then { class: 'success', icon: 'fas fa-check-circle' }
+                                 when 'error' then { class: 'danger', icon: 'fas fa-exclamation-triangle' }
                                  else { class: 'secondary', icon: 'fas fa-question' }
                                  end
                 %>
@@ -52,6 +61,15 @@
               <i class="fas fa-exclamation-triangle me-2"></i>
               <strong>Attenzione:</strong> <%= @payment.failed_processing_count %> rimborsi hanno fallito il processing e sono stati riportati a "creato".
               Processati con successo: <%= @payment.successfully_processed_count %>
+            </div>
+          <% end %>
+          
+          <% if @payment.status_error? %>
+            <div class="alert alert-danger">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <strong>Errore durante il processamento</strong><br>
+              Il processamento di questo pagamento ha riscontrato degli errori. 
+              Utilizza il pulsante "Riprova Processamento" per ritentare l'operazione.
             </div>
           <% end %>
         </div>
