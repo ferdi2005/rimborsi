@@ -1,7 +1,7 @@
 <div class="expense-row border rounded p-4 mb-4">
   <!-- Cestino in alto a destra -->
   <div class="d-flex justify-content-end mb-3">
-    <button type="button" class="btn btn-danger btn-sm remove-expense">
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeExpense(this)">
       <i class="fas fa-trash"></i>
     </button>
     <%= f.hidden_field :_destroy %>
@@ -289,8 +289,6 @@ function calculateAutoAmount(expenseRow) {
   if (!expenseRow) return;
   
   console.warn('Using fallback car expense calculation - consider loading car_expense_calculator.js');
-  
-  // ... resto del codice locale come fallback ...
   
   // Verifica che sia effettivamente una spesa auto
   const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');

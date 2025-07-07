@@ -329,12 +329,62 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTotal();
   });
 
-  // Rimuovi spesa
-  document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-expense')) {
-      const expenseRow = e.target.closest('.expense-row');
-      
-      // Animazione di uscita
+  // Funzione globale per rimuovere una spesa (chiamata dal pulsante cestino)
+  window.removeExpense = function(button) {
+    const expenseRow = button.closest('.expense-row');
+    const destroyField = expenseRow.querySelector('input[name*="[_destroy]"]');
+    
+    // Se la spesa ha un campo _destroy, significa che è già salvata nel database
+    if (destroyField) {
+      // Conferma prima di cancellare
+      if (confirm('Sei sicuro di voler cancellare questa spesa?')) {
+        // Imposta il campo _destroy su true per marcare la spesa per la cancellazione
+        destroyField.value = 'true';
+        
+        // Nascondi visivamente la spesa con animazione
+        expenseRow.style.transition = 'all 0.3s ease';
+        expenseRow.style.opacity = '0.5';
+        expenseRow.style.transform = 'scale(0.95)';
+        expenseRow.style.pointerEvents = 'none';
+        
+        // Aggiungi una classe per indicare che è marcata per la cancellazione
+        expenseRow.classList.add('marked-for-deletion');
+        
+        // Aggiungi un overlay per indicare che sarà cancellata
+        const overlay = document.createElement('div');
+        overlay.className = 'deletion-overlay';
+        overlay.innerHTML = '<div class="deletion-message"><i class="fas fa-trash"></i> Spesa marcata per la cancellazione</div>';
+        overlay.style.cssText = `
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(220, 53, 69, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 0.375rem;
+          z-index: 10;
+        `;
+        
+        const messageDiv = overlay.querySelector('.deletion-message');
+        messageDiv.style.cssText = `
+          background: rgba(220, 53, 69, 0.9);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 0.375rem;
+          font-weight: 500;
+          text-align: center;
+        `;
+        
+        expenseRow.style.position = 'relative';
+        expenseRow.appendChild(overlay);
+        
+        updateTotal();
+      }
+    } else {
+      // È una spesa nuova (non ancora salvata), rimuovila completamente dal DOM
       expenseRow.style.transition = 'all 0.3s ease';
       expenseRow.style.opacity = '0';
       expenseRow.style.transform = 'translateX(100%)';
@@ -344,14 +394,20 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTotal();
       }, 300);
     }
-  });
+  };
 
-  // Funzione per aggiornare il totale
-  function updateTotal() {
+  // Funzione per aggiornare il totale (globale per essere usata da _expense_fields.html.erb)
+  window.updateTotal = function() {
     const expenseRows = document.querySelectorAll('.expense-row');
     let total = 0;
     
     expenseRows.forEach(row => {
+      // Salta le spese marcate per la cancellazione
+      const destroyField = row.querySelector('input[name*="[_destroy]"]');
+      if (destroyField && destroyField.value === 'true') {
+        return; // Skip questa spesa
+      }
+      
       const amountInput = row.querySelector('input[name*="[amount]"]');
       const statusSelect = row.querySelector('select[name*="[status]"]');
       
@@ -367,6 +423,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     document.getElementById('total-amount').textContent = '€ ' + total.toFixed(2).replace('.', ',');
+  };
+
+  // Alias locale per compatibilità con il codice esistente
+  function updateTotal() {
+    window.updateTotal();
   }
 
   // Funzione globale per calcolo automatico spese auto
