@@ -485,6 +485,108 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
   
+  // Gestione centralizzata di tutti gli eventi delle spese
+  document.addEventListener('change', function(e) {
+    // Toggle tra spese auto e normali
+    if (e.target.classList.contains('car-type') || (e.target.name && e.target.name.includes('[car]'))) {
+      toggleExpenseType(e.target.closest('.expense-row'));
+    }
+    
+    // Calcolo automatico per campi auto
+    if (e.target.classList.contains('cost-input') || 
+        e.target.classList.contains('distance-input') ||
+        e.target.classList.contains('return-trip-input') || 
+        (e.target.name && e.target.name.includes('[return_trip]'))) {
+      window.calculateAutoAmount(e.target.closest('.expense-row'));
+    }
+    
+    // Aggiorna totale quando cambia l'importo o lo status
+    if (e.target.name && (e.target.name.includes('[amount]') || e.target.name.includes('[status]'))) {
+      updateTotal();
+    }
+  });
+  
+  document.addEventListener('input', function(e) {
+    // Calcolo automatico per campi auto
+    if (e.target.classList.contains('cost-input') || 
+        e.target.classList.contains('distance-input')) {
+      window.calculateAutoAmount(e.target.closest('.expense-row'));
+    }
+    
+    // Aggiorna totale quando cambia l'importo
+    if (e.target.name && e.target.name.includes('[amount]')) {
+      updateTotal();
+    }
+  });
+  
+  // Funzione per gestire il toggle tra spese auto e normali
+  function toggleExpenseType(expenseRow) {
+    if (!expenseRow) return;
+    
+    const attachmentField = expenseRow.querySelector('.attachment-field');
+    const carFields = expenseRow.querySelector('.car-fields');
+    const amountField = expenseRow.querySelector('input[name*="[amount]"]');
+    const amountLabel = expenseRow.querySelector('label[for*="amount"]');
+    const carRadios = expenseRow.querySelectorAll('input[name*="[car]"]');
+    
+    let isCar = false;
+    carRadios.forEach(radio => {
+      if (radio.checked && radio.value === 'true') {
+        isCar = true;
+      }
+    });
+    
+    if (isCar) {
+      // Mostra campi auto e nasconde allegato
+      if (attachmentField) attachmentField.style.display = 'none';
+      if (carFields) carFields.style.display = 'block';
+      
+      // Configura il campo amount per spese auto
+      if (amountField) {
+        amountField.readOnly = true;
+        amountField.className = 'form-control calculated-amount';
+        amountField.placeholder = 'Auto-calcolato';
+        amountField.style.backgroundColor = '#f8f9fa';
+      }
+      if (amountLabel) {
+        amountLabel.textContent = 'Importo calcolato';
+      }
+      
+      // Svuota il campo file
+      const fileInput = expenseRow.querySelector('input[type="file"]');
+      if (fileInput) {
+        fileInput.value = '';
+      }
+      
+      // Calcola importo iniziale se tutti i campi sono già popolati
+      window.calculateAutoAmount(expenseRow);
+    } else {
+      // Mostra campi normali e nasconde auto
+      if (attachmentField) attachmentField.style.display = 'block';
+      if (carFields) carFields.style.display = 'none';
+      
+      // Configura il campo amount per spese normali
+      if (amountField) {
+        amountField.readOnly = false;
+        amountField.className = 'form-control';
+        amountField.placeholder = 'Inserisci importo';
+        amountField.style.backgroundColor = '';
+        amountField.value = ''; // Reset del valore calcolato
+      }
+      if (amountLabel) {
+        amountLabel.textContent = 'Importo';
+      }
+    }
+  }
+  
+  // Calcola automaticamente per le spese auto esistenti al caricamento della pagina
+  document.querySelectorAll('.expense-row').forEach(expenseRow => {
+    const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');
+    if (carRadio && carRadio.checked) {
+      window.calculateAutoAmount(expenseRow);
+    }
+  });
+  
   // Calcola il totale iniziale
   updateTotal();
 
