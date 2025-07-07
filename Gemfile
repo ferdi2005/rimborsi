@@ -50,14 +50,13 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
-    gem 'capistrano',         require: false
-  gem 'capistrano-yarn',     require: false
-  gem 'capistrano-rvm',     require: false
-  gem 'capistrano-rails',   require: false
-  gem 'capistrano-bundler', require: false
-  gem 'capistrano3-puma', '~> 6.2.0',   require: false
-  gem 'capistrano-sidekiq', require: false
-
+    gem "capistrano",         require: false
+  gem "capistrano-yarn",     require: false
+  gem "capistrano-rvm",     require: false
+  gem "capistrano-rails",   require: false
+  gem "capistrano-bundler", require: false
+  gem "capistrano3-puma", "~> 6.2.0",   require: false
+  gem "capistrano-sidekiq", require: false
 end
 
 group :development do
@@ -66,6 +65,8 @@ group :development do
 
   # Highlight the fine-grained location where an error occurred [https://github.com/ruby/error_highlight]
   gem "error_highlight", ">= 0.4.0", platforms: [ :ruby ]
+
+  gem "byebug"
 end
 
 group :test do
@@ -81,6 +82,10 @@ gem "dotenv-rails"
 
 # PDF generation
 gem "prawn", "~> 2.4"
+gem "prawn-table", "~> 0.2"
+
+# XML parsing for electronic invoices
+gem "nokogiri", "~> 1.13"
 
 # IBAN validation
 gem "iban-tools"

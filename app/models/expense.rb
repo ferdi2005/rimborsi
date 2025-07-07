@@ -4,6 +4,10 @@ class Expense < ApplicationRecord
   belongs_to :project
 
   has_one_attached :attachment
+  has_one_attached :pdf_attachment
+
+  # Include il concern per la gestione delle fatture elettroniche
+  include ElectronicInvoiceProcessor
 
   # Enumerativo per gli status
   enum :status, {

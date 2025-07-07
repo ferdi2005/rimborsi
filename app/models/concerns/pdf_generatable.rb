@@ -2,8 +2,6 @@ module PdfGeneratable
   extend ActiveSupport::Concern
 
   def generate_pdf
-    require 'prawn'
-
     Prawn::Document.new do |pdf|
       # Header del documento
       pdf.text "Rimborso ##{id}", size: 20, style: :bold
@@ -43,7 +41,7 @@ module PdfGeneratable
         # Se è una spesa auto, mostra i dettagli specifici
         if expense.car?
           pdf.move_down 5
-          pdf.text "RIMBORSO SPESE CHILOMETRICO PER TRASPORTO IN AUTO - Dettagli:", size: 12, style: :bold, color: '0066CC'
+          pdf.text "RIMBORSO SPESE CHILOMETRICO PER TRASPORTO IN AUTO - Dettagli:", size: 12, style: :bold, color: "0066CC"
           pdf.text "Data calcolo: #{expense.calculation_date&.strftime('%d/%m/%Y')}", size: 10
           pdf.text "Partenza: #{expense.departure}", size: 10
           pdf.text "Arrivo: #{expense.arrival}", size: 10
@@ -69,7 +67,7 @@ module PdfGeneratable
         else
             pdf.text "Fornitore: #{expense.supplier}", size: 10
           if expense.attachment.attached?
-            pdf.text "Ricevuta allegata: #{expense.attachment.filename}", size: 10, color: '008800'
+            pdf.text "Ricevuta allegata: #{expense.attachment.filename}", size: 10, color: "008800"
           end
         end
 
@@ -99,7 +97,7 @@ module PdfGeneratable
       # Footer con data generazione
       pdf.move_down 30
       pdf.text "Documento generato il #{Time.current.strftime('%d/%m/%Y alle %H:%M')}",
-               size: 8, align: :right, color: '666666'
+               size: 8, align: :right, color: "666666"
     end.render
   end
 end

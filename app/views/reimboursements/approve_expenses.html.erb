@@ -109,12 +109,46 @@
                   </div>
                 </div>
               <% else %>
-                <h5>Allegato</h5>
+                <h5>
+                  <% if @current_expense.electronic_invoice? && @current_expense.has_invoice_pdf? %>
+                    <i class="fas fa-file-invoice me-2"></i>Fattura Elettronica
+                  <% else %>
+                    Allegato
+                  <% end %>
+                </h5>
                 
                 <div class="card">
                   <div class="card-body text-center">
                     <% if @current_expense.attachment.attached? %>
-                      <% if @current_expense.attachment.content_type.start_with?('image/') %>
+                      <% if @current_expense.electronic_invoice? && @current_expense.has_invoice_pdf? %>
+                        <!-- Mostra PDF della fattura elettronica generato -->
+                        <div class="mb-3">
+                          <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i>Fattura convertita in PDF
+                          </span>
+                        </div>
+                        <div class="border rounded">
+                          <iframe src="<%= url_for(@current_expense.pdf_attachment) %>" 
+                                  width="100%" 
+                                  height="600" 
+                                  style="border: none;" 
+                                  class="rounded">
+                            Il tuo browser non supporta la visualizzazione di PDF.
+                          </iframe>
+                          <div class="p-2 bg-light border-top d-flex justify-content-between">
+                            <div>
+                              <%= link_to "Scarica PDF", download_invoice_pdf_expense_path(@current_expense), 
+                                          class: "btn btn-sm btn-primary" %>
+                              <%= link_to "File XML Originale", @current_expense.attachment, target: "_blank", 
+                                          class: "btn btn-sm btn-outline-secondary ms-2" %>
+                            </div>
+                            <small class="text-muted align-self-center">
+                              <i class="fas fa-info-circle"></i>
+                              PDF generato automaticamente dalla fattura elettronica
+                            </small>
+                          </div>
+                        </div>
+                      <% elsif @current_expense.attachment.content_type.start_with?('image/') %>
                         <!-- Mostra immagine -->
                         <%= image_tag @current_expense.attachment, class: "img-fluid rounded", style: "max-height: 500px;" %>
                         <div class="mt-3">

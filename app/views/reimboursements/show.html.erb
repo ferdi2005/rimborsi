@@ -345,11 +345,10 @@
                           <td><%= expense.date&.strftime("%d/%m/%Y") %></td>
                           <td><%= expense.purpose %></td>
                           <td>
-                            <% if expense.car? %>
-                              <span class="badge bg-info">Auto</span>
-                            <% else %>
-                              <span class="badge bg-secondary">Normale</span>
-                            <% end %>
+                            <span class="badge <%= file_badge_class(expense) %>">
+                              <i class="<%= file_icon(expense) %> me-1"></i>
+                              <%= file_type_text(expense) %>
+                            </span>
                           </td>
                           <td>
                             <% case expense.status %>
@@ -393,10 +392,34 @@
                               <div class="small">
                                 <strong>Fornitore:</strong> <%= expense.supplier %><br>
                                 <!-- Allegato spesa normale -->
-                                <% if expense.attachment.attached? %>
-                                  <%= link_to expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" do %>
-                                    <i class="fas fa-file"></i> Visualizza
-                                  <% end %>
+                                <% if expense.electronic_invoice? && expense.has_invoice_pdf? %>
+                                  <!-- Fattura elettronica con PDF generato -->
+                                  <div class="mt-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                      <span class="badge bg-success me-2">
+                                        <i class="fas fa-file-invoice me-1"></i>Fattura Elettronica
+                                      </span>
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                      <%= link_to download_invoice_pdf_expense_path(expense), 
+                                                  class: "btn btn-sm btn-primary", 
+                                                  title: "Scarica PDF della fattura" do %>
+                                        <i class="fas fa-download me-1"></i>PDF
+                                      <% end %>
+                                      <%= link_to expense.attachment, target: "_blank", 
+                                                  class: "btn btn-sm btn-outline-secondary",
+                                                  title: "Visualizza file XML originale" do %>
+                                        <i class="fas fa-file-code me-1"></i>XML
+                                      <% end %>
+                                    </div>
+                                  </div>
+                                <% elsif expense.attachment.attached? %>
+                                  <!-- Allegato normale -->
+                                  <div class="mt-2">
+                                    <%= link_to expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" do %>
+                                      <i class="<%= file_icon(expense) %> me-1"></i>Visualizza
+                                    <% end %>
+                                  </div>
                                 <% else %>
                                   <span class="text-muted">Nessun allegato</span>
                                 <% end %>
@@ -437,7 +460,7 @@
           <!-- Note -->
           <div class="row">
             <div class="col-12">
-              <h5>Note e Comunicazioni</h5>
+              <h5>Note e comunicazioni</h5>
               
               <!-- Form per aggiungere nuova nota -->
               <div class="card mb-3">
@@ -453,7 +476,7 @@
                     
                     <% if current_user.admin? %>
                       <div class="mb-3">
-                        <%= form.label :status_change, "Cambia Stato (opzionale)", class: "form-label" %>
+                        <%= form.label :status_change, "Cambia stato (opzionale)", class: "form-label" %>
                         <%= form.select :status_change, 
                                       options_for_select(
                                         [['Nessun cambio', '']] + 

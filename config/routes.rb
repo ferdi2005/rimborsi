@@ -3,7 +3,11 @@ Rails.application.routes.draw do
   resources :paypal_accounts
   resources :bank_accounts
   resources :projects
-  resources :expenses
+  resources :expenses do
+    member do
+      get :download_invoice_pdf
+    end
+  end
   resources :notes
   root to: "reimboursements#index"
   resources :reimboursements do

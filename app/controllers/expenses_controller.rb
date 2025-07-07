@@ -1,23 +1,5 @@
 class ExpensesController < ApplicationController
-  before_action :set_expense, only: %i[ show edit update destroy ]
-
-  # GET /expenses or /expenses.json
-  def index
-    @expenses = current_user.expenses
-  end
-
-  # GET /expenses/1 or /expenses/1.json
-  def show
-  end
-
-  # GET /expenses/new
-  def new
-    @expense = Expense.new
-  end
-
-  # GET /expenses/1/edit
-  def edit
-  end
+  before_action :set_expense, only: %i[  update destroy download_invoice_pdf ]
 
   # POST /expenses or /expenses.json
   def create
@@ -57,12 +39,27 @@ class ExpensesController < ApplicationController
     end
   end
 
+  # GET /expenses/1/download_invoice_pdf
+  def download_invoice_pdf
+    if @expense.pdf_attachment.attached?
+      send_data @expense.pdf_attachment.download,
+                filename: @expense.pdf_attachment.filename.to_s,
+                type: 'application/pdf',
+                disposition: 'attachment'
+    else
+      redirect_back(fallback_location: @expense, alert: 'PDF della fattura non disponibile.')
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_expense
-      @expense = current_user.expenses.find(params[:id])
+      if current_user.admin?
+        @expense = Expense.find(params[:id])
+      else
+        @expense = current_user.expenses.find(params[:id])
+      end
     end
-
     # Only allow a list of trusted parameters through.
     def expense_params
       params.require(:expense).permit(:reimboursement_id, :purpose, :date, :amount, :car, :calculation_date, :departure, :arrival, :distance, :return_trip, :vehicle_category_id, :brand, :model, :fuel_id, :quota_capitale, :carburante, :pneumatici, :manutenzione, :project_id, :attachment, :supplier)

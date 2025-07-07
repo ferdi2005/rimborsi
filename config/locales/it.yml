@@ -168,6 +168,7 @@ it:
             email:
               blank: "è obbligatoria"
               invalid: "non è valida"
+          required: "è richiesto"
         
         vehicle:
           attributes:

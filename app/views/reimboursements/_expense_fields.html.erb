@@ -53,7 +53,7 @@
       <%= f.select :project_id, 
           options_from_collection_for_select(Project.active.order(:name), :id, :name, f.object.project_id),
           { prompt: "Seleziona progetto" },
-          { class: "form-select", required: true } %>
+          { class: "form-select" } %>
     </div>
   </div>
 
@@ -83,8 +83,8 @@
     
     <div class="col-md-6">
       <%= f.label :attachment, "Allegato", class: "form-label" %>
-      <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m"%>
-      <small class="form-text text-muted">Carica ricevuta o fattura</small>
+      <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
+      <small class="form-text text-muted">Carica ricevuta o fattura (immagine o PDF) o fattura elettronica (.xml, .xml.p7m)</small>
     </div>
   </div>
 
