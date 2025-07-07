@@ -74,33 +74,80 @@ class Payment < ApplicationRecord
 
   # Genera XML per il flusso di pagamento
   def generate_xml_flow
-    require 'builder'
+    require "builder"
 
-    xml = ::Builder::XmlMarkup.new(indent: 2)
+    xml = ::Builder::XmlMarkup.new(indent: 4)
     xml.instruct!
 
-    xml.PaymentFlow do |flow|
-      flow.PaymentId id
-      flow.PaymentDate payment_date&.strftime("%Y-%m-%d")
-      flow.TotalAmount total
-      flow.Status status_in_italian
-      flow.CreatedAt created_at.strftime("%Y-%m-%d %H:%M:%S")
-
-      flow.Reimboursements do |reimbursements_xml|
-        reimboursements.includes(:bank_account, :user).each do |reimbursement|
-          reimbursements_xml.Reimboursement do |r|
-            r.Id reimbursement.id
-            r.UserId reimbursement.user.id
-            r.UserName "#{reimbursement.user.name} #{reimbursement.user.surname}"
-            r.IBAN reimbursement.bank_account&.iban
-            r.BankName reimbursement.bank_account&.bank_name
-            r.Amount reimbursement.total_amount
-            r.Status reimbursement.status_in_italian
-            r.CreatedAt reimbursement.created_at.strftime("%Y-%m-%d %H:%M:%S")
+    xml.GrpHdr do |grp|
+      grp.MsgId id
+      grp.CreDtTm DateTime.now.iso8601
+      grp.NbOfTxs reimboursements.count
+      grp.CtrlSum sprintf("%.2f", total)
+      grp.InitgPty do |init|
+        init.Id do |id_tag|
+          id_tag.OrgId do |org|
+            org.Othr do |othr|
+              othr.Id "BGCJC"
+              othr.Issr "CBI"
+            end
           end
         end
       end
     end
+
+    xml.PmtInf do |pmt|
+      pmt.PmtInfId id
+      pmt.PmtMtd "TRF"
+      pmt.PmtTpInf do |pmt_tp|
+        pmt_tp.InstrPrty "NORM"
+      end
+      pmt.SvcLvl do |svc|
+        svc.Cd "SEPA"
+      end
+      pmt.ReqdExctnDt do |req_dt|
+        req_dt.Dt next_business_day.strftime("%Y-%m-%d")
+      end
+      pmt.Dbtr do |dbtr|
+        dbtr.Nm "Wikimedia Italia - Associazione per la diffusione della conoscenza libera - APS-ETS"
+      end
+      pmt.DbtrAcct do |dbtr_acct|
+        dbtr_acct.Id do |id_tag|
+          id_tag.IBAN "IT08F0306909606100000145960"
+        end
+      end
+      pmt.DbtrAgt do |dbtr_agt|
+        dbtr_agt.FinInstnId do |fin|
+          fin.ClrSysMmbId do |clr|
+            clr.MmbId "03069"
+          end
+        end
+      end
+
+      reimboursements.includes(:bank_account, :user).each do |reimbursement|
+      xml.CdtTrfTxInf do |cdt|
+        cdt.PmtId do |pmt_id|
+          pmt_id.InstrId reimbursement.id
+          pmt_id.EndToEndId "rimborso#{reimbursement.id}"
+        end
+        cdt.CtgyPurp do |ctgy|
+          ctgy.Prtry "Rimborso spese n. #{reimbursement.id}"
+        end
+        cdt.Amt do |amt|
+          amt.InstdAmt "EUR#{sprintf('%.2f', reimbursement.total_amount)}"
+        end
+        cdt.Cdtr do |cdtr|
+          cdtr.Nm reimbursement.bank_account.owner
+        end
+        cdt.CdtrAcct do |cdtr_acct|
+          cdtr_acct.Id do |id_tag|
+            id_tag.IBAN reimbursement.bank_account.iban
+          end
+        end
+      end
+    end
+    end
+
 
     xml.target!
   end
@@ -131,12 +178,21 @@ class Payment < ApplicationRecord
 
   def update_reimboursements_status
     case status
-    when 'paid'
+    when "paid"
       reimboursements.update_all(status: :paid)
       # Avvia il job per processare il pagamento solo se è appena stato marcato come pagato
       ProcessPaymentJob.perform_later(id) if saved_change_to_status? && status_paid?
-    when 'created'
+    when "created"
       reimboursements.update_all(status: :approved)
     end
+  end
+
+  # Calcola il prossimo giorno lavorativo (lunedì-venerdì)
+  def next_business_day
+    date = Date.current + 1.day
+    while date.saturday? || date.sunday?
+      date += 1.day
+    end
+    date
   end
 end

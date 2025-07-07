@@ -8,7 +8,7 @@
             <OrgId>
                 <Othr>
                     <Id>
-                        IT05599740965
+                        BGCJC
                     </Id>
                     <Issr>
                         CBI
@@ -23,5 +23,68 @@
         #{pagamento.id}
     </PmtInfId>
     <PmtMtd>TRF</PmtMtd>
-    
+    <PmtTpInf>
+        <InstrPrty>
+            NORM
+        </InstrPrty>
+    </PmtTpInf>
+    <SvcLvl>
+        <Cd>
+            SEPA
+        </Cd>
+    </SvcLvl>
+    <ReqdExctnDt>
+        <Dt>#{primo giorno compreso tra lunedi e venerdi successivo}</Dt>
+    </ReqdExctnDt>
+    <Dbtr>
+        <Nm>
+            Wikimedia Italia - Associazione per la diffusione della conoscenza libera - APS-ETS
+        </Nm>
+    </Dbtr>
+    <DbtrAcct>
+        <Id>
+            <IBAN>
+                IT08F0306909606100000145960
+            </IBAN>
+        </Id>
+    </DbtrAcct>
+    <DbtrAgt>
+        <FinInstnId>
+            <ClrSysMmbId>
+                <MmbId>03069</MmbId>
+            </ClrSysMmbId>
+        </FinInstnId>
+    </DbtrAgt>
 </PmtInf>
+#{for every reimboursment in payment}
+<CdtTrfTxInf>
+    <PmtId>
+        <InstrId>
+            #{reimboursement.id}
+        </InstrId>
+        <EndToEndId>
+            rimborso#{reimboursement.id}
+        </EndToEndId>
+    </PmtId>
+    <CtgyPurp>
+        <Prtry>
+        Rimborso spese n. #{reimboursement.id}
+        </Prtry>
+    </CtgyPurp>
+    <Amt>
+        <InstdAmt>
+            EUR#{reimboursment.total_amount espresso con il punto come separatore decimale e due cifre sole decimali}
+        </InstdAmt>
+    </Amt>
+    <Cdtr>
+        <Nm>
+            #{reimboursement.bank_account.owner}
+        </Nm>
+    </Cdtr>
+    <CdtrAcct>
+        <Id>
+            <IBAN>
+                #{reimboursement.bank_account.iban}
+            </IBAN>
+        </Id>
+    </CdtrAcct>
