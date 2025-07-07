@@ -27,23 +27,7 @@ class Payment < ApplicationRecord
     status_created?
   end
 
-  # Verifica se ci sono rimborsi che sono stati riportati a "created" dopo un errore di processing
-  def has_failed_reimboursements?
-    status_paid? && reimboursements.status_created.any?
-  end
-
   # Conta i rimborsi che sono stati processati con successo
-  def successfully_processed_count
-    return 0 unless status_paid?
-    reimboursements.status_paid.count
-  end
-
-  # Conta i rimborsi che hanno fallito il processing
-  def failed_processing_count
-    return 0 unless status_paid?
-    reimboursements.status_created.count
-  end
-
   def mark_as_paid!(date = Date.current)
     transaction do
       update!(status: :paid, payment_date: date)

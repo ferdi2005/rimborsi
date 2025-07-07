@@ -55,20 +55,12 @@
               <p><strong>Rimborsi inclusi:</strong> <%= @payment.reimboursements.count %></p>
             </div>
           </div>
-          
-          <% if @payment.has_failed_reimboursements? %>
-            <div class="alert alert-warning">
-              <i class="fas fa-exclamation-triangle me-2"></i>
-              <strong>Attenzione:</strong> <%= @payment.failed_processing_count %> rimborsi hanno fallito il processing e sono stati riportati a "creato".
-              Processati con successo: <%= @payment.successfully_processed_count %>
-            </div>
-          <% end %>
-          
+                    
           <% if @payment.status_error? %>
             <div class="alert alert-danger">
               <i class="fas fa-exclamation-triangle me-2"></i>
               <strong>Errore durante il processamento</strong><br>
-              Il processamento di questo pagamento ha riscontrato degli errori. 
+              Il cariamento di questo pagamento su NextCloud ha riscontrato degli errori. 
               Utilizza il pulsante "Riprova Processamento" per ritentare l'operazione.
             </div>
           <% end %>
