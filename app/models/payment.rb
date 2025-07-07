@@ -18,7 +18,6 @@ class Payment < ApplicationRecord
 
   # Callbacks
   before_save :calculate_total
-  after_update :update_reimboursements_status, if: :saved_change_to_status?
 
   def to_s
     "Pagamento ##{id} - €#{total}"
@@ -191,20 +190,6 @@ class Payment < ApplicationRecord
   def reimboursements_have_bank_accounts
     if reimboursements.any? { |r| r.bank_account.blank? }
       errors.add(:reimboursements, "devono tutti avere un conto bancario associato")
-    end
-  end
-
-  def update_reimboursements_status
-    case status
-    when "paid"
-      reimboursements.update_all(status: :paid)
-      # Avvia il job per processare il pagamento solo se è appena stato marcato come pagato
-      ProcessPaymentJob.perform_later(id) if saved_change_to_status? && status_paid?
-    when "created"
-      reimboursements.update_all(status: :approved)
-    when "error"
-      # Non modificare lo stato dei rimborsi quando il pagamento è in errore
-      # I rimborsi mantengono il loro stato attuale
     end
   end
 
