@@ -2,7 +2,7 @@ require "test_helper"
 
 class ProjectsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @project = projects(:one)
+    @fund = projects(:one)
   end
 
   test "should get index" do
@@ -17,30 +17,30 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create project" do
     assert_difference("Project.count") do
-      post projects_url, params: { project: { active: @project.active, budget: @project.budget, name: @project.name } }
+      post projects_url, params: { project: { active: @fund.active, budget: @fund.budget, name: @fund.name } }
     end
 
     assert_redirected_to project_url(Project.last)
   end
 
   test "should show project" do
-    get project_url(@project)
+    get project_url(@fund)
     assert_response :success
   end
 
   test "should get edit" do
-    get edit_project_url(@project)
+    get edit_project_url(@fund)
     assert_response :success
   end
 
   test "should update project" do
-    patch project_url(@project), params: { project: { active: @project.active, budget: @project.budget, name: @project.name } }
-    assert_redirected_to project_url(@project)
+    patch project_url(@fund), params: { project: { active: @fund.active, budget: @fund.budget, name: @fund.name } }
+    assert_redirected_to project_url(@fund)
   end
 
   test "should destroy project" do
     assert_difference("Project.count", -1) do
-      delete project_url(@project)
+      delete project_url(@fund)
     end
 
     assert_redirected_to projects_url

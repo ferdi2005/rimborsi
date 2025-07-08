@@ -35,7 +35,8 @@ module PdfGeneratable
         # Informazioni base
         pdf.text "Data: #{expense.date.strftime('%d/%m/%Y')}", size: 11
         pdf.text "Importo: € #{expense.amount}", size: 11
-        pdf.text "Progetto: #{expense.project.name}", size: 11
+        pdf.text "Fondo: #{expense.fund.name}", size: 11
+        pdf.text "Progetto: #{expense.project}", size: 11
 
         # Se è una spesa auto, mostra i dettagli specifici
         if expense.car?

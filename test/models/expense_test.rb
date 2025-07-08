@@ -3,7 +3,7 @@ require "test_helper"
 class ExpenseTest < ActiveSupport::TestCase
   def setup
     @user = users(:one)
-    @project = projects(:one)
+    @fund = projects(:one)
     @reimboursement = reimboursements(:one)
   end
 
@@ -12,7 +12,7 @@ class ExpenseTest < ActiveSupport::TestCase
       purpose: "Test expense",
       amount: 100.0,
       date: Date.current,
-      project: @project,
+      project: @fund,
       reimboursement: @reimboursement,
       supplier: "Test Supplier"
     )
@@ -40,7 +40,7 @@ class ExpenseTest < ActiveSupport::TestCase
       purpose: "Test expense",
       amount: 100.0,
       date: Date.current,
-      project: @project,
+      project: @fund,
       reimboursement: @reimboursement,
       supplier: "Test Supplier"
     )
@@ -68,7 +68,7 @@ class ExpenseTest < ActiveSupport::TestCase
       purpose: "Test expense",
       amount: 100.0,
       date: Date.current,
-      project: @project,
+      project: @fund,
       reimboursement: @reimboursement,
       supplier: "Test Supplier"
     )
@@ -171,7 +171,7 @@ class ExpenseTest < ActiveSupport::TestCase
       purpose: "Test expense with electronic invoice",
       amount: 100.0,
       date: Date.current,
-      project: @project,
+      project: @fund,
       reimboursement: @reimboursement,
       supplier: "" # Supplier vuoto per testare il popolamento automatico
     )
@@ -213,7 +213,7 @@ class ExpenseTest < ActiveSupport::TestCase
       pneumatici: 0.02,
       manutenzione: 0.03,
       date: Date.current,
-      project: @project,
+      project: @fund,
       reimboursement: @reimboursement,
       vehicle: vehicles(:one)
     )
@@ -246,7 +246,7 @@ class ExpenseTest < ActiveSupport::TestCase
       purpose: "Test expense",
       amount: 100.0,
       date: Date.current,
-      project: @project,
+      project: @fund,
       reimboursement: @reimboursement,
       supplier: "Old Supplier"
     )

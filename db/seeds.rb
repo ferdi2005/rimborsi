@@ -2,10 +2,10 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-# Creazione progetti di esempio
-puts "Creazione progetti di esempio..."
+# Creazione fondi di esempio
+puts "Creazione fondi di esempio..."
 
-projects_data = [
+funds_data = [
   { name: "CP.01 itWikiCon - Dario", budget: 15000.00, active: true },
   { name: "CP.02 Foss4Git-OSMit - Anisa", budget: 8000.00, active: true },
   { name: "CP.03 Wikimania - Dario", budget: 20000.00, active: true },
@@ -18,10 +18,10 @@ projects_data = [
   { name: "Altro", budget: 5000.00, active: true }
 ]
 
-projects_data.each do |project_attrs|
-  project = Project.find_or_initialize_by(name: project_attrs[:name])
-  project.update!(project_attrs)
-  puts "✓ Progetto creato: #{project.name}"
+funds_data.each do |fund_attrs|
+  fund = Fund.find_or_initialize_by(name: fund_attrs[:name])
+  fund.update!(fund_attrs)
+  puts "✓ Fondo creato: #{fund.name}"
 end
 
-puts "#{Project.count} progetti totali nel database."
+puts "#{Fund.count} fondi totali nel database."

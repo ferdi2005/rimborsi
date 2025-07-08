@@ -2,7 +2,7 @@ require "application_system_test_case"
 
 class ProjectsTest < ApplicationSystemTestCase
   setup do
-    @project = projects(:one)
+    @fund = projects(:one)
   end
 
   test "visiting the index" do
@@ -14,9 +14,9 @@ class ProjectsTest < ApplicationSystemTestCase
     visit projects_url
     click_on "New project"
 
-    check "Active" if @project.active
-    fill_in "Budget", with: @project.budget
-    fill_in "Name", with: @project.name
+    check "Active" if @fund.active
+    fill_in "Budget", with: @fund.budget
+    fill_in "Name", with: @fund.name
     click_on "Create Project"
 
     assert_text "Project was successfully created"
@@ -24,12 +24,12 @@ class ProjectsTest < ApplicationSystemTestCase
   end
 
   test "should update Project" do
-    visit project_url(@project)
+    visit project_url(@fund)
     click_on "Edit this project", match: :first
 
-    check "Active" if @project.active
-    fill_in "Budget", with: @project.budget
-    fill_in "Name", with: @project.name
+    check "Active" if @fund.active
+    fill_in "Budget", with: @fund.budget
+    fill_in "Name", with: @fund.name
     click_on "Update Project"
 
     assert_text "Project was successfully updated"
@@ -37,7 +37,7 @@ class ProjectsTest < ApplicationSystemTestCase
   end
 
   test "should destroy Project" do
-    visit project_url(@project)
+    visit project_url(@fund)
     click_on "Destroy this project", match: :first
 
     assert_text "Project was successfully destroyed"
