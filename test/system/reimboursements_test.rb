@@ -15,7 +15,6 @@ class ReimboursementsTest < ApplicationSystemTestCase
     click_on "New reimboursement"
 
     fill_in "Bank account", with: @reimboursement.bank_account_id
-    fill_in "Paypal account", with: @reimboursement.paypal_account_id
     fill_in "State", with: @reimboursement.state_id
     fill_in "User", with: @reimboursement.user_id
     click_on "Create Reimboursement"
@@ -29,7 +28,6 @@ class ReimboursementsTest < ApplicationSystemTestCase
     click_on "Edit this reimboursement", match: :first
 
     fill_in "Bank account", with: @reimboursement.bank_account_id
-    fill_in "Paypal account", with: @reimboursement.paypal_account_id
     fill_in "State", with: @reimboursement.state_id
     fill_in "User", with: @reimboursement.user_id
     click_on "Update Reimboursement"

@@ -17,7 +17,7 @@ class ReimboursementsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create reimboursement" do
     assert_difference("Reimboursement.count") do
-      post reimboursements_url, params: { reimboursement: { bank_account_id: @reimboursement.bank_account_id, paypal_account_id: @reimboursement.paypal_account_id, state_id: @reimboursement.state_id, user_id: @reimboursement.user_id } }
+      post reimboursements_url, params: { reimboursement: { bank_account_id: @reimboursement.bank_account_id, state_id: @reimboursement.state_id, user_id: @reimboursement.user_id } }
     end
 
     assert_redirected_to reimboursement_url(Reimboursement.last)
@@ -34,7 +34,7 @@ class ReimboursementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update reimboursement" do
-    patch reimboursement_url(@reimboursement), params: { reimboursement: { bank_account_id: @reimboursement.bank_account_id, paypal_account_id: @reimboursement.paypal_account_id, state_id: @reimboursement.state_id, user_id: @reimboursement.user_id } }
+    patch reimboursement_url(@reimboursement), params: { reimboursement: { bank_account_id: @reimboursement.bank_account_id, state_id: @reimboursement.state_id, user_id: @reimboursement.user_id } }
     assert_redirected_to reimboursement_url(@reimboursement)
   end
 

@@ -21,7 +21,7 @@ class BankAccount < ApplicationRecord
     return unless iban.present?
 
     # Rimuovi spazi e converti in maiuscolo
-    self.iban = iban.gsub(/\s+/, '').upcase
+    self.iban = iban.gsub(/\s+/, "").upcase
   end
 
   def validate_iban_format
@@ -31,10 +31,10 @@ class BankAccount < ApplicationRecord
       # Usa iban-tools per validare l'IBAN
       unless IBANTools::IBAN.valid?(iban)
         errors.add(:iban, "non è un IBAN valido")
-        return
+        nil
       end
 
-    rescue StandardError => e
+    rescue StandardError
       errors.add(:iban, "formato non valido")
     end
   end
@@ -44,8 +44,5 @@ class BankAccount < ApplicationRecord
 
     # Rimuovi il flag predefinito da tutti gli altri conti bancari dell'utente
     user.bank_accounts.where.not(id: id).update_all(default: false)
-
-    # Rimuovi il flag predefinito da tutti gli account PayPal dell'utente
-    user.paypal_accounts.update_all(default: false)
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_06_120000) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_08_204802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -104,15 +104,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_06_120000) do
     t.index ["status"], name: "index_payments_on_status"
   end
 
-  create_table "paypal_accounts", force: :cascade do |t|
-    t.string "email"
-    t.bigint "user_id", null: false
-    t.boolean "default"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_paypal_accounts_on_user_id"
-  end
-
   create_table "projects", force: :cascade do |t|
     t.string "name"
     t.decimal "budget"
@@ -124,14 +115,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_06_120000) do
   create_table "reimboursements", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "bank_account_id"
-    t.bigint "paypal_account_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
     t.bigint "payment_id"
     t.index ["bank_account_id"], name: "index_reimboursements_on_bank_account_id"
     t.index ["payment_id"], name: "index_reimboursements_on_payment_id"
-    t.index ["paypal_account_id"], name: "index_reimboursements_on_paypal_account_id"
     t.index ["user_id"], name: "index_reimboursements_on_user_id"
   end
 
@@ -191,10 +180,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_06_120000) do
   add_foreign_key "expenses", "reimboursements"
   add_foreign_key "notes", "reimboursements"
   add_foreign_key "notes", "users"
-  add_foreign_key "paypal_accounts", "users"
   add_foreign_key "reimboursements", "bank_accounts"
   add_foreign_key "reimboursements", "payments"
-  add_foreign_key "reimboursements", "paypal_accounts"
   add_foreign_key "reimboursements", "users"
   add_foreign_key "vehicles", "users"
 end

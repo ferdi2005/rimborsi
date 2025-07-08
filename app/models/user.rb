@@ -10,7 +10,6 @@ class User < ApplicationRecord
   # Associations
   belongs_to :role, optional: true
   has_many :bank_accounts, dependent: :destroy
-  has_many :paypal_accounts, dependent: :destroy
   has_many :vehicles, dependent: :destroy
   has_many :reimboursements, dependent: :destroy
   has_many :notes, dependent: :destroy
@@ -36,15 +35,11 @@ class User < ApplicationRecord
 
   # Metodi per gestire il conto predefinito
   def default_account
-    default_bank_account || default_paypal_account
+    default_bank_account
   end
 
   def default_bank_account
     bank_accounts.find_by(default: true)
-  end
-
-  def default_paypal_account
-    paypal_accounts.find_by(default: true)
   end
 
   def default_vehicle

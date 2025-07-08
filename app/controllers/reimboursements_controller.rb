@@ -194,8 +194,8 @@ class ReimboursementsController < ApplicationController
 
       send_data pdf_content,
                 filename: "rimborso_#{@reimboursement.id}_#{Date.current.strftime('%Y%m%d')}.pdf",
-                type: 'application/pdf',
-                disposition: 'attachment'
+                type: "application/pdf",
+                disposition: "attachment"
     rescue => e
       Rails.logger.error "Error generating PDF for reimboursement #{@reimboursement.id}: #{e.message}"
       redirect_to @reimboursement, alert: "Errore nella generazione del PDF. Riprova più tardi."
@@ -212,7 +212,7 @@ class ReimboursementsController < ApplicationController
     end
 
     def reimboursement_params
-      permitted_params = [ :bank_account_id, :paypal_account_id, :initial_note,
+      permitted_params = [ :bank_account_id, :initial_note,
                          expenses_attributes: [
                            :id, :amount, :purpose, :date, :car, :attachment, :_destroy,
                            :calculation_date, :departure, :arrival, :distance, :return_trip,

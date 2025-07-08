@@ -36,16 +36,12 @@
               <span class="text-muted">
                 <% if reimboursement.bank_account.present? %>
                   <i class="fas fa-university me-1"></i><%= reimboursement.payment_method_type %>
-                <% elsif reimboursement.paypal_account.present? %>
-                  <i class="fab fa-paypal me-1"></i><%= reimboursement.payment_method_type %>
                 <% else %>
                   <i class="fas fa-question-circle me-1"></i><%= reimboursement.payment_method_type %>
                 <% end %>
               </span><br>
               <% if reimboursement.bank_account.present? %>
                 <small><i class="fas fa-credit-card me-1"></i><%= reimboursement.bank_account.iban %> - <%= reimboursement.bank_account.owner %></small>
-              <% elsif reimboursement.paypal_account.present? %>
-                <small><i class="fas fa-envelope me-1"></i><%= reimboursement.paypal_account.email %></small>
               <% end %>
             </p>
             

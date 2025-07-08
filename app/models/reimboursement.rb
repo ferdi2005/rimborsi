@@ -2,8 +2,7 @@ class Reimboursement < ApplicationRecord
   include PdfGeneratable
 
   belongs_to :user
-  belongs_to :bank_account, optional: true
-  belongs_to :paypal_account, optional: true
+  belongs_to :bank_account
   belongs_to :payment, optional: true
   has_many :expenses, dependent: :destroy
   has_many :notes, dependent: :destroy
@@ -56,14 +55,11 @@ class Reimboursement < ApplicationRecord
 
   # Metodi di utilità
   def payment_method
-    return bank_account if bank_account.present?
-    return paypal_account if paypal_account.present?
-    nil
+    bank_account
   end
 
   def payment_method_type
     return "Conto Bancario" if bank_account.present?
-    return "PayPal" if paypal_account.present?
     "Nessuno"
   end
 
@@ -97,10 +93,8 @@ class Reimboursement < ApplicationRecord
   end
 
   def must_have_payment_method
-    if bank_account.blank? && paypal_account.blank?
-      errors.add(:base, "Deve essere selezionato un metodo di pagamento (Conto Bancario o PayPal)")
-    elsif bank_account.present? && paypal_account.present?
-      errors.add(:base, "Può essere selezionato solo un metodo di pagamento")
+    if bank_account.blank?
+      errors.add(:base, "Deve essere selezionato un conto bancario")
     end
   end
 

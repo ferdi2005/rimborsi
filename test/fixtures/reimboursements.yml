@@ -4,10 +4,8 @@ one:
   state: one
   user: one
   bank_account: one
-  paypal_account: one
 
 two:
   state: two
   user: two
   bank_account: two
-  paypal_account: two

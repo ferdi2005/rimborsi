@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   resources :vehicles
-  resources :paypal_accounts
   resources :bank_accounts
   resources :projects
   resources :expenses do

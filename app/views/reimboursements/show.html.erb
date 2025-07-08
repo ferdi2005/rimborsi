@@ -248,8 +248,6 @@
                         <div class="avatar bg-light rounded-circle p-2 me-3">
                           <% if @reimboursement.bank_account.present? %>
                             <i class="fas fa-university text-primary"></i>
-                          <% elsif @reimboursement.paypal_account.present? %>
-                            <i class="fab fa-paypal text-info"></i>
                           <% else %>
                             <i class="fas fa-question text-muted"></i>
                           <% end %>
@@ -287,20 +285,6 @@
                             <small class="text-muted">Intestatario</small>
                             <div class="fw-bold">
                               <%= @reimboursement.bank_account.owner %>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    <% elsif @reimboursement.paypal_account.present? %>
-                      <div class="col-12">
-                        <div class="d-flex align-items-center">
-                          <div class="avatar bg-light rounded-circle p-2 me-3">
-                            <i class="fas fa-envelope text-info"></i>
-                          </div>
-                          <div>
-                            <small class="text-muted">Email PayPal</small>
-                            <div class="fw-bold">
-                              <%= @reimboursement.paypal_account.email %>
                             </div>
                           </div>
                         </div>
