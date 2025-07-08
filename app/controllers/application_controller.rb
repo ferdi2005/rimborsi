@@ -11,12 +11,12 @@ class ApplicationController < ActionController::Base
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :surname, :telephone, :username])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :name, :surname, :telephone ])
 
     if current_user&.admin?
-      devise_parameter_sanitizer.permit(:account_update, keys: [:name, :surname, :telephone, :username, :role_id])
+      devise_parameter_sanitizer.permit(:account_update, keys: [ :name, :surname, :telephone, :role_id ])
     else
-      devise_parameter_sanitizer.permit(:account_update, keys: [:name, :surname, :telephone, :username])
+      devise_parameter_sanitizer.permit(:account_update, keys: [ :name, :surname, :telephone ])
     end
   end
 

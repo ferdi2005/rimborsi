@@ -18,8 +18,6 @@ class User < ApplicationRecord
   # Validations
   validates :name, presence: true, length: { minimum: 2, maximum: 50 }
   validates :surname, presence: true, length: { minimum: 2, maximum: 50 }
-  validates :username, presence: true, uniqueness: true, length: { minimum: 3, maximum: 30 },
-            format: { with: /\A[a-zA-Z0-9_]+\z/, message: "può contenere solo lettere, numeri e underscore" }
 
   # Validazione telefono italiano (opzionale ma se presente deve essere valido, senza spazi e senza prefisso)
   validates :telephone, format: {
