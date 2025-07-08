@@ -1,4 +1,4 @@
-class Project < ApplicationRecord
+class Fund < ApplicationRecord
   has_many :expenses, dependent: :nullify
 
   validates :name, presence: true, uniqueness: true

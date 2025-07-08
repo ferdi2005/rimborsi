@@ -18,7 +18,7 @@ class ReimboursementsController < ApplicationController
   def new
     @reimboursement = Reimboursement.new
     @reimboursement.expenses.build # Crea una spesa vuota per il form
-    @projects = Project.active.order(:name)
+    @funds = Fund.active.order(:name)
   end
 
   # GET /reimboursements/1/edit
@@ -27,7 +27,7 @@ class ReimboursementsController < ApplicationController
       redirect_to @reimboursement, alert: "Non puoi modificare questo rimborso. I rimborsi possono essere modificati solo se sono in stato 'Creato' o 'In Attesa', oppure se sei un amministratore."
       nil
     end
-    @projects = Project.active.order(:name)
+    @funds = Fund.active.order(:name)
   end
 
   # POST /reimboursements or /reimboursements.json
@@ -54,7 +54,7 @@ class ReimboursementsController < ApplicationController
         format.html { redirect_to @reimboursement, notice: "🎉 Rimborso creato con successo! Riceverai aggiornamenti via email per ogni cambio di stato." }
         format.json { render :show, status: :created, location: @reimboursement }
       else
-        @projects = Project.active.order(:name)
+        @funds = Fund.active.order(:name)
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
       end
@@ -92,7 +92,7 @@ class ReimboursementsController < ApplicationController
         format.html { redirect_to @reimboursement, notice: "Rimborso aggiornato con successo." }
         format.json { render :show, status: :ok, location: @reimboursement }
       else
-        @projects = Project.active.order(:name)
+        @funds = Fund.active.order(:name)
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
       end
@@ -214,10 +214,10 @@ class ReimboursementsController < ApplicationController
     def reimboursement_params
       permitted_params = [ :bank_account_id, :initial_note,
                          expenses_attributes: [
-                           :id, :amount, :purpose, :date, :car, :attachment, :_destroy,
+                           :id, :amount, :purpose, :project, :date, :car, :attachment, :_destroy,
                            :calculation_date, :departure, :arrival, :distance, :return_trip,
                            :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione,
-                           :project_id, :supplier
+                           :fund_id, :supplier
                          ] ]
 
       # Se è admin, può anche modificare user_id e status

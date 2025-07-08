@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :vehicles
   resources :bank_accounts
-  resources :projects
+  resources :funds
   resources :expenses do
     member do
       get :download_invoice_pdf

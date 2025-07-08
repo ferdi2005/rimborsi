@@ -1,0 +1,119 @@
+<div class="container-fluid">
+  
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-piggy-bank me-2"></i>Fondi</h1>
+    <% if admin_user? %>
+      <%= link_to new_fund_path, class: "btn btn-primary" do %>
+        <i class="fas fa-plus me-1"></i>Nuovo Fondo
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th><i class="fas fa-tag me-1"></i>Nome</th>
+                  <th><i class="fas fa-euro-sign me-1"></i>Budget</th>
+                  <th><i class="fas fa-chart-pie me-1"></i>Spese Totali</th>
+                  <th><i class="fas fa-percentage me-1"></i>% Utilizzato</th>
+                  <th><i class="fas fa-money-bill-wave me-1"></i>Rimanente</th>
+                  <th><i class="fas fa-toggle-on me-1"></i>Attivo</th>
+                  <% if admin_user? %>
+                    <th>Azioni</th>
+                  <% else %>
+                    <th>Dettagli</th>
+                  <% end %>
+                </tr>
+              </thead>
+              <tbody>
+                <% @funds.each do |fund| %>
+                <tr class="<%= 'table-warning' if fund.over_budget? %>">
+                  <td>
+                    <strong><%= fund.name %></strong>
+                  </td>
+                  <td>
+                    <span class="text-primary">€ <%= number_with_precision(fund.budget, precision: 2) %></span>
+                  </td>
+                  <td>
+                    <span class="<%= fund.over_budget? ? 'text-danger' : 'text-success' %>">
+                      € <%= number_with_precision(fund.total_expenses, precision: 2) %>
+                    </span>
+                  </td>
+                  <td>
+                    <div class="progress" style="height: 20px;">
+                      <div class="progress-bar <%= fund.over_budget? ? 'bg-danger' : 'bg-success' %>" 
+                           role="progressbar" 
+                           style="width: <%= [fund.budget_percentage_used, 100].min %>%"
+                           aria-valuenow="<%= fund.budget_percentage_used %>" 
+                           aria-valuemin="0" 
+                           aria-valuemax="100">
+                        <%= fund.budget_percentage_used %>%
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="<%= fund.remaining_budget < 0 ? 'text-danger' : 'text-success' %>">
+                      € <%= number_with_precision(fund.remaining_budget, precision: 2) %>
+                    </span>
+                  </td>
+                  <td>
+                    <% if fund.active? %>
+                      <span class="badge bg-success"><i class="fas fa-check me-1"></i>Attivo</span>
+                    <% else %>
+                      <span class="badge bg-secondary"><i class="fas fa-times me-1"></i>Inattivo</span>
+                    <% end %>
+                  </td>
+                  <% if admin_user? %>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <%= link_to fund, class: "btn btn-outline-primary btn-sm", title: "Visualizza" do %>
+                          <i class="fas fa-eye"></i>
+                        <% end %>
+                        <%= link_to edit_fund_path(fund), class: "btn btn-outline-secondary btn-sm", title: "Modifica" do %>
+                          <i class="fas fa-edit"></i>
+                        <% end %>
+                        <%= link_to fund, method: :delete, 
+                                    class: "btn btn-outline-danger btn-sm", 
+                                    title: "Elimina",
+                                    data: { 
+                                      confirm: "Sei sicuro di voler eliminare questo progetto? Tutte le spese associate verranno scollegate dal progetto." 
+                                    } do %>
+                          <i class="fas fa-trash"></i>
+                        <% end %>
+                      </div>
+                    </td>
+                  <% else %>
+                    <td>
+                      <% if admin_user? %>
+                        <%= link_to fund, class: "btn btn-outline-primary btn-sm", title: "Visualizza" do %>
+                          <i class="fas fa-eye me-1"></i>Dettagli
+                        <% end %>
+                      <% else %>
+                        <span class="text-muted">
+                          <i class="fas fa-lock me-1"></i>Solo Admin
+                        </span>
+                      <% end %>
+                    </td>
+                  <% end %>
+                </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          
+          <% if @funds.empty? %>
+          <div class="text-center py-5">
+            <i class="fas fa-fund-diagram fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Nessun progetto trovato</h5>
+          </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

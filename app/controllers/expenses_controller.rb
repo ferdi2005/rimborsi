@@ -44,10 +44,10 @@ class ExpensesController < ApplicationController
     if @expense.pdf_attachment.attached?
       send_data @expense.pdf_attachment.download,
                 filename: @expense.pdf_attachment.filename.to_s,
-                type: 'application/pdf',
-                disposition: 'attachment'
+                type: "application/pdf",
+                disposition: "attachment"
     else
-      redirect_back(fallback_location: @expense, alert: 'PDF della fattura non disponibile.')
+      redirect_back(fallback_location: @expense, alert: "PDF della fattura non disponibile.")
     end
   end
 
@@ -62,6 +62,6 @@ class ExpensesController < ApplicationController
     end
     # Only allow a list of trusted parameters through.
     def expense_params
-      params.require(:expense).permit(:reimboursement_id, :purpose, :date, :amount, :car, :calculation_date, :departure, :arrival, :distance, :return_trip, :vehicle_category_id, :brand, :model, :fuel_id, :quota_capitale, :carburante, :pneumatici, :manutenzione, :project_id, :attachment, :supplier)
+      params.require(:expense).permit(:reimboursement_id, :purpose, :project, :date, :amount, :car, :calculation_date, :departure, :arrival, :distance, :return_trip, :vehicle_category_id, :brand, :model, :fuel_id, :quota_capitale, :carburante, :pneumatici, :manutenzione, :fund_id, :attachment, :supplier)
     end
 end

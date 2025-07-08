@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_08_210602) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_08_213238) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -72,15 +72,24 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_08_210602) do
     t.decimal "carburante"
     t.decimal "pneumatici"
     t.decimal "manutenzione"
-    t.bigint "project_id"
+    t.bigint "fund_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
     t.integer "vehicle_id"
     t.string "supplier"
-    t.index ["project_id"], name: "index_expenses_on_project_id"
+    t.string "project"
+    t.index ["fund_id"], name: "index_expenses_on_fund_id"
     t.index ["reimboursement_id"], name: "index_expenses_on_reimboursement_id"
     t.index ["vehicle_id"], name: "index_expenses_on_vehicle_id"
+  end
+
+  create_table "funds", force: :cascade do |t|
+    t.string "name"
+    t.decimal "budget"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "notes", force: :cascade do |t|
@@ -102,14 +111,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_08_210602) do
     t.datetime "updated_at", null: false
     t.index ["payment_date"], name: "index_payments_on_payment_date"
     t.index ["status"], name: "index_payments_on_status"
-  end
-
-  create_table "projects", force: :cascade do |t|
-    t.string "name"
-    t.decimal "budget"
-    t.boolean "active"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "reimboursements", force: :cascade do |t|
@@ -176,7 +177,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_08_210602) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bank_accounts", "users"
-  add_foreign_key "expenses", "projects"
+  add_foreign_key "expenses", "funds"
   add_foreign_key "expenses", "reimboursements"
   add_foreign_key "notes", "reimboursements"
   add_foreign_key "notes", "users"
