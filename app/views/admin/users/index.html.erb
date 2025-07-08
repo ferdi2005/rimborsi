@@ -9,6 +9,7 @@
           <th>Cognome</th>
           <th>Email</th>
           <th>Telefono</th>
+          <th>Codice Fiscale</th>
           <th>Ruolo</th>
           <th>Stato</th>
           <th>Rimborsi</th>
@@ -22,6 +23,7 @@
             <td><%= user.surname %></td>
             <td><%= user.email %></td>
             <td><%= user.telephone %></td>
+            <td><%= user.fiscal_code.presence || "-" %></td>
             <td>
               <%= user.role&.label %>
               <% if user.admin? %>

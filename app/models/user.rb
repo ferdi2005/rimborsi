@@ -25,6 +25,12 @@ class User < ApplicationRecord
     message: "deve essere un numero di telefono italiano valido senza spazi e senza prefisso +39"
   }, allow_blank: true
 
+  # Validazione codice fiscale italiano (obbligatorio e deve essere valido)
+  validates :fiscal_code, presence: true, format: {
+    with: /\A[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]\z/,
+    message: "deve essere un codice fiscale italiano valido (16 caratteri alfanumerici)"
+  }, uniqueness: { case_sensitive: false }
+
   # Validazione email più rigorosa
   validates :email, format: {
     with: /\A[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\z/,
@@ -79,5 +85,10 @@ class User < ApplicationRecord
       errors.add(:base, "Impossibile eliminare l'utente: ha dei rimborsi associati")
       throw(:abort)
     end
+  end
+
+  # Normalizza il codice fiscale in maiuscolo prima della validazione
+  def normalize_fiscal_code
+    self.fiscal_code = fiscal_code.upcase if fiscal_code.present?
   end
 end
