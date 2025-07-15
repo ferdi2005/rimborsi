@@ -59,6 +59,16 @@ module ElectronicInvoiceHelper
 
   # Estrazione usando PKCS7
   def self.extract_with_pkcs7(p7m_content)
+    # Supporta BER indefinite-length convertendo prima in DER
+    begin
+      asn1_objs = OpenSSL::ASN1.decode_all(p7m_content)
+      if asn1_objs && asn1_objs.first
+        p7m_content = asn1_objs.first.to_der
+        Rails.logger.info "BER->DER: convertito indefinite-length prima di PKCS7"
+      end
+    rescue => e
+      Rails.logger.debug "BER->DER fallback failed: #{e.message}"
+    end
     begin
       # Prova prima con il contenuto così com'è
       pkcs7 = OpenSSL::PKCS7.new(p7m_content)
@@ -72,6 +82,23 @@ module ElectronicInvoiceHelper
       end
     rescue OpenSSL::PKCS7::PKCS7Error => e
       Rails.logger.debug "Errore PKCS7 diretto: #{e.message}"
+
+      # Strategia 1a: tenta di decodificare BER indefinite-length con ASN1.decode_all
+      begin
+        Rails.logger.info "Tentativo di decodifica BER(indefinite) con ASN1.decode_all"
+        asn1_objects = OpenSSL::ASN1.decode_all(p7m_content)
+        if asn1_objects && asn1_objects.first
+          der_data = asn1_objects.first.to_der
+          pkcs7 = OpenSSL::PKCS7.new(der_data)
+          if pkcs7.type == "signed"
+            content = pkcs7.data
+            Rails.logger.info "PKCS7 BER->DER decrittato con successo"
+            return content if content && content.include?("<?xml")
+          end
+        end
+      rescue => ber_e
+        Rails.logger.debug "Errore BER->DER extraction: #{ber_e.message}"
+      end
     end
 
     # Prova con formato DER se non funziona direttamente
@@ -149,26 +176,39 @@ module ElectronicInvoiceHelper
   # Estrazione XML dal contenuto raw
   def self.extract_xml_from_raw_content(p7m_content)
     begin
-      # Cerca direttamente pattern XML nel contenuto binario
-      if p7m_content.include?("<?xml") && (p7m_content.include?("</FatturaElettronica>") || p7m_content.include?("</ns3:FatturaElettronica>"))
-        start_pos = p7m_content.index("<?xml")
-
-        if p7m_content.include?("</FatturaElettronica>")
-          end_pos = p7m_content.rindex("</FatturaElettronica>") + "</FatturaElettronica>".length
-        else
-          end_pos = p7m_content.rindex("</ns3:FatturaElettronica>") + "</ns3:FatturaElettronica>".length
-        end
-        result = p7m_content[start_pos...end_pos]
-
-        # Pulisci eventuali caratteri non stampabili all'inizio e alla fine
-        result = result.gsub(/\A[^\<]*/, "").gsub(/[^\>]*\z/, "")
-
-        return result
+      data = p7m_content.dup.force_encoding("ASCII-8BIT")
+      # Regex per start/end tag di FatturaElettronica con namespace opzionale
+      start_regex = /<(?:(?:\w+:)?FatturaElettronica)\b/
+      end_regex = /<\/(?:(?:\w+:)?FatturaElettronica)>/
+      start_match = data.match(start_regex)
+      end_match = data.match(end_regex)
+      if start_match && end_match
+        start_pos = start_match.begin(0)
+        end_pos = end_match.end(0)
+        result = data[start_pos...end_pos]
+        # Rimuovi eventuali caratteri non stampabili ai bordi e caratteri di controllo
+        result = result.gsub(/\A[^<]*/, "").gsub(/[^>]*\z/, "")
+        result = result.gsub(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/, "")
+        Rails.logger.info "Raw regex extraction: trovata FatturaElettronica, pulita da caratteri binari"
+        return result if result.length > 100
+      end
+      # Fallback con tag statici
+      start_tags = [ "<?xml", "<ns3:FatturaElettronica", "<p:FatturaElettronica" ]
+      close_tags = [ "</FatturaElettronica>", "</ns3:FatturaElettronica>", "</p:FatturaElettronica>" ]
+      start_tag = start_tags.find { |tag| data.include?(tag) }
+      end_tag = close_tags.find { |tag| data.include?(tag) }
+      if start_tag && end_tag
+        start_pos = data.index(start_tag)
+        end_pos = data.rindex(end_tag) + end_tag.length
+        result = data[start_pos...end_pos]
+        result = result.gsub(/\A[^<]*/, "").gsub(/[^>]*\z/, "")
+        result = result.gsub(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/, "")
+        Rails.logger.info "Raw fallback extraction: XML pulito da caratteri binari"
+        return result if result.length > 100
       end
     rescue => e
       Rails.logger.debug "Errore estrazione raw: #{e.message}"
     end
-
     nil
   end
 
