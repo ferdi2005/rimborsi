@@ -89,7 +89,7 @@ class Payment < ApplicationRecord
         init.Id do |id_tag|
           id_tag.OrgId do |org|
             org.Othr do |othr|
-              othr.Id "BGCJC"
+              othr.Id ENV["COD_BANCA"]
               othr.Issr "CBI"
             end
           end
@@ -114,13 +114,13 @@ class Payment < ApplicationRecord
       end
       pmt.DbtrAcct do |dbtr_acct|
         dbtr_acct.Id do |id_tag|
-          id_tag.IBAN "IT08F0306909606100000145960"
+          id_tag.IBAN ENV["IBAN"]
         end
       end
       pmt.DbtrAgt do |dbtr_agt|
         dbtr_agt.FinInstnId do |fin|
           fin.ClrSysMmbId do |clr|
-            clr.MmbId "03069"
+            clr.MmbId "03069" # Codice ABI Intesa San Paolo
           end
         end
       end
