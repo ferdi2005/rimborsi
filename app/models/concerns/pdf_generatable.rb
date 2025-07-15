@@ -1,3 +1,5 @@
+require "pdf-reader"
+
 module PdfGeneratable
   extend ActiveSupport::Concern
 
@@ -65,8 +67,88 @@ module PdfGeneratable
           pdf.text "Totale per km: €#{total_per_km}", size: 9, style: :bold
           pdf.text "Distanza totale: #{total_distance} km", size: 9
         else
-          if expense.attachment.attached?
-            pdf.text "Ricevuta allegata: #{expense.attachment.filename}", size: 10, color: "008800"
+          # Gestione allegati per spese normali
+          if expense.electronic_invoice? && expense.has_invoice_pdf?
+            pdf.text "Fattura elettronica allegata", size: 10, color: "008800"
+
+            # Aggiungi il PDF della fattura elettronica
+            begin
+              pdf_content = expense.pdf_attachment.download
+              temp_pdf = Tempfile.new([ "invoice_pdf", ".pdf" ])
+              temp_pdf.binmode
+              temp_pdf.write(pdf_content)
+              temp_pdf.close
+
+              pdf.start_new_page
+              pdf.text "Fattura Elettronica - Expense ##{expense.id}", size: 14, style: :bold
+              pdf.move_down 10
+
+              # Inserisce il PDF della fattura elettronica
+              pdf_pages = PDF::Reader.new(temp_pdf.path).page_count
+              (1..pdf_pages).each do |page_num|
+                pdf.start_new_page unless page_num == 1
+                pdf.image temp_pdf.path,
+                         fit: [ pdf.bounds.width, pdf.bounds.height ],
+                         position: :center,
+                         page: page_num
+              end
+
+              temp_pdf.unlink
+            rescue => e
+              Rails.logger.error "Errore nell'inserimento del PDF della fattura elettronica: #{e.message}"
+              pdf.text "Errore nel caricamento del PDF della fattura elettronica", size: 10, color: "FF0000"
+            end
+
+          elsif expense.attachment.attached?
+            # Aggiungi l'allegato (immagine o PDF)
+            begin
+              attachment_content = expense.attachment.download
+              content_type = expense.attachment.content_type
+              filename = expense.attachment.filename.to_s
+
+              pdf.start_new_page
+              pdf.text "Ricevuta - Spesa ##{expense.id}: #{filename}", size: 14, style: :bold
+              pdf.move_down 10
+
+              if content_type.start_with?("image/")
+                # Per le immagini
+                temp_image = Tempfile.new([ "attachment", File.extname(filename) ])
+                temp_image.binmode
+                temp_image.write(attachment_content)
+                temp_image.close
+
+                pdf.image temp_image.path,
+                         fit: [ pdf.bounds.width, pdf.bounds.height - 50 ],
+                         position: :center
+
+                temp_image.unlink
+
+              elsif content_type == "application/pdf"
+                # Per i PDF
+                temp_pdf = Tempfile.new([ "attachment", ".pdf" ])
+                temp_pdf.binmode
+                temp_pdf.write(attachment_content)
+                temp_pdf.close
+
+                # Inserisce tutte le pagine del PDF allegato
+                pdf_pages = PDF::Reader.new(temp_pdf.path).page_count
+                (1..pdf_pages).each do |page_num|
+                  pdf.start_new_page unless page_num == 1
+                  pdf.image temp_pdf.path,
+                           fit: [ pdf.bounds.width, pdf.bounds.height ],
+                           position: :center,
+                           page: page_num
+                end
+
+                temp_pdf.unlink
+              else
+                pdf.text "Formato file non supportato per l'inclusione: #{content_type}", size: 10, color: "FF6600"
+              end
+
+            rescue => e
+              Rails.logger.error "Errore nell'inserimento dell'allegato: #{e.message}"
+              pdf.text "Errore nel caricamento dell'allegato", size: 10, color: "FF0000"
+            end
           end
         end
 

@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    Ascii85 (2.0.1)
     actioncable (7.2.1.1)
       actionpack (= 7.2.1.1)
       activesupport (= 7.2.1.1)
@@ -73,6 +74,7 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
+    afm (0.2.2)
     airbrussh (1.5.3)
       sshkit (>= 1.6.1, != 1.7.0)
     ast (2.4.2)
@@ -173,6 +175,7 @@ GEM
     google-protobuf (4.31.1-x86_64-linux-gnu)
       bigdecimal
       rake (>= 13)
+    hashery (2.1.2)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     iban-tools (1.2.1)
@@ -242,6 +245,12 @@ GEM
       ast (~> 2.4.1)
       racc
     pdf-core (0.10.0)
+    pdf-reader (2.14.1)
+      Ascii85 (>= 1.0, < 3.0, != 2.0.0)
+      afm (~> 0.2.1)
+      hashery (~> 2.0)
+      ruby-rc4
+      ttfunk
     pg (1.5.9)
     popper_js (2.11.8)
     pp (0.6.2)
@@ -340,6 +349,7 @@ GEM
       rubocop-performance
       rubocop-rails
     ruby-progressbar (1.13.0)
+    ruby-rc4 (0.1.5)
     rubyzip (2.3.2)
     sass-embedded (1.89.2)
       google-protobuf (~> 4.31)
@@ -444,6 +454,7 @@ DEPENDENCIES
   jbuilder
   jquery-rails
   nokogiri (~> 1.13)
+  pdf-reader (~> 2.11)
   pg (~> 1.1)
   prawn (~> 2.4)
   prawn-table (~> 0.2)

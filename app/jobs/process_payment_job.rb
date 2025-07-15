@@ -56,50 +56,56 @@ class ProcessPaymentJob < ApplicationJob
 
     # Costruisci il path di destinazione con cartella data
     user_folder = reimboursement.user.email.split("@").first # username dall'email
-    date_folder = Date.current.strftime("%Y-%m-%d")
-    rimborso_folder = "rimborso_#{reimboursement.id}"
+    year_folder = Date.current.strftime("%Y")
+    date_folder = Date.current.strftime("%m")
 
-    base_path = "#{admin_folder}/#{user_folder}/#{date_folder}/#{rimborso_folder}"
+    base_path = "#{admin_folder}/#{year_folder}/#{date_folder}"
 
     # Crea tutte le directory necessarie
     base_uri = URI(nextcloud_url)
     ensure_directory_exists(base_uri, username, password, base_path)
 
+    filename = "rimborso_#{reimboursement.user.surname}#{reimboursement.user.name}_#{Date.current.strftime("%Y%m%d")}"
+
     # Carica il PDF del rimborso
-    pdf_path = "#{base_path}/rimborso_#{reimboursement.id}.pdf"
+    pdf_path = "#{base_path}/#{filename}.pdf"
     upload_file_to_nextcloud(nextcloud_url, pdf_path, pdf_content, "application/pdf", username, password)
 
     Rails.logger.info "Successfully uploaded PDF for reimboursement #{reimboursement.id} to #{pdf_path}"
 
-    # Carica le ricevute allegate
-    uploaded_receipts = 0
+    # Carica solo i file XML delle fatture elettroniche
+    uploaded_invoices = 0
     reimboursement.expenses.each do |expense|
-      if expense.attachment.attached?
+      if expense.electronic_invoice? && expense.attachment.attached?
         begin
-          # Scarica il file da Active Storage
+          # Scarica il file XML della fattura elettronica
           attachment_content = expense.attachment.download
 
           # Determina il tipo di contenuto
-          content_type = expense.attachment.content_type || "application/octet-stream"
+          content_type = expense.attachment.content_type || "application/xml"
 
-          # Costruisci il nome del file con prefisso spesa
-          filename = "spesa_#{expense.id}_#{expense.attachment.filename}"
-          receipt_path = "#{base_path}/#{filename}"
+          # Costruisci il nome del file per la fattura elettronica
+          fattura_elettronica_name = "rimborso_#{reimboursement.user.surname}#{reimboursement.user.name}_#{Date.current.strftime("%Y%m%d")}_fattura#{expense.id}"
+          
+          # Mantieni l'estensione originale del file
+          original_extension = File.extname(expense.attachment.filename.to_s)
+          invoice_filename = "#{fattura_elettronica_name}#{original_extension}"
+          invoice_path = "#{base_path}/#{invoice_filename}"
 
-          # Carica la ricevuta
-          upload_file_to_nextcloud(nextcloud_url, receipt_path, attachment_content, content_type, username, password)
+          # Carica la fattura elettronica
+          upload_file_to_nextcloud(nextcloud_url, invoice_path, attachment_content, content_type, username, password)
 
-          uploaded_receipts += 1
-          Rails.logger.info "Successfully uploaded receipt for expense #{expense.id}: #{filename}"
+          uploaded_invoices += 1
+          Rails.logger.info "Successfully uploaded electronic invoice for expense #{expense.id}: #{invoice_filename}"
 
         rescue StandardError => e
-          Rails.logger.error "Failed to upload receipt for expense #{expense.id}: #{e.message}"
-          # Continua con le altre ricevute anche se una fallisce
+          Rails.logger.error "Failed to upload electronic invoice for expense #{expense.id}: #{e.message}"
+          # Continua con le altre fatture anche se una fallisce
         end
       end
     end
 
-    Rails.logger.info "Successfully uploaded #{uploaded_receipts} receipts for reimboursement #{reimboursement.id}"
+    Rails.logger.info "Successfully uploaded #{uploaded_invoices} electronic invoices for reimboursement #{reimboursement.id}"
   end
 
   def upload_file_to_nextcloud(nextcloud_url, remote_path, content, content_type, username, password)

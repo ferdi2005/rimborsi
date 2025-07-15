@@ -7,9 +7,6 @@ module ElectronicInvoiceProcessor
     # Usiamo after_commit per assicurarci che il file sia completamente salvato
     # Evitiamo loop controllando che sia cambiato solo l'attachment principale
     after_commit :convert_and_attach_pdf, if: -> { should_generate_pdf? && !@generating_pdf }
-
-    # Callback per popolare il supplier dalla fattura elettronica
-    after_commit :populate_supplier_from_invoice, if: -> { should_populate_supplier? }
   end
 
   # Metodo per verificare se l'attachment è una fattura elettronica
@@ -66,18 +63,6 @@ module ElectronicInvoiceProcessor
     false
   end
 
-  # Determina se il supplier deve essere popolato dalla fattura elettronica
-  def should_populate_supplier?
-    return false unless electronic_invoice? && attachment.attached?
-    return false if @populating_supplier # Evita loop durante il popolamento
-
-    # Popola il supplier se:
-    # 1. È una fattura elettronica
-    # 2. Il campo supplier è vuoto o l'attachment è stato modificato
-    # 3. Non è una spesa auto (che non richiede il supplier)
-    !car? && (supplier.blank? || main_attachment_changed?)
-  end
-
   # Estrae i dati della fattura elettronica
   def extract_invoice_data
     return {} unless electronic_invoice? && attachment.attached?
@@ -131,23 +116,6 @@ module ElectronicInvoiceProcessor
   end
 
   private
-
-  # Callback per popolare il supplier dalla fattura elettronica
-  def populate_supplier_from_invoice
-    return unless electronic_invoice? && attachment.attached?
-    return if @populating_supplier # Evita loop di popolamento
-    return if car? # Le spese auto non richiedono il supplier
-
-    begin
-      Rails.logger.info "Fattura elettronica processata correttamente"
-    rescue => e
-      Rails.logger.error "Errore durante il popolamento automatico del supplier: #{e.message}"
-      Rails.logger.error e.backtrace.join("\n")
-    ensure
-      # Rimuovi il flag anche in caso di errore
-      @populating_supplier = false
-    end
-  end
 
   # Callback per convertire e allegare il PDF
   def convert_and_attach_pdf
