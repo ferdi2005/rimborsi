@@ -77,15 +77,9 @@
     </div>
   <% end %>
 
-  <!-- Campo allegato e fornitore per spese non auto -->
+  <!-- Campo allegato per spese non auto -->
   <div class="row mt-4 attachment-field" style="<%= 'display: none;' if f.object.car? %>">
-    <div class="col-md-6">
-      <%= f.label :supplier, "Fornitore", class: "form-label" %>
-      <%= f.text_field :supplier, class: "form-control", placeholder: "Es: Coop Alleanza 3.0 Scarl, Pizzeria da Gino SNC..." %>
-      <small class="form-text text-muted">Ragione sociale del fornitore o azienda</small>
-    </div>
-    
-    <div class="col-md-6">
+    <div class="col-md-12">
       <%= f.label :attachment, "Allegato", class: "form-label" %>
       <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
       <small class="form-text text-muted">Carica ricevuta o fattura (immagine o PDF) o fattura elettronica (.xml, .xml.p7m)</small>

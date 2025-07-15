@@ -12,9 +12,8 @@ class ExpenseTest < ActiveSupport::TestCase
       purpose: "Test expense",
       amount: 100.0,
       date: Date.current,
-      project: @fund,
+      fund: @fund,
       reimboursement: @reimboursement,
-      supplier: "Test Supplier"
     )
 
     # Simula un file XML
@@ -40,9 +39,8 @@ class ExpenseTest < ActiveSupport::TestCase
       purpose: "Test expense",
       amount: 100.0,
       date: Date.current,
-      project: @fund,
+      fund: @fund,
       reimboursement: @reimboursement,
-      supplier: "Test Supplier"
     )
 
     # Simula un file P7M
@@ -68,9 +66,8 @@ class ExpenseTest < ActiveSupport::TestCase
       purpose: "Test expense",
       amount: 100.0,
       date: Date.current,
-      project: @fund,
+      fund: @fund,
       reimboursement: @reimboursement,
-      supplier: "Test Supplier"
     )
 
     # Simula un file PDF normale
@@ -166,14 +163,13 @@ class ExpenseTest < ActiveSupport::TestCase
     XML
   end
 
-  test "should automatically populate supplier from electronic invoice" do
+  test "should process electronic invoice correctly" do
     expense = Expense.new(
       purpose: "Test expense with electronic invoice",
       amount: 100.0,
       date: Date.current,
-      project: @fund,
+      fund: @fund,
       reimboursement: @reimboursement,
-      supplier: "" # Supplier vuoto per testare il popolamento automatico
     )
 
     # Crea un file XML con dati del fornitore
@@ -190,83 +186,6 @@ class ExpenseTest < ActiveSupport::TestCase
     )
 
     expense.save!
-
-    # Il supplier dovrebbe essere popolato automaticamente dal callback
-    expense.reload
-    assert_equal "Azienda Fornitrice S.r.l.", expense.supplier,
-                 "Supplier should be automatically populated from electronic invoice"
-
-    file.close
-    file.unlink
-  end
-
-  test "should not populate supplier for car expenses" do
-    expense = Expense.new(
-      purpose: "Car expense",
-      car: true,
-      calculation_date: Date.current,
-      departure: "Milano",
-      arrival: "Roma",
-      distance: 500,
-      quota_capitale: 0.10,
-      carburante: 0.05,
-      pneumatici: 0.02,
-      manutenzione: 0.03,
-      date: Date.current,
-      project: @fund,
-      reimboursement: @reimboursement,
-      vehicle: vehicles(:one)
-    )
-
-    # Crea un file XML
-    xml_content = create_sample_electronic_invoice_xml
-    file = Tempfile.new([ "test_invoice", ".xml" ])
-    file.write(xml_content)
-    file.rewind
-
-    # Allega il file e salva l'expense
-    expense.attachment.attach(
-      io: file,
-      filename: "fattura_elettronica.xml",
-      content_type: "application/xml"
-    )
-
-    expense.save!
-
-    # Il supplier dovrebbe rimanere vuoto per le spese auto
-    expense.reload
-    assert expense.supplier.blank?, "Supplier should not be populated for car expenses"
-
-    file.close
-    file.unlink
-  end
-
-  test "should update supplier when electronic invoice is changed" do
-    expense = Expense.create!(
-      purpose: "Test expense",
-      amount: 100.0,
-      date: Date.current,
-      project: @fund,
-      reimboursement: @reimboursement,
-      supplier: "Old Supplier"
-    )
-
-    # Allega una nuova fattura elettronica
-    xml_content = create_sample_electronic_invoice_xml
-    file = Tempfile.new([ "test_invoice", ".xml" ])
-    file.write(xml_content)
-    file.rewind
-
-    expense.attachment.attach(
-      io: file,
-      filename: "fattura_elettronica.xml",
-      content_type: "application/xml"
-    )
-
-    # Il supplier dovrebbe essere aggiornato
-    expense.reload
-    assert_equal "Azienda Fornitrice S.r.l.", expense.supplier,
-                 "Supplier should be updated when electronic invoice is attached"
 
     file.close
     file.unlink

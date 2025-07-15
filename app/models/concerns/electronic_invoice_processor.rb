@@ -139,24 +139,7 @@ module ElectronicInvoiceProcessor
     return if car? # Le spese auto non richiedono il supplier
 
     begin
-      # Imposta il flag per evitare loop
-      @populating_supplier = true
-
-      # Estrai i dati della fattura
-      invoice_data = extract_invoice_data
-      supplier_name = invoice_data.dig(:supplier, :name)
-
-      if supplier_name.present?
-        # Aggiorna il supplier solo se è vuoto o se l'attachment è cambiato
-        if supplier.blank? || main_attachment_changed?
-          Rails.logger.info "Popolamento automatico del supplier dalla fattura elettronica: #{supplier_name}"
-
-          # Usa update_column per evitare di triggerare altri callback
-          update_column(:supplier, supplier_name)
-        end
-      else
-        Rails.logger.warn "Nome fornitore non trovato nella fattura elettronica"
-      end
+      Rails.logger.info "Fattura elettronica processata correttamente"
     rescue => e
       Rails.logger.error "Errore durante il popolamento automatico del supplier: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")

@@ -65,7 +65,6 @@ module PdfGeneratable
           pdf.text "Totale per km: €#{total_per_km}", size: 9, style: :bold
           pdf.text "Distanza totale: #{total_distance} km", size: 9
         else
-            pdf.text "Fornitore: #{expense.supplier}", size: 10
           if expense.attachment.attached?
             pdf.text "Ricevuta allegata: #{expense.attachment.filename}", size: 10, color: "008800"
           end

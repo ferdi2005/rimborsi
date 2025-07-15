@@ -24,9 +24,8 @@ class Expense < ApplicationRecord
   validates :project, presence: true, length: { maximum: 255 }
   validates :fund, presence: true
 
-  # Validation: attachment and supplier are required only if not car expense
+  # Validation: attachment is required only if not car expense
   validates :attachment, presence: true, unless: :car?
-  validates :supplier, presence: true, unless: :car?
 
   # Validazione del formato dell'allegato
   validate :validate_attachment_format, if: -> { attachment.attached? }

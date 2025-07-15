@@ -375,7 +375,6 @@
                               <!-- Dettagli spesa normale -->
                               <div class="small">
                                 <strong>Progetto:</strong> <%= expense.project %><br>
-                                <strong>Fornitore:</strong> <%= expense.supplier %><br>
                                 <!-- Allegato spesa normale -->
                                 <% if expense.electronic_invoice? && expense.has_invoice_pdf? %>
                                   <!-- Fattura elettronica con PDF generato -->
