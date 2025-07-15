@@ -33,7 +33,7 @@ class BankAccountsController < ApplicationController
 
     respond_to do |format|
       if @bank_account.save
-        format.html { redirect_to @bank_account, notice: "Conto bancario creato con successo." }
+        format.html { redirect_to @bank_account, notice: "conto bancario creato con successo." }
         format.json { render :show, status: :created, location: @bank_account }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -46,7 +46,7 @@ class BankAccountsController < ApplicationController
   def update
     respond_to do |format|
       if @bank_account.update(bank_account_params)
-        format.html { redirect_to @bank_account, notice: "Conto bancario aggiornato con successo." }
+        format.html { redirect_to @bank_account, notice: "conto bancario aggiornato con successo." }
         format.json { render :show, status: :ok, location: @bank_account }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -60,7 +60,7 @@ class BankAccountsController < ApplicationController
     @bank_account.destroy!
 
     respond_to do |format|
-      format.html { redirect_to bank_accounts_path, status: :see_other, notice: "Conto bancario eliminato con successo." }
+      format.html { redirect_to bank_accounts_path, status: :see_other, notice: "conto bancario eliminato con successo." }
       format.json { head :no_content }
     end
   end

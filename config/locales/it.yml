@@ -5,7 +5,7 @@ it:
       reimboursement: "Rimborso"
       user: "Utente"
       vehicle: "Veicolo"
-      bank_account: "Conto Bancario"
+      bank_account: "conto bancario"
       paypal_account: "Account PayPal"
       project: "Progetto"
       role: "Ruolo"
@@ -41,8 +41,8 @@ it:
         status: "Stato"
         user: "Utente"
         user_id: "Utente"
-        bank_account: "Conto Bancario"
-        bank_account_id: "Conto Bancario"
+        bank_account: "conto bancario"
+        bank_account_id: "conto bancario"
         paypal_account: "Account PayPal"
         paypal_account_id: "Account PayPal"
         total_amount: "Importo totale"
@@ -54,7 +54,7 @@ it:
         surname: "Cognome"
         email: "Email"
         admin: "Amministratore"
-        default_bank_account: "Conto bancario predefinito"
+        default_bank_account: "conto bancario predefinito"
         default_paypal_account: "Account PayPal predefinito"
         default_vehicle: "Veicolo predefinito"
         created_at: "Creato il"
@@ -279,7 +279,7 @@ it:
       car: "Auto"
     
     payment_methods:
-      bank: "Conto Bancario"
+      bank: "conto bancario"
       paypal: "PayPal"
     
     messages:

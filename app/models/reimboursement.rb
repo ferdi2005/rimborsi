@@ -59,7 +59,7 @@ class Reimboursement < ApplicationRecord
   end
 
   def payment_method_type
-    return "Conto Bancario" if bank_account.present?
+    return "conto bancario" if bank_account.present?
     "Nessuno"
   end
 
