@@ -212,11 +212,6 @@ module ElectronicInvoiceHelper
     nil
   end
 
-  # Metodo alternativo per estrarre con Ruby OpenSSL (deprecato - ora integrato in extract_with_pkcs7)
-  # def self.extract_with_ruby_openssl(p7m_content)
-  #   # Metodo rimosso - logica integrata direttamente in decrypt_p7m
-  # end
-
   # Verifica se un file è una fattura elettronica basandosi su content type
   def self.electronic_invoice?(content_type)
     [ "application/xml", "text/xml", "application/pkcs7-mime", "application/x-pkcs7-mime" ].include?(content_type)
@@ -425,7 +420,6 @@ module ElectronicInvoiceHelper
     pdf.table(table_data, header: true, width: available_width) do
       row(0).font_style = :bold
       columns(1..4).align = :right
-      # Distribuzione proporzionale: Descrizione più larga, altre più piccole
       self.column_widths = {
         0 => available_width * 0.45,  # 45% per descrizione
         1 => available_width * 0.10,  # 10% per quantità
@@ -461,7 +455,6 @@ module ElectronicInvoiceHelper
       row(0).font_style = :bold
       columns(1..2).align = :right
       self.position = :right
-      # Distribuisci equamente le 3 colonne
       self.column_widths = {
         0 => vat_table_width * 0.33,
         1 => vat_table_width * 0.33,
