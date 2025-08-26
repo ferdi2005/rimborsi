@@ -30,7 +30,8 @@
                         pattern: "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
                         title: "IBAN valido (es: IT60X0542811101000000123456)",
                         placeholder: "IT60X0542811101000000123456",
-                        style: "text-transform: uppercase;" %>
+                        style: "text-transform: uppercase;",
+                        id: "bank_account_iban" %>
     <small class="form-text text-muted">Inserisci l'IBAN senza spazi (verrà formattato automaticamente)</small>
   </div>
 
@@ -47,6 +48,14 @@
                         minlength: 2, maxlength: 100,
                         placeholder: "es: Banca Intesa Sanpaolo" %>
     <small class="form-text text-muted">Nome dell'istituto bancario (opzionale)</small>
+  </div>
+
+  <div class="col-md-6">
+    <%= form.label :bic_swift, "Codice BIC/SWIFT", class: "form-label" %>
+    <%= form.text_field :bic_swift, class: "form-control",
+                        placeholder: "BCITITMM",
+                        style: "text-transform: uppercase;" %>
+    <small class="form-text text-muted">Codice BIC/SWIFT della banca (obbligatorio per conti non italiani, opzionale per conti italiani)</small>
   </div>
 
   <div class="col-md-8">

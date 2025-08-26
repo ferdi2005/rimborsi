@@ -145,6 +145,14 @@ class Payment < ApplicationRecord
             id_tag.IBAN reimbursement.bank_account.iban
           end
         end
+        # Aggiungi BIC/SWIFT se disponibile per il beneficiario
+        if reimbursement.bank_account.bic_swift.present?
+          cdt.CdtrAgt do |cdtr_agt|
+            cdtr_agt.FinInstnId do |fin|
+              fin.BICFI reimbursement.bank_account.bic_swift
+            end
+          end
+        end
       end
     end
     end

@@ -38,6 +38,24 @@
           <%= @bank_account.owner %>
         </div>
       </div>
+      
+      <% if @bank_account.bank_name.present? %>
+        <div class="form-group mb-3">
+          <p><strong>Nome Banca:</strong></p>
+          <div>
+            <%= @bank_account.bank_name %>
+          </div>
+        </div>
+      <% end %>
+      
+      <% if @bank_account.bic_swift.present? %>
+        <div class="form-group mb-3">
+          <p><strong>Codice BIC/SWIFT:</strong></p>
+          <div class="font-monospace">
+            <%= @bank_account.bic_swift %>
+          </div>
+        </div>
+      <% end %>
                 <div class="form-group mb-3">
         <p><strong>Indirizzo:</strong></p>
         <div>

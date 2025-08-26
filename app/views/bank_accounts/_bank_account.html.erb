@@ -14,6 +14,13 @@
     <%= bank_account.owner %>
   </p>
 
+  <% if bank_account.bic_swift.present? %>
+    <p>
+      <strong>BIC/SWIFT:</strong>
+      <%= bank_account.bic_swift %>
+    </p>
+  <% end %>
+
   <p>
     <strong>Address:</strong>
     <%= bank_account.address %>

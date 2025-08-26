@@ -78,9 +78,9 @@ class BankAccountsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def bank_account_params
       if current_user.admin?
-        params.require(:bank_account).permit(:iban, :owner, :bank_name, :address, :cap, :town, :fiscal_code, :default, :user_id)
+        params.require(:bank_account).permit(:iban, :owner, :bank_name, :bic_swift, :address, :cap, :town, :fiscal_code, :default, :user_id)
       else
-        params.require(:bank_account).permit(:iban, :owner, :bank_name, :address, :cap, :town, :fiscal_code, :default)
+        params.require(:bank_account).permit(:iban, :owner, :bank_name, :bic_swift, :address, :cap, :town, :fiscal_code, :default)
       end
     end
 end
