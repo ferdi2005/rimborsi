@@ -94,3 +94,6 @@ gem "nokogiri", "~> 1.13"
 gem "iban-tools"
 
 gem "sidekiq", "~> 7.3"
+
+gem "sentry-ruby"
+gem "sentry-rails"
