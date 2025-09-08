@@ -10,6 +10,14 @@ module PdfGeneratable
     begin
       # Create main PDF with expense details
       pdf_content = Prawn::Document.new(margin: 50) do |pdf|
+        pdf.font_families.update("OpenSans" => {
+            normal: Rails.root.join("app/assets/fonts/OpenSans-Regular.ttf"),
+            italic: Rails.root.join("app/assets/fonts/OpenSans-Italic.ttf"),
+            bold: Rails.root.join("app/assets/fonts/OpenSans-Bold.ttf"),
+            bold_italic: Rails.root.join("app/assets/fonts/OpenSans-BoldItalic.ttf")
+          })
+        pdf.font "OpenSans"
+
         create_pdf_header(pdf)
         create_pdf_body(pdf)
         create_pdf_footer(pdf)

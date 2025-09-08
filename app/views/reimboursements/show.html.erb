@@ -466,8 +466,8 @@
                 <div class="card-body">
                   <%= form_with model: [@reimboursement, Note.new], local: true, class: "mb-3" do |form| %>
                     <div class="mb-3">
-                      <%= form.label :content, "Messaggio", class: "form-label" %>
-                      <%= form.text_area :content, rows: 3, class: "form-control", required: true, placeholder: "Scrivi un messaggio..." %>
+                      <%= form.label :text, "Messaggio", class: "form-label" %>
+                      <%= form.text_area :text, rows: 3, class: "form-control", required: true, placeholder: "Scrivi un messaggio..." %>
                     </div>
                     
                     <% if current_user.admin? %>

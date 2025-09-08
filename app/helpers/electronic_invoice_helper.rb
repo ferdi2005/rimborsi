@@ -279,9 +279,13 @@ module ElectronicInvoiceHelper
   # Genera il PDF della fattura
   def self.generate_pdf(invoice_data)
     Prawn::Document.new(page_size: "A4", margin: 40) do |pdf|
-      # Usa il font standard Helvetica che supporta caratteri base
-      pdf.font "Helvetica"
-
+    pdf.font_families.update("OpenSans" => {
+        normal: Rails.root.join("app/assets/fonts/OpenSans-Regular.ttf"),
+        italic: Rails.root.join("app/assets/fonts/OpenSans-Italic.ttf"),
+        bold: Rails.root.join("app/assets/fonts/OpenSans-Bold.ttf"),
+        bold_italic: Rails.root.join("app/assets/fonts/OpenSans-BoldItalic.ttf")
+      })
+     pdf.font "OpenSans"
       # Header
       generate_header(pdf)
 
