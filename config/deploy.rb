@@ -3,12 +3,12 @@ lock "~> 3.19.2"
 
 set :application, "rimborsi"
 
-server 'c.ferdi.cc', port: 22, roles: [:web, :app, :db], primary: true
+server "c.ferdi.cc", port: 22, roles: [ :web, :app, :db, :worker ], primary: true
 set :repo_url, "git@github.com:ferdi2005/rimborsi.git"
 set :sidekiq_service_unit_name, "#{fetch(:application)}-sidekiq"
 
-set :user, 'deploy'
-set :puma_threads,    [4, 16]
+set :user, "deploy"
+set :puma_threads,    [ 4, 16 ]
 set :puma_workers,    0
 set :puma_user, fetch(:user)
 
@@ -22,13 +22,13 @@ set :puma_state,      "#{shared_path}/tmp/pids/puma.state"
 set :puma_pid,        "#{shared_path}/tmp/pids/puma.pid"
 set :puma_access_log, "#{release_path}/log/puma.access.log"
 set :puma_error_log,  "#{release_path}/log/puma.error.log"
-set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w(~/.ssh/id_rsa.pub) }
+set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_rsa.pub] }
 set :puma_preload_app, true
 set :puma_worker_timeout, nil
 set :puma_phased_restart, true
-set :puma_enable_socket_service, true #importantissimo per far funzionare puma
+set :puma_enable_socket_service, true # importantissimo per far funzionare puma
 set :puma_init_active_record, true  # Change to false when not using ActiveRecord
-set :default_env, {"LD_PRELOAD" => "/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"}
+set :default_env, { "LD_PRELOAD" => "/usr/lib/x86_64-linux-gnu/libjemalloc.so.2" }
 set :sidekiq_user, fetch(:user)
 set :sidekiq_service_unit_user, :system
 set :rvm_ruby_version, "3.1.2"
@@ -39,7 +39,7 @@ append :linked_files, ".env", "config/puma.rb"
 append :linked_dirs, "log", "tmp/pids", "tmp/sockets", "tmp/cache", "public/uploads", "public/cached_pages"
 
 namespace :rails do
-    desc 'Open a rails console `cap [staging] rails:console [server_index default: 0]`'
+    desc "Open a rails console `cap [staging] rails:console [server_index default: 0]`"
     task :console do
       server = roles(:app)[ARGV[2].to_i]
 
@@ -58,7 +58,7 @@ namespace :deploy do
       before :linked_files, :set_master_key do
         on roles(:app), in: :sequence, wait: 10 do
             puts "Uploading .env file..."
-            upload! '.env', "#{shared_path}/.env"
+            upload! ".env", "#{shared_path}/.env"
         end
       end
     end
@@ -71,7 +71,7 @@ namespace :deploy do
       before :linked_files, :set_master_key do
         on roles(:app), in: :sequence, wait: 10 do
             puts "Uploading config file file..."
-            upload! 'config/puma.rb', "#{shared_path}/config/puma.rb"
+            upload! "config/puma.rb", "#{shared_path}/config/puma.rb"
         end
       end
     end
@@ -88,7 +88,7 @@ namespace :bundler do
   end
 end
 
-before 'bundler:install', 'bundler:set_force_ruby_platform'
+before "bundler:install", "bundler:set_force_ruby_platform"
 
 
 # Default branch is :master
