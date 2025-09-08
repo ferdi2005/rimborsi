@@ -19,17 +19,15 @@ class User < ApplicationRecord
   validates :name, presence: true, length: { minimum: 2, maximum: 50 }
   validates :surname, presence: true, length: { minimum: 2, maximum: 50 }
 
-  # Validazione telefono italiano (opzionale ma se presente deve essere valido, senza spazi e senza prefisso)
+  # Validazione telefono (opzionale ma se presente deve essere valido, senza spazi e senza prefisso)
   validates :telephone, format: {
     with: /\A[0-9]{6,13}\z/,
-    message: "deve essere un numero di telefono italiano valido senza spazi e senza prefisso +39"
+    message: "deve essere un numero di telefono valido senza spazi e senza prefisso +39"
   }, allow_blank: true
 
   # Validazione codice fiscale italiano (obbligatorio e deve essere valido)
-  validates :fiscal_code, presence: true, format: {
-    with: /\A[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]\z/,
-    message: "deve essere un codice fiscale italiano valido (16 caratteri alfanumerici)"
-  }, uniqueness: { case_sensitive: false }
+  validates :fiscal_code, presence: true, uniqueness: { case_sensitive: false }
+  #  format: { with: /\A[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]\z/, message: "deve essere un codice fiscale italiano valido (16 caratteri alfanumerici)" },
 
   # Validazione email più rigorosa
   validates :email, format: {
