@@ -46,13 +46,6 @@
               <strong><i class="fas fa-clock me-2"></i>Creato:</strong><br>
               <span class="text-muted"><%= payment.created_at.strftime('%d/%m/%Y alle %H:%M') %></span>
             </p>
-            
-            <% if payment.has_failed_reimboursements? %>
-              <div class="alert alert-warning py-2">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <small>Alcuni rimborsi hanno fallito il processing</small>
-              </div>
-            <% end %>
           </div>
           <div class="card-footer">
             <div class="btn-group w-100" role="group">

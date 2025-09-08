@@ -29,9 +29,13 @@ set :puma_phased_restart, true
 set :puma_enable_socket_service, true # importantissimo per far funzionare puma
 set :puma_init_active_record, true  # Change to false when not using ActiveRecord
 set :default_env, { "LD_PRELOAD" => "/usr/lib/x86_64-linux-gnu/libjemalloc.so.2" }
+set :sidekiq_roles, :worker                  # Default role for Sidekiq processes
+set :sidekiq_default_hooks, true             # Enable default deployment hooks
+set :sidekiq_env, fetch(:rack_env, fetch(:rails_env, fetch(:stage)))  # Environment for Sidekiq processes
+# Single config file
 set :sidekiq_user, fetch(:user)
-set :sidekiq_service_unit_user, :system
-set :rvm_ruby_version, "3.1.2"
+set :service_unit_user, :system
+set :rvm_ruby_version, "3.2.2"
 
 set :nginx_template, "deploy/nginx.conf.erb"
 
