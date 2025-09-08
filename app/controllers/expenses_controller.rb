@@ -62,6 +62,6 @@ class ExpensesController < ApplicationController
     end
     # Only allow a list of trusted parameters through.
     def expense_params
-      params.require(:expense).permit(:reimboursement_id, :purpose, :project, :date, :amount, :car, :calculation_date, :departure, :arrival, :distance, :return_trip, :vehicle_category_id, :brand, :model, :fuel_id, :quota_capitale, :carburante, :pneumatici, :manutenzione, :fund_id, :attachment)
+      params.require(:expense).permit(:reimboursement_id, :purpose, :project, :date, :amount, :requested_amount, :car, :calculation_date, :departure, :arrival, :distance, :return_trip, :vehicle_category_id, :brand, :model, :fuel_id, :quota_capitale, :carburante, :pneumatici, :manutenzione, :fund_id, :attachment)
     end
 end

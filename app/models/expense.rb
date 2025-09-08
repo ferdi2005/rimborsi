@@ -19,6 +19,7 @@ class Expense < ApplicationRecord
   # Validazioni
   validates :amount, presence: true, unless: :car?
   validates :amount, numericality: { greater_than: 0 }, allow_blank: true
+  validates :requested_amount, presence: true, numericality: { greater_than: 0 }
   validates :purpose, presence: true
   validates :date, presence: true
   validates :project, presence: true, length: { maximum: 255 }
@@ -29,6 +30,9 @@ class Expense < ApplicationRecord
 
   # Validazione del formato dell'allegato
   validate :validate_attachment_format, if: -> { attachment.attached? }
+  
+  # Validazione che il requested_amount non superi l'amount
+  validate :validate_requested_amount_not_exceeding_amount
 
   # Validazioni specifiche per spese auto
   validates :calculation_date, presence: true, if: :car?
@@ -44,6 +48,9 @@ class Expense < ApplicationRecord
 
   # Callback per calcolare automaticamente l'importo per le spese auto
   before_save :calculate_auto_amount, if: :car?
+  
+  # Callback per impostare requested_amount uguale ad amount se non specificato
+  before_validation :set_default_requested_amount
 
   # Callback per aggiornare lo stato del rimborso quando una spesa viene approvata
   after_update :update_reimboursement_status, if: :saved_change_to_status?
@@ -85,6 +92,27 @@ class Expense < ApplicationRecord
     calculated_amount = (cost_per_km * total_distance) / 2
 
     self.amount = calculated_amount.round(2)
+    
+    # Se requested_amount non è stato ancora impostato o è uguale al vecchio amount, aggiornalo
+    if requested_amount.blank? || requested_amount == amount_was
+      self.requested_amount = self.amount
+    end
+  end
+
+  # Imposta requested_amount uguale ad amount se non specificato
+  def set_default_requested_amount
+    if requested_amount.blank? && amount.present?
+      self.requested_amount = amount
+    end
+  end
+
+  # Validazione che il requested_amount non superi l'amount
+  def validate_requested_amount_not_exceeding_amount
+    return unless amount.present? && requested_amount.present?
+    
+    if requested_amount > amount
+      errors.add(:requested_amount, "non può essere maggiore dell'importo della spesa (€#{amount})")
+    end
   end
 
   # Validazione del formato dell'allegato

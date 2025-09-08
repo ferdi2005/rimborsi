@@ -193,7 +193,23 @@ document.addEventListener('DOMContentLoaded', function() {
       window.calculateAutoAmount(e.target.closest('.expense-row'));
     }
     
-    if (e.target.name && (e.target.name.includes('[amount]') || e.target.name.includes('[status]'))) {
+    // Sincronizza requested_amount con amount per spese normali
+    if (e.target.name && e.target.name.includes('[amount]') && !e.target.readOnly) {
+      const expenseRow = e.target.closest('.expense-row');
+      const requestedAmountField = expenseRow.querySelector('input[name*="[requested_amount]"]');
+      const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');
+      
+      // Solo per spese non auto e se requested_amount è vuoto o uguale al vecchio amount
+      if (requestedAmountField && (!carRadio || !carRadio.checked)) {
+        if (!requestedAmountField.value || requestedAmountField.value === e.target.previousValue) {
+          requestedAmountField.value = e.target.value;
+        }
+      }
+      
+      e.target.previousValue = e.target.value;
+    }
+    
+    if (e.target.name && (e.target.name.includes('[amount]') || e.target.name.includes('[requested_amount]') || e.target.name.includes('[status]'))) {
       updateTotal();
     }
   });
@@ -348,16 +364,16 @@ document.addEventListener('DOMContentLoaded', function() {
         return; // Skip questa spesa
       }
       
-      const amountInput = row.querySelector('input[name*="[amount]"]');
+      const requestedAmountInput = row.querySelector('input[name*="[requested_amount]"]');
       const statusSelect = row.querySelector('select[name*="[status]"]');
       
-      if (amountInput) {
-        const amount = parseFloat(amountInput.value) || 0;
+      if (requestedAmountInput) {
+        const requestedAmount = parseFloat(requestedAmountInput.value) || 0;
         const status = statusSelect ? statusSelect.value : 'created';
         
         // Includi nel totale solo se non è negata
         if (status !== 'denied') {
-          total += amount;
+          total += requestedAmount;
         }
       }
     });
@@ -407,12 +423,22 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Aggiorna i campi
       const calculatedField = expenseRow.querySelector('.calculated-amount');
+      const requestedAmountField = expenseRow.querySelector('input[name*="[requested_amount]"]');
       
       if (calculatedField) {
         calculatedField.value = calculatedAmount.toFixed(2);
         // Trigger change event per aggiornare il totale generale
         calculatedField.dispatchEvent(new Event('input', { bubbles: true }));
       }
+      
+      // Aggiorna automaticamente il requested_amount se è vuoto o uguale al vecchio amount
+      if (requestedAmountField && (!requestedAmountField.value || requestedAmountField.value === calculatedField.previousValue)) {
+        requestedAmountField.value = calculatedAmount.toFixed(2);
+        requestedAmountField.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      
+      // Salva il valore corrente per confronti futuri
+      calculatedField.previousValue = calculatedAmount.toFixed(2);
       
       // Aggiorna il totale
       updateTotal();

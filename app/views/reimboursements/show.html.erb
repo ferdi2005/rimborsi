@@ -346,9 +346,21 @@
                           </td>
                           <td class="text-end">
                             <% if expense.status_denied? %>
-                              <del>€ <%= number_with_precision(expense.amount, precision: 2) %></del>
+                              <div>
+                                <del>€ <%= number_with_precision(expense.requested_amount, precision: 2) %></del>
+                                <small class="text-muted d-block">
+                                  <del>richiesto di € <%= number_with_precision(expense.amount, precision: 2) %></del>
+                                </small>
+                              </div>
                             <% else %>
-                              <strong>€ <%= number_with_precision(expense.amount, precision: 2) %></strong>
+                              <div>
+                                <strong>€ <%= number_with_precision(expense.requested_amount, precision: 2) %></strong>
+                                <% if expense.requested_amount != expense.amount %>
+                                  <small class="text-muted d-block">
+                                    di € <%= number_with_precision(expense.amount, precision: 2) %>
+                                  </small>
+                                <% end %>
+                              </div>
                             <% end %>
                           </td>
                           <td>

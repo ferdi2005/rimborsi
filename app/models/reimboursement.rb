@@ -65,17 +65,17 @@ class Reimboursement < ApplicationRecord
 
   # Calcola il totale escludendo le spese negate
   def total_amount
-    expenses.where.not(status: "denied").sum(:amount) || 0
+    expenses.where.not(status: "denied").sum(:requested_amount) || 0
   end
 
   # Calcola il totale di tutte le spese (incluse quelle negate)
   def gross_total_amount
-    expenses.sum(:amount) || 0
+    expenses.sum(:requested_amount) || 0
   end
 
   # Calcola il totale delle spese negate
   def denied_amount
-    expenses.where(status: "denied").sum(:amount) || 0
+    expenses.where(status: "denied").sum(:requested_amount) || 0
   end
 
   # Verifica se il rimborso può essere modificato dall'utente specificato
