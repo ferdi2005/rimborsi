@@ -3,7 +3,7 @@ class Note < ApplicationRecord
   belongs_to :user
 
   # Validazioni
-  validates :content, presence: true
+  validates :text, presence: true
 
   # Callbacks
   after_create :send_notification_email

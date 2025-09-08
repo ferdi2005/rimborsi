@@ -45,7 +45,7 @@ class ReimboursementsController < ApplicationController
         # Crea la nota iniziale se presente
         if params[:reimboursement][:initial_note].present?
           @reimboursement.notes.create!(
-            content: params[:reimboursement][:initial_note],
+            text: params[:reimboursement][:initial_note],
             user: current_user,
             status_change: false
           )
@@ -78,7 +78,7 @@ class ReimboursementsController < ApplicationController
         # Crea una nuova nota se è presente il campo initial_note
         if params[:reimboursement][:initial_note].present?
           @reimboursement.notes.create!(
-            content: params[:reimboursement][:initial_note],
+            text: params[:reimboursement][:initial_note],
             user: current_user,
             status_change: false
           )
@@ -163,7 +163,7 @@ class ReimboursementsController < ApplicationController
     # Crea una nota se fornita
     if params[:note_content].present?
       note = @reimboursement.notes.build(
-        content: params[:note_content],
+        text: params[:note_content],
         user: current_user,
         status_change: params[:reimboursement_status] || "waiting"
       )
@@ -190,7 +190,7 @@ class ReimboursementsController < ApplicationController
 
       # Crea una nota automatica
       @reimboursement.notes.create!(
-        content: "Rimborso approvato.",
+        text: "Rimborso approvato.",
         user: current_user,
         status_change: "approved"
       )
