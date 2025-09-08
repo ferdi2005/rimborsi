@@ -3,7 +3,12 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h3 class="mb-0">Approvazione Giustificativi - Rimborso #<%= @reimboursement.id %></h3>
+          <div>
+            <h3 class="mb-0">Approvazione Giustificativi - Rimborso #<%= @reimboursement.id %></h3>
+            <small class="text-muted">
+              Totale richiesto: <strong class="text-primary">€ <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></strong>
+            </small>
+          </div>
           <div>
             <span class="badge bg-info">
               Giustificativo <%= @current_expense_index + 1 %> di <%= @total_expenses %>
@@ -100,6 +105,22 @@
                       </div>
                     </div>
                     
+                    <hr>
+                    <h6 class="text-success">Importi Finali</h6>
+                    <div class="row mb-2">
+                      <div class="col-sm-6">Importo spesa calcolato:</div>
+                      <div class="col-sm-6"><strong>€ <%= number_with_precision(@current_expense.amount, precision: 2) %></strong></div>
+                    </div>
+                    <div class="row mb-2">
+                      <div class="col-sm-6"><strong>Importo richiesto:</strong></div>
+                      <div class="col-sm-6">
+                        <strong class="text-primary">€ <%= number_with_precision(@current_expense.requested_amount, precision: 2) %></strong>
+                        <% if @current_expense.requested_amount != @current_expense.amount %>
+                          <br><small class="text-muted">Differenza: € <%= number_with_precision(@current_expense.amount - @current_expense.requested_amount, precision: 2) %></small>
+                        <% end %>
+                      </div>
+                    </div>
+                    
                     <div class="mt-3 p-2 bg-light rounded">
                       <small class="text-muted">
                         <i class="fas fa-info-circle"></i>
@@ -116,6 +137,28 @@
                     Allegato
                   <% end %>
                 </h5>
+                
+                <!-- Informazioni importo per spese non auto -->
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <h6 class="card-title text-primary">
+                      <i class="fas fa-euro-sign me-2"></i>Dettagli Importo
+                    </h6>
+                    <div class="row">
+                      <div class="col-sm-6">Importo spesa:</div>
+                      <div class="col-sm-6"><strong>€ <%= number_with_precision(@current_expense.amount, precision: 2) %></strong></div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6"><strong>Importo richiesto:</strong></div>
+                      <div class="col-sm-6">
+                        <strong class="text-primary">€ <%= number_with_precision(@current_expense.requested_amount, precision: 2) %></strong>
+                        <% if @current_expense.requested_amount != @current_expense.amount %>
+                          <br><small class="text-muted">Differenza: € <%= number_with_precision(@current_expense.amount - @current_expense.requested_amount, precision: 2) %></small>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 
                 <div class="card">
                   <div class="card-body text-center">

@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Aggiorna totale quando cambia l'importo o lo status
-    if (e.target.name && (e.target.name.includes('[amount]') || e.target.name.includes('[status]'))) {
+    if (e.target.name && (e.target.name.includes('[amount]') || e.target.name.includes('[requested_amount]') || e.target.name.includes('[status]'))) {
       updateTotal();
     }
   });

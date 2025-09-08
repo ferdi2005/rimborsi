@@ -134,6 +134,12 @@ class ReimboursementsController < ApplicationController
     return admin_required unless current_user.admin?
 
     expense = @reimboursement.expenses.find(params[:expense_id])
+
+    # Aggiorna il requested_amount se fornito
+    if params[:requested_amount].present?
+      expense.update!(requested_amount: params[:requested_amount])
+    end
+
     expense.update!(status: "approved")
 
     redirect_to approve_expenses_reimboursement_path(@reimboursement, expense_index: params[:next_index]),
@@ -145,6 +151,12 @@ class ReimboursementsController < ApplicationController
     return admin_required unless current_user.admin?
 
     expense = @reimboursement.expenses.find(params[:expense_id])
+
+    # Aggiorna il requested_amount se fornito
+    if params[:requested_amount].present?
+      expense.update!(requested_amount: params[:requested_amount])
+    end
+
     expense.update!(status: "denied")
 
     # Crea una nota se fornita
