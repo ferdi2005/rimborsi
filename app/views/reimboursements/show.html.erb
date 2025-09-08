@@ -509,8 +509,8 @@
                           <% end %>
                           <small class="text-muted ms-2"><%= note.created_at.strftime("%d/%m/%Y alle %H:%M") %></small>
                         </div>
-                        <% if current_user.admin? || note.user_id == current_user.id %>
-                          <%= link_to [@reimboursement, note], method: :delete, 
+                        <% if current_user.admin? %>
+                          <%= button_to [@reimboursement, note], method: :delete, 
                                       confirm: "Sei sicuro di voler eliminare questa nota?", 
                                       class: "btn btn-sm btn-outline-danger" do %>
                             <i class="fas fa-trash"></i>

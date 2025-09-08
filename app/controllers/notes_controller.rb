@@ -24,6 +24,7 @@ class NotesController < ApplicationController
   end
 
   def destroy
+    redirect_to @reimboursement and return unless current_user.admin?
     @note.destroy
     respond_to do |format|
       format.html { redirect_to @reimboursement, notice: "Nota eliminata con successo." }
