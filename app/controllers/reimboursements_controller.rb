@@ -1,5 +1,5 @@
 class ReimboursementsController < ApplicationController
-  before_action :set_reimboursement, only: %i[ show edit update destroy download_pdf ]
+  before_action :set_reimboursement, only: %i[ show edit update destroy download_pdf approve_expenses approve_expense deny_expense approve_reimboursement ]
 
   # GET /reimboursements or /reimboursements.json
   def index
@@ -111,7 +111,6 @@ class ReimboursementsController < ApplicationController
 
   # GET /reimboursements/1/approve_expenses
   def approve_expenses
-    @reimboursement = Reimboursement.find(params[:id])
     redirect_to root_path and return unless @reimboursement
 
     return admin_required unless current_user.admin?
@@ -131,6 +130,7 @@ class ReimboursementsController < ApplicationController
 
   # PATCH /reimboursements/1/approve_expense
   def approve_expense
+    redirect_to root_path and return unless @reimboursement
     return admin_required unless current_user.admin?
 
     expense = @reimboursement.expenses.find(params[:expense_id])
@@ -148,6 +148,7 @@ class ReimboursementsController < ApplicationController
 
   # PATCH /reimboursements/1/deny_expense
   def deny_expense
+    redirect_to root_path and return unless @reimboursement
     return admin_required unless current_user.admin?
 
     expense = @reimboursement.expenses.find(params[:expense_id])
@@ -181,6 +182,7 @@ class ReimboursementsController < ApplicationController
 
   # PATCH /reimboursements/1/approve_reimboursement
   def approve_reimboursement
+    redirect_to root_path and return unless @reimboursement
     return admin_required unless current_user.admin?
 
     if @reimboursement.can_be_approved?
