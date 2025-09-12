@@ -77,86 +77,99 @@ class Payment < ApplicationRecord
   def generate_xml_flow
     require "builder"
 
-    xml = ::Builder::XmlMarkup.new(indent: 4)
-    xml.instruct!
+    xml = ::Builder::XmlMarkup.new(indent: 2)
+    xml.instruct! :xml, version: "1.0", encoding: "utf-8"
 
-    xml.GrpHdr do |grp|
-      grp.MsgId id
-      grp.CreDtTm DateTime.now.iso8601
-      grp.NbOfTxs reimboursements.count
-      grp.CtrlSum sprintf("%.2f", total)
-      grp.InitgPty do |init|
-        init.Id do |id_tag|
-          id_tag.OrgId do |org|
-            org.Othr do |othr|
-              othr.Id ENV["COD_BANCA"]
-              othr.Issr "CBI"
+    xml.CBIPaymentRequest("xmlns" => "urn:CBI:xsd:CBIPaymentRequest.00.03.09") do
+      xml.GrpHdr do |grp|
+        grp.MsgId "payment_#{id}"
+        grp.CreDtTm DateTime.now.iso8601
+        grp.NbOfTxs reimboursements.count
+        grp.CtrlSum sprintf("%.2f", total)
+        grp.InitgPty do |init|
+          init.Id do |id_tag|
+            id_tag.OrgId do |org|
+              org.Othr do |othr|
+                othr.Id ENV["COD_BANCA"]
+                othr.Issr "CBI"
+              end
+            end
+          end
+        end
+      end
+
+      xml.PmtInf do |pmt|
+        pmt.PmtInfId "payment_#{id}"
+        pmt.PmtMtd "TRF"
+        pmt.PmtTpInf do |pmt_tp|
+          pmt_tp.SvcLvl do |svc|
+            svc.Cd "SEPA"
+          end
+        end
+        pmt.ReqdExctnDt next_business_day.strftime("%Y-%m-%d")
+
+        pmt.Dbtr do |dbtr|
+          dbtr.Nm "Wikimedia Italia - Associazione per la diffusione della conoscenza libera - APS-ETS"
+        end
+
+        pmt.DbtrAcct do |dbtr_acct|
+          dbtr_acct.Id do |id_tag|
+            id_tag.IBAN ENV["IBAN"]
+          end
+        end
+
+        pmt.DbtrAgt do |dbtr_agt|
+          dbtr_agt.FinInstnId do |fin|
+            fin.ClrSysMmbId do |clr|
+              clr.MmbId "03069" # Codice ABI Intesa San Paolo
+            end
+          end
+        end
+
+        reimboursements.includes(:bank_account, :user).each do |reimbursement|
+          xml.CdtTrfTxInf do |cdt|
+            cdt.PmtId do |pmt_id|
+              pmt_id.InstrId reimbursement.id.to_s
+              pmt_id.EndToEndId "rimborso#{reimbursement.id}"
+            end
+
+            cdt.PmtTpInf do |pmt_tp|
+              pmt_tp.CtgyPurp do |ctgy|
+                ctgy.Cd "SUPP" # Codice per pagamenti fornitori/rimborsi
+              end
+            end
+
+            cdt.Amt do |amt|
+              amt.InstdAmt sprintf("%.2f", reimbursement.total_amount), "Ccy" => "EUR"
+            end
+
+            cdt.Cdtr do |cdtr|
+              cdtr.Nm reimbursement.bank_account.owner
+            end
+
+            cdt.CdtrAcct do |cdtr_acct|
+              cdtr_acct.Id do |id_tag|
+                id_tag.IBAN reimbursement.bank_account.iban
+              end
+            end
+
+            # Aggiungi BIC/SWIFT se disponibile per il beneficiario
+            if reimbursement.bank_account.bic_swift.present?
+              cdt.CdtrAgt do |cdtr_agt|
+                cdtr_agt.FinInstnId do |fin|
+                  fin.BIC reimbursement.bank_account.bic_swift
+                end
+              end
+            end
+
+            # Informazioni di rimessa
+            cdt.RmtInf do |rmt|
+              rmt.Ustrd "Rimborso spese n. #{reimbursement.id}"
             end
           end
         end
       end
     end
-
-    xml.PmtInf do |pmt|
-      pmt.PmtInfId id
-      pmt.PmtMtd "TRF"
-      pmt.PmtTpInf do |pmt_tp|
-        pmt_tp.InstrPrty "NORM"
-      end
-      pmt.SvcLvl do |svc|
-        svc.Cd "SEPA"
-      end
-      pmt.ReqdExctnDt do |req_dt|
-        req_dt.Dt next_business_day.strftime("%Y-%m-%d")
-      end
-      pmt.Dbtr do |dbtr|
-        dbtr.Nm "Wikimedia Italia - Associazione per la diffusione della conoscenza libera - APS-ETS"
-      end
-      pmt.DbtrAcct do |dbtr_acct|
-        dbtr_acct.Id do |id_tag|
-          id_tag.IBAN ENV["IBAN"]
-        end
-      end
-      pmt.DbtrAgt do |dbtr_agt|
-        dbtr_agt.FinInstnId do |fin|
-          fin.ClrSysMmbId do |clr|
-            clr.MmbId "03069" # Codice ABI Intesa San Paolo
-          end
-        end
-      end
-
-      reimboursements.includes(:bank_account, :user).each do |reimbursement|
-      xml.CdtTrfTxInf do |cdt|
-        cdt.PmtId do |pmt_id|
-          pmt_id.InstrId reimbursement.id
-          pmt_id.EndToEndId "rimborso#{reimbursement.id}"
-        end
-        cdt.CtgyPurp do |ctgy|
-          ctgy.Prtry "Rimborso spese n. #{reimbursement.id}"
-        end
-        cdt.Amt do |amt|
-          amt.InstdAmt "EUR#{sprintf('%.2f', reimbursement.total_amount)}"
-        end
-        cdt.Cdtr do |cdtr|
-          cdtr.Nm reimbursement.bank_account.owner
-        end
-        cdt.CdtrAcct do |cdtr_acct|
-          cdtr_acct.Id do |id_tag|
-            id_tag.IBAN reimbursement.bank_account.iban
-          end
-        end
-        # Aggiungi BIC/SWIFT se disponibile per il beneficiario
-        if reimbursement.bank_account.bic_swift.present?
-          cdt.CdtrAgt do |cdtr_agt|
-            cdtr_agt.FinInstnId do |fin|
-              fin.BICFI reimbursement.bank_account.bic_swift
-            end
-          end
-        end
-      end
-    end
-    end
-
 
     xml.target!
   end
