@@ -55,7 +55,6 @@ class ProcessPaymentJob < ApplicationJob
     raise "NextCloud configuration missing" if [ nextcloud_url, username, password, admin_folder ].any?(&:blank?)
 
     # Costruisci il path di destinazione con cartella data
-    user_folder = reimboursement.user.email.split("@").first # username dall'email
     year_folder = Date.current.strftime("%Y")
     date_folder = Date.current.strftime("%m")
 
@@ -86,7 +85,7 @@ class ProcessPaymentJob < ApplicationJob
 
           # Costruisci il nome del file per la fattura elettronica
           fattura_elettronica_name = "rimborso_#{reimboursement.user.surname}#{reimboursement.user.name}_#{Date.current.strftime("%Y%m%d")}_fattura#{expense.id}"
-          
+
           # Mantieni l'estensione originale del file
           original_extension = File.extname(expense.attachment.filename.to_s)
           invoice_filename = "#{fattura_elettronica_name}#{original_extension}"
@@ -127,24 +126,42 @@ class ProcessPaymentJob < ApplicationJob
     end
   end
 
-  def ensure_directory_exists(base_uri, username, password, directory_path)
-    path_parts = directory_path.split("/")
-    current_path = ""
+def ensure_directory_exists(base_uri, username, password, directory_path)
+  path_parts = directory_path.split("/")
+  current_path = ""
 
-    path_parts.each do |part|
-      next if part.blank?
+  path_parts.each do |part|
+    next if part.blank?
 
-      current_path += "/#{part}"
-      dir_uri = URI("#{base_uri.scheme}://#{base_uri.host}:#{base_uri.port}#{base_uri.path.split('/')[0..-2].join('/')}#{current_path}")
+    current_path += "/#{part}"
 
-      http = Net::HTTP.new(dir_uri.host, dir_uri.port)
-      http.use_ssl = dir_uri.scheme == "https"
+    # Costruisci l'URI corretto per WebDAV
+    dir_path = "#{base_uri.path.chomp('/')}#{current_path}"
+    dir_uri = URI("#{base_uri.scheme}://#{base_uri.host}:#{base_uri.port}#{dir_path}")
 
-      # Prova a creare la directory (MKCOL)
-      http.send_request("MKCOL", dir_uri.path, "", {
-        "Authorization" => "Basic #{Base64.strict_encode64("#{username}:#{password}")}"
-      })
-      # Ignora se la directory esiste già (405) o è stata creata con successo (201)
+    http = Net::HTTP.new(dir_uri.host, dir_uri.port)
+    http.use_ssl = dir_uri.scheme == "https"
+
+    # Prima verifica se la directory esiste già
+    head_request = Net::HTTP::Head.new(dir_uri.path)
+    head_request.basic_auth(username, password)
+    head_response = http.request(head_request)
+
+    # Se la directory non esiste (404), creala
+    if head_response.code == "404"
+      mkcol_request = Net::HTTP::Mkcol.new(dir_uri.path)
+      mkcol_request.basic_auth(username, password)
+
+      response = http.request(mkcol_request)
+
+      Rails.logger.info "MKCOL response for #{dir_path}: #{response.code} #{response.message}"
+
+      # 201 = creata, 405 = esiste già, altri codici = errore
+      unless [ "201", "405" ].include?(response.code)
+        Rails.logger.error "Failed to create directory #{dir_path}: #{response.code} #{response.message}"
+        Rails.logger.error "Response body: #{response.body}"
+      end
     end
   end
+end
 end

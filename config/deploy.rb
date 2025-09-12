@@ -40,7 +40,7 @@ set :rvm_ruby_version, "3.2.2"
 set :nginx_template, "deploy/nginx.conf.erb"
 
 append :linked_files, ".env", "config/puma.rb"
-append :linked_dirs, "log", "tmp/pids", "tmp/sockets", "tmp/cache", "public/uploads", "public/cached_pages"
+append :linked_dirs, "log", "tmp/pids", "tmp/sockets", "tmp/cache", "public/uploads", "public/cached_pages", "storage", "node_modules", "vendor", "public/system"
 
 namespace :rails do
     desc "Open a rails console `cap [staging] rails:console [server_index default: 0]`"
