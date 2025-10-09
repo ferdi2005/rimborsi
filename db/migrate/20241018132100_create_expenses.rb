@@ -21,7 +21,7 @@ class CreateExpenses < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    
+
     add_foreign_key :expenses, :reimboursements
     add_foreign_key :expenses, :projects
   end
