@@ -37,7 +37,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[7.2]
       t.integer :telephone
       t.string :username
       t.boolean :admin
-      t.references :role
+      t.bigint :role_id
 
       t.timestamps null: false
     end
@@ -46,5 +46,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[7.2]
     add_index :users, :reset_password_token, unique: true
     # add_index :users, :confirmation_token,   unique: true
     # add_index :users, :unlock_token,         unique: true
+    
+    add_foreign_key :users, :roles
   end
 end

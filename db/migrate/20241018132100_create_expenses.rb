@@ -1,7 +1,7 @@
 class CreateExpenses < ActiveRecord::Migration[7.2]
   def change
     create_table :expenses do |t|
-      t.references :reimboursement, null: false, foreign_key: true
+      t.bigint :reimboursement_id, null: false
       t.text :purpose
       t.date :date
       t.decimal :amount
@@ -17,9 +17,12 @@ class CreateExpenses < ActiveRecord::Migration[7.2]
       t.decimal :carburante
       t.decimal :pneumatici
       t.decimal :manutenzione
-      t.references :project, null: true, foreign_key: true
+      t.bigint :project_id, null: true
 
       t.timestamps
     end
+    
+    add_foreign_key :expenses, :reimboursements
+    add_foreign_key :expenses, :projects
   end
 end

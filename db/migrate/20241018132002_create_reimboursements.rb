@@ -2,12 +2,14 @@ class CreateReimboursements < ActiveRecord::Migration[7.2]
   def change
     create_table :reimboursements do |t|
       t.bigint :user_id, null: false
-      t.references :bank_account, null: false, foreign_key: true
-      t.references :paypal_account, null: false, foreign_key: true
+      t.bigint :bank_account_id, null: false
+      t.bigint :paypal_account_id, null: false
 
       t.timestamps
     end
 
     add_foreign_key :reimboursements, :users
+    add_foreign_key :reimboursements, :bank_accounts
+    add_foreign_key :reimboursements, :paypal_accounts
   end
 end
