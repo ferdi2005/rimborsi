@@ -91,4 +91,4 @@ production:
   pool: 5
   username: rimborsi
   password: <%= ENV["MYSQL_PASSWORD"] %>
-  host: localhost
+  socket: /run/mysqld/mysqld.sock
