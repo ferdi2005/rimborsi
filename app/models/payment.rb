@@ -82,7 +82,7 @@ class Payment < ApplicationRecord
 
     xml.CBIPaymentRequest("xmlns" => "urn:CBI:xsd:CBIPaymentRequest.00.03.09") do
       xml.GrpHdr do |grp|
-        grp.MsgId "payment_#{id}"
+        grp.MsgId "pagrimb#{id}"
         grp.CreDtTm DateTime.now.iso8601
         grp.NbOfTxs reimboursements.count
         grp.CtrlSum sprintf("%.2f", total)
@@ -99,7 +99,7 @@ class Payment < ApplicationRecord
       end
 
       xml.PmtInf do |pmt|
-        pmt.PmtInfId "payment_#{id}"
+        pmt.PmtInfId "pagrimb#{id}"
         pmt.PmtMtd "TRF"
         pmt.PmtTpInf do |pmt_tp|
           pmt_tp.SvcLvl do |svc|
@@ -109,7 +109,7 @@ class Payment < ApplicationRecord
         pmt.ReqdExctnDt next_business_day.strftime("%Y-%m-%d")
 
         pmt.Dbtr do |dbtr|
-          dbtr.Nm "Wikimedia Italia - Associazione per la diffusione della conoscenza libera - APS-ETS"
+          dbtr.Nm "Wikimedia Italia - Associazione per la diffusione della conoscenza lib"
         end
 
         pmt.DbtrAcct do |dbtr_acct|
@@ -120,6 +120,7 @@ class Payment < ApplicationRecord
 
         pmt.DbtrAgt do |dbtr_agt|
           dbtr_agt.FinInstnId do |fin|
+            fin.BIC "BCITITM1XXX" # BIC di Intesa San Paolo
             fin.ClrSysMmbId do |clr|
               clr.MmbId "03069" # Codice ABI Intesa San Paolo
             end

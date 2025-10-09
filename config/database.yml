@@ -78,8 +78,17 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
-production:
+staging:
   <<: *default
   database: rimborsi_production
   username: rimborsi
   password: <%= ENV["RIMBORSI_DATABASE_PASSWORD"] %>
+
+production:
+  adapter: mysql2
+  encoding: utf8mb4
+  database: rimborsi
+  pool: 5
+  username: rimborsi
+  password: <%= ENV["MYSQL_PASSWORD"] %>
+  socket: /tmp/mysql.sock

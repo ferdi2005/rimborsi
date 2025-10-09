@@ -1,3 +1,20 @@
+set :user, "rimborsi"
+set :bundle_flags, "--without development test staging"
+
+set :stage, :production
+server "morfema.wikimedia.it", user: "rimborsi", port: 22, roles: [ :web, :app, :db, :worker ], primary: true
+
+set :deploy_to,       "/home/#{fetch(:user)}/apps/#{fetch(:application)}"
+set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_rsa] }
+set :sidekiq_user, fetch(:user)
+set :puma_user, fetch(:user)
+
+set :rbenv_type, :user # or :system, or :fullstaq (for Fullstaq Ruby), depends on your rbenv setup
+set :rbenv_ruby, File.read(".ruby-version").strip.gsub("ruby-", "") # Read the Ruby version from the file
+set :rbenv_prefix, "/usr/bin/rbenv exec"
+set :rbenv_map_bins, %w[rake gem bundle ruby rails]
+set :rbenv_roles, :all # default value
+
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.
@@ -28,7 +45,7 @@
 # You can set any configuration variable like in config/deploy.rb
 # These variables are then only loaded and set in this stage.
 # For available Capistrano configuration variables see the documentation page.
-# http://capistranorb.com/documentation/getting-started/configuration/
+# http://capistranorb.com/documentcation/getting-started/configuration/
 # Feel free to add new variables to customise your setup.
 
 

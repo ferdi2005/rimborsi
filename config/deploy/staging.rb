@@ -1,3 +1,15 @@
+set :stage,           :staging
+set :rails_env,       :production
+set :user, "deploy"
+server "c.ferdi.cc", user: "deploy", port: 22, roles: [ :web, :app, :db, :worker ], primary: true
+set :deploy_to,       "/home/#{fetch(:user)}/apps/#{fetch(:application)}"
+set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_rsa] }
+set :sidekiq_user, fetch(:user)
+set :puma_user, fetch(:user)
+
+set :rvm_ruby_version, "3.2.2"
+
+
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.
