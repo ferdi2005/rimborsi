@@ -87,7 +87,7 @@ staging:
 production:
   adapter: mysql2
   encoding: utf8mb4
-  database: rimborsi
+  database: rimborsi_db
   pool: 5
   username: rimborsi
   password: <%= ENV["MYSQL_PASSWORD"] %>
