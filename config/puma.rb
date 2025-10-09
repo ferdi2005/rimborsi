@@ -31,5 +31,5 @@ plugin :tmp_restart
 
 # Bind to unix socket for Nginx (production)
 unless ENV["RAILS_ENV"] == "development"
-  bind "unix:///home/deploy/apps/rimborsi/shared/tmp/sockets/rimborsi-puma.sock"
+  bind "unix:///home/#{ENV["USER"]}/apps/rimborsi/shared/tmp/sockets/rimborsi-puma.sock"
 end

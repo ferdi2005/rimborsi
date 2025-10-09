@@ -5,7 +5,7 @@ set :stage, :production
 server "morfema.wikimedia.it", user: "rimborsi", port: 22, roles: [ :web, :app, :db, :worker ], primary: true
 
 set :deploy_to,       "/home/#{fetch(:user)}/apps/#{fetch(:application)}"
-set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_rsa] }
+set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_rsa.pub] }
 set :sidekiq_user, fetch(:user)
 set :puma_user, fetch(:user)
 
