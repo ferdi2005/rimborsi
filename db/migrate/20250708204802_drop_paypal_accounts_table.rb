@@ -3,7 +3,7 @@ class DropPaypalAccountsTable < ActiveRecord::Migration[7.2]
     drop_table :paypal_accounts do |t|
       t.string :email, null: false
       t.boolean :default, default: false
-      t.references :user, null: false, foreign_key: true, type: :bigint
+      t.bigint :user_id, null: false
       t.timestamps
     end
   end

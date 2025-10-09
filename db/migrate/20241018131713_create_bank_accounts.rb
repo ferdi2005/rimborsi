@@ -1,7 +1,7 @@
 class CreateBankAccounts < ActiveRecord::Migration[7.2]
   def change
     create_table :bank_accounts do |t|
-      t.references :user, null: false, foreign_key: true, type: :bigint
+      t.bigint :user_id, null: false
       t.string :iban
       t.string :owner
       t.string :address
@@ -12,5 +12,7 @@ class CreateBankAccounts < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
+
+    add_foreign_key :bank_accounts, :users
   end
 end
