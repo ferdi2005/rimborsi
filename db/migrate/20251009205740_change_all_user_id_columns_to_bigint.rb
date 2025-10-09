@@ -3,7 +3,7 @@ class ChangeAllUserIdColumnsToBigint < ActiveRecord::Migration[7.2]
     # Mappa di tabelle e le loro colonne foreign key che potrebbero essere integer
     foreign_key_columns = {
       bank_accounts: [ :user_id ],
-      reimboursements: [ :user_id, :bank_account_id, :paypal_account_id ],
+      reimboursements: [ :user_id, :bank_account_id ],
       notes: [ :user_id, :reimboursement_id ],
       vehicles: [ :user_id ],
       expenses: [ :reimboursement_id, :project_id ],
@@ -20,7 +20,6 @@ class ChangeAllUserIdColumnsToBigint < ActiveRecord::Migration[7.2]
         reference_table = case column_name
         when :user_id then :users
         when :bank_account_id then :bank_accounts
-        when :paypal_account_id then :paypal_accounts
         when :reimboursement_id then :reimboursements
         when :project_id then :projects
         when :role_id then :roles
@@ -46,7 +45,7 @@ class ChangeAllUserIdColumnsToBigint < ActiveRecord::Migration[7.2]
     # Rollback: torna a integer (attenzione: potrebbe causare perdita di dati)
     foreign_key_columns = {
       bank_accounts: [ :user_id ],
-      reimboursements: [ :user_id, :bank_account_id, :paypal_account_id ],
+      reimboursements: [ :user_id, :bank_account_id ],
       notes: [ :user_id, :reimboursement_id ],
       vehicles: [ :user_id ],
       expenses: [ :reimboursement_id, :project_id ],
@@ -63,7 +62,6 @@ class ChangeAllUserIdColumnsToBigint < ActiveRecord::Migration[7.2]
         reference_table = case column_name
         when :user_id then :users
         when :bank_account_id then :bank_accounts
-        when :paypal_account_id then :paypal_accounts
         when :reimboursement_id then :reimboursements
         when :project_id then :projects
         when :role_id then :roles
