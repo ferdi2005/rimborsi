@@ -7,7 +7,7 @@ class CreateVehicles < ActiveRecord::Migration[7.2]
       t.string :brand
       t.string :model
       t.boolean :default
-      t.references :user, null: false, foreign_key: true
+      t.references :user, null: false, foreign_key: true, type: :bigint
 
       t.timestamps
     end
