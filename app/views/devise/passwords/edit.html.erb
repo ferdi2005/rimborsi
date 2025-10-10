@@ -1,25 +1,82 @@
-<h2>Change your password</h2>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <h2 class="h4 text-gray-900 mb-0">Cambia la tua password</h2>
+            <p class="text-muted small mt-2">Inserisci la tua nuova password</p>
+          </div>
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
+          <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "needs-validation", novalidate: true }) do |f| %>
+            <%= render "devise/shared/error_messages", resource: resource %>
+            <%= f.hidden_field :reset_password_token %>
 
-  <div class="field">
-    <%= f.label :password, "New password" %><br />
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em><br />
-    <% end %>
-    <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
+            <div class="mb-3">
+              <%= f.label :password, "Nuova password", class: "form-label" %>
+              <% if @minimum_password_length %>
+                <small class="form-text text-muted d-block">
+                  <em>(minimo <%= @minimum_password_length %> caratteri)</em>
+                </small>
+              <% end %>
+              <%= f.password_field :password, 
+                  autofocus: true, 
+                  autocomplete: "new-password",
+                  class: "form-control",
+                  placeholder: "Inserisci la nuova password",
+                  minlength: @minimum_password_length,
+                  required: true %>
+              <div class="invalid-feedback">
+                La password deve essere di almeno <%= @minimum_password_length || 6 %> caratteri.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :password_confirmation, "Conferma nuova password", class: "form-label" %>
+              <%= f.password_field :password_confirmation, 
+                  autocomplete: "new-password",
+                  class: "form-control",
+                  placeholder: "Conferma la nuova password",
+                  required: true %>
+              <div class="invalid-feedback">
+                Le password non corrispondono.
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <%= f.submit "Cambia la mia password", 
+                  class: "btn btn-primary btn-block" %>
+            </div>
+          <% end %>
+
+          <hr class="my-4">
+
+          <div class="text-center">
+            <%= render "devise/shared/links" %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Change my password" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+<script>
+// Validazione client-side per conferma password
+document.addEventListener('DOMContentLoaded', function() {
+  const passwordField = document.querySelector('input[name="user[password]"]');
+  const confirmField = document.querySelector('input[name="user[password_confirmation]"]');
+  
+  if (passwordField && confirmField) {
+    function validatePasswordMatch() {
+      if (confirmField.value && passwordField.value !== confirmField.value) {
+        confirmField.setCustomValidity('Le password non corrispondono');
+      } else {
+        confirmField.setCustomValidity('');
+      }
+    }
+    
+    passwordField.addEventListener('input', validatePasswordMatch);
+    confirmField.addEventListener('input', validatePasswordMatch);
+  }
+});
+</script>
