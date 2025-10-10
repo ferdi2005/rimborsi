@@ -62,11 +62,7 @@
                     </span>
                   </td>
                   <td>
-                    <% if fund.active? %>
-                      <span class="badge bg-success"><i class="fas fa-check me-1"></i>Attivo</span>
-                    <% else %>
-                      <span class="badge bg-secondary"><i class="fas fa-times me-1"></i>Inattivo</span>
-                    <% end %>
+                    <%= active_badge(fund.active?) %>
                   </td>
                   <% if admin_user? %>
                     <td>

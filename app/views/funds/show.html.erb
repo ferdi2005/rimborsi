@@ -3,11 +3,7 @@
     <h1>
       <i class="fas fa-fund-diagram me-2"></i>
       <%= @fund.name %>
-      <% if @fund.active? %>
-        <span class="badge bg-success ms-2">Attivo</span>
-      <% else %>
-        <span class="badge bg-secondary ms-2">Inattivo</span>
-      <% end %>
+      <%= active_badge(@fund.active?, css_class: "ms-2") %>
     </h1>
     <div>
       <%= link_to edit_fund_path(@fund), class: "btn btn-primary" do %>
@@ -165,14 +161,7 @@
                         <% end %>
                       </td>
                       <td>
-                        <% case expense.status %>
-                        <% when 'created' %>
-                          <span class="badge bg-warning">In attesa</span>
-                        <% when 'approved' %>
-                          <span class="badge bg-success">Approvata</span>
-                        <% when 'denied' %>
-                          <span class="badge bg-danger">Negata</span>
-                        <% end %>
+                        <%= status_badge(expense.status, :expense) %>
                       </td>
                       <td>
                         <%= link_to expense.reimboursement, class: "btn btn-sm btn-outline-primary" do %>

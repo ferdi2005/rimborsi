@@ -64,7 +64,7 @@ class Expense < ApplicationRecord
   # Metodi per la traduzione degli status
   def self.status_translations
     {
-      "created" => "Creata",
+      "created" => "In attesa di approvazione",
       "approved" => "Approvata",
       "denied" => "Negata"
     }

@@ -1,4 +1,6 @@
 module ApplicationHelper
+  include StatusHelper
+
   # Helper per verificare se l'utente corrente è admin
   def admin_user?
     user_signed_in? && current_user.admin?

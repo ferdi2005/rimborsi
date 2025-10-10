@@ -25,16 +25,16 @@
     
     <!-- Campo requested_amount -->
     <div class="col-md-3">
-      <%= f.label :requested_amount, "Importo richiesto", class: "form-label" %>
+      <%= f.label :requested_amount, "Importo richiesto come rimborso", class: "form-label" %>
       <div class="input-group">
         <span class="input-group-text">€</span>
         <%= f.number_field :requested_amount, 
             step: 0.01, 
             min: 0, 
             class: "form-control", 
-            placeholder: "Importo richiesto come rimborso" %>
+            placeholder: "Importo richiesto" %>
       </div>
-      <small class="form-text text-muted">Importo che si richiede come rimborso (max. importo spesa)</small>
+      <small class="form-text text-muted">Eventuale importo parziale o totale richiesto</small>
     </div>
     
     <div class="col-md-3">

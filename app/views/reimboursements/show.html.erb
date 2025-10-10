@@ -5,49 +5,18 @@
         <div class="card-header d-flex justify-content-between align-items-center py-3" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
           <div>
             <h2 class="mb-1">
-              <i class="fas fa-file-invoice-dollar text-primary me-2"></i>
+              <%= primary_icon("file-invoice-dollar", class: "me-2") %>
               Rimborso #<%= @reimboursement.id %>
             </h2>
             <small class="text-muted">
-              <i class="fas fa-calendar me-1"></i>
+              <%= neutral_icon("calendar", class: "me-1") %>
               Creato il <%= @reimboursement.created_at.strftime("%d/%m/%Y alle %H:%M") %>
             </small>
           </div>
-          <% 
-            badge_class = case @reimboursement.status
-                         when 'created' then 'warning'  # Cambiato da 'secondary' a 'warning' per più visibilità
-                         when 'in_process' then 'warning'
-                         when 'approved' then 'success'
-                         when 'paid' then 'primary'
-                         when 'waiting' then 'info'
-                         else 'secondary'
-                         end
-          %>
           <div class="d-flex align-items-center">
-            <% if @reimboursement.status == 'created' %>
-              <div class="me-3 text-center">
-                <div class="badge bg-warning text-dark fs-4 px-4 py-2 shadow-sm border border-warning" style="border-radius: 25px;">
-                  <i class="fas fa-plus-circle me-2"></i>
-                  <%= @reimboursement.status_in_italian %>
-                </div>
-                <div class="mt-1">
-                  <small class="text-muted">
-                    <i class="fas fa-hourglass-start me-1"></i>In attesa di elaborazione
-                  </small>
-                </div>
-              </div>
-            <% else %>
-              <span class="badge bg-<%= badge_class %> fs-5 px-3 py-2 me-3">
-                <% if @reimboursement.status == 'waiting' %>
-                  <i class="fas fa-clock me-2"></i>
-                <% elsif @reimboursement.status == 'approved' %>
-                  <i class="fas fa-check-circle me-2"></i>
-                <% elsif @reimboursement.status == 'paid' %>
-                  <i class="fas fa-credit-card me-2"></i>
-                <% end %>
-                <%= @reimboursement.status_in_italian %>
-              </span>
-            <% end %>
+            <div class="me-3">
+              <%= status_badge(@reimboursement.status, :reimboursement) %>
+            </div>
             
             <% if current_user.admin? %>
               <div class="btn-group">
@@ -110,7 +79,7 @@
               <div class="card h-100">
                 <div class="card-header bg-primary text-white">
                   <h5 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Informazioni Generali
+                    <%= info_icon("info-circle", class: "me-2") %> Informazioni
                   </h5>
                 </div>
                 <div class="card-body">
@@ -118,7 +87,7 @@
                     <div class="col-12">
                       <div class="d-flex align-items-center">
                         <div class="avatar bg-light rounded-circle p-2 me-3">
-                          <i class="fas fa-user text-primary"></i>
+                          <%= neutral_icon("user") %>
                         </div>
                         <div>
                           <small class="text-muted">Richiedente</small>
@@ -132,49 +101,12 @@
                     <div class="col-12">
                       <div class="d-flex align-items-center">
                         <div class="avatar bg-light rounded-circle p-2 me-3">
-                          <% 
-                            status_icon_color = case @reimboursement.status
-                                               when 'created' then 'secondary'
-                                               when 'in_process' then 'warning'
-                                               when 'approved' then 'success'
-                                               when 'paid' then 'primary'
-                                               when 'waiting' then 'info'
-                                               else 'secondary'
-                                               end
-                            status_icon = case @reimboursement.status
-                                         when 'created' then 'fas fa-plus-circle'
-                                         when 'in_process' then 'fas fa-spinner'
-                                         when 'approved' then 'fas fa-check-circle'
-                                         when 'paid' then 'fas fa-credit-card'
-                                         when 'waiting' then 'fas fa-clock'
-                                         else 'fas fa-question-circle'
-                                         end
-                          %>
-                          <i class="<%= status_icon %> text-<%= status_icon_color %>"></i>
+                          <%= neutral_icon("clock") %>
                         </div>
                         <div class="flex-grow-1">
                           <small class="text-muted">Stato attuale</small>
                           <div class="d-flex align-items-center">
-                            <span class="badge bg-<%= status_icon_color %> me-2">
-                              <%= @reimboursement.status_in_italian %>
-                            </span>
-                            <% if @reimboursement.status == 'created' %>
-                              <small class="text-muted">
-                                <i class="fas fa-info-circle me-1"></i>In attesa di elaborazione
-                              </small>
-                            <% elsif @reimboursement.status == 'waiting' %>
-                              <small class="text-info">
-                                <i class="fas fa-hourglass-half me-1"></i>Richiede attenzione
-                              </small>
-                            <% elsif @reimboursement.status == 'approved' %>
-                              <small class="text-success">
-                                <i class="fas fa-thumbs-up me-1"></i>Pronto per il pagamento
-                              </small>
-                            <% elsif @reimboursement.status == 'paid' %>
-                              <small class="text-primary">
-                                <i class="fas fa-money-check-alt me-1"></i>Completato
-                              </small>
-                            <% end %>
+                            <%= status_badge(@reimboursement.status, :reimboursement) %>
                           </div>
                         </div>
                       </div>
@@ -183,7 +115,7 @@
                     <div class="col-12">
                       <div class="d-flex align-items-center">
                         <div class="avatar bg-light rounded-circle p-2 me-3">
-                          <i class="fas fa-calendar-plus text-success"></i>
+                          <%= neutral_icon("calendar-plus") %>
                         </div>
                         <div>
                           <small class="text-muted">Data creazione</small>
@@ -198,7 +130,7 @@
                     <div class="col-12">
                       <div class="d-flex align-items-center">
                         <div class="avatar bg-light rounded-circle p-2 me-3">
-                          <i class="fas fa-edit text-warning"></i>
+                          <%= neutral_icon("edit") %>
                         </div>
                         <div>
                           <small class="text-muted">Ultima modifica</small>
@@ -213,7 +145,7 @@
                     <div class="col-12">
                       <div class="d-flex align-items-center">
                         <div class="avatar bg-light rounded-circle p-2 me-3">
-                          <i class="fas fa-euro-sign text-success"></i>
+                          <%= success_icon("euro-sign") %>
                         </div>
                         <div>
                           <small class="text-muted">Importo totale</small>
@@ -238,7 +170,7 @@
               <div class="card h-100">
                 <div class="card-header bg-info text-white">
                   <h5 class="mb-0">
-                    <i class="fas fa-credit-card me-2"></i>Metodo di Pagamento
+                    <%= info_icon("credit-card", class: "me-2") %> Metodo di Pagamento
                   </h5>
                 </div>
                 <div class="card-body">
@@ -247,9 +179,9 @@
                       <div class="d-flex align-items-center">
                         <div class="avatar bg-light rounded-circle p-2 me-3">
                           <% if @reimboursement.bank_account.present? %>
-                            <i class="fas fa-university text-primary"></i>
+                            <%= primary_icon("university") %>
                           <% else %>
-                            <i class="fas fa-question text-muted"></i>
+                            <%= muted_icon("question") %>
                           <% end %>
                         </div>
                         <div>
@@ -265,7 +197,7 @@
                       <div class="col-12">
                         <div class="d-flex align-items-center">
                           <div class="avatar bg-light rounded-circle p-2 me-3">
-                            <i class="fas fa-hashtag text-primary"></i>
+                            <%= primary_icon("hashtag") %>
                           </div>
                           <div>
                             <small class="text-muted">IBAN</small>
@@ -279,7 +211,7 @@
                       <div class="col-12">
                         <div class="d-flex align-items-center">
                           <div class="avatar bg-light rounded-circle p-2 me-3">
-                            <i class="fas fa-user-tie text-secondary"></i>
+                            <%= secondary_icon("user-tie") %>
                           </div>
                           <div>
                             <small class="text-muted">Intestatario</small>
@@ -335,14 +267,7 @@
                             </span>
                           </td>
                           <td>
-                            <% case expense.status %>
-                            <% when 'created' %>
-                              <span class="badge bg-warning">Creata</span>
-                            <% when 'approved' %>
-                              <span class="badge bg-success">Approvata</span>
-                            <% when 'denied' %>
-                              <span class="badge bg-danger">Negata</span>
-                            <% end %>
+                            <%= status_badge(expense.status, :expense) %>
                           </td>
                           <td class="text-end">
                             <% if expense.status_denied? %>

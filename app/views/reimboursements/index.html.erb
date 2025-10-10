@@ -1,8 +1,8 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1><i class="fas fa-file-invoice-dollar me-2"></i>Rimborsi</h1>
+    <h1><%= neutral_icon("file-invoice-dollar", class: "me-2") %>Rimborsi</h1>
     <%= link_to new_reimboursement_path, class: "btn btn-primary" do %>
-      <i class="fas fa-plus me-2"></i>Nuovo Rimborso
+      <%= neutral_icon("plus", class: "me-2") %>Nuovo Rimborso
     <% end %>
   </div>
 
@@ -12,19 +12,7 @@
         <div class="card h-100">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h6 class="mb-0">Rimborso #<%= reimboursement.id %></h6>
-            <% 
-              status_config = case reimboursement.status
-                             when 'created' then { class: 'secondary', icon: 'fas fa-edit' }
-                             when 'in_process' then { class: 'warning', icon: 'fas fa-clock' }
-                             when 'approved' then { class: 'success', icon: 'fas fa-check' }
-                             when 'paid' then { class: 'primary', icon: 'fas fa-money-bill-wave' }
-                             when 'waiting' then { class: 'info', icon: 'fas fa-hourglass-half' }
-                             else { class: 'secondary', icon: 'fas fa-question' }
-                             end
-            %>
-            <span class="badge bg-<%= status_config[:class] %>">
-              <i class="<%= status_config[:icon] %> me-1"></i><%= reimboursement.status_in_italian %>
-            </span>
+            <%= status_badge(reimboursement.status, :reimboursement) %>
           </div>
           <div class="card-body">
             <% if current_user.admin? %>
@@ -32,26 +20,26 @@
             <% end %>
             
             <p class="card-text">
-              <strong><i class="fas fa-credit-card me-2"></i>Metodo di pagamento:</strong><br>
+              <strong><%= neutral_icon("credit-card", class: "me-2") %>Metodo di pagamento:</strong><br>
               <span class="text-muted">
                 <% if reimboursement.bank_account.present? %>
-                  <i class="fas fa-university me-1"></i><%= reimboursement.payment_method_type %>
+                  <%= neutral_icon("university", class: "me-1") %><%= reimboursement.payment_method_type %>
                 <% else %>
-                  <i class="fas fa-question-circle me-1"></i><%= reimboursement.payment_method_type %>
+                  <%= muted_icon("question-circle", class: "me-1") %><%= reimboursement.payment_method_type %>
                 <% end %>
               </span><br>
               <% if reimboursement.bank_account.present? %>
-                <small><i class="fas fa-credit-card me-1"></i><%= reimboursement.bank_account.iban %> - <%= reimboursement.bank_account.owner %></small>
+                <small><%= neutral_icon("credit-card", class: "me-1") %><%= reimboursement.bank_account.iban %> - <%= reimboursement.bank_account.owner %></small>
               <% end %>
             </p>
             
             <p class="card-text">
-              <strong><i class="fas fa-euro-sign me-2"></i>Totale:</strong> 
+              <strong><%= neutral_icon("euro-sign", class: "me-2") %>Totale:</strong> 
               <span class="h5 text-primary">€ <%= number_with_precision(reimboursement.total_amount, precision: 2) %></span>
             </p>
             
             <p class="card-text">
-              <strong><i class="fas fa-receipt me-2"></i>Spese:</strong> <%= pluralize(reimboursement.expenses.count, 'spesa', 'spese') %>
+              <strong><%= neutral_icon("receipt", class: "me-2") %>Spese:</strong> <%= pluralize(reimboursement.expenses.count, 'spesa', 'spese') %>
             </p>
             
             <p class="card-text">
@@ -62,7 +50,7 @@
             <div class="btn-group w-100" role="group">
               <%= link_to 'Visualizza', reimboursement, class: "btn btn-outline-primary btn-sm" %>
               <%= link_to download_pdf_reimboursement_path(reimboursement), class: "btn btn-outline-danger btn-sm" do %>
-                <i class="fas fa-file-pdf"></i>
+                <%= neutral_icon("file-pdf") %>
               <% end %>
               <% if reimboursement.user_id == current_user.id || current_user.admin? %>
                 <%= link_to 'Modifica', edit_reimboursement_path(reimboursement), class: "btn btn-outline-secondary btn-sm" %>

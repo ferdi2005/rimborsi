@@ -1,0 +1,180 @@
+/* Status Badges - Consistent styling for all status indicators */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  cursor: default;
+  text-decoration: none;
+  white-space: nowrap;
+  
+  /* Prevent button-like appearance */
+  background-image: none;
+  box-shadow: none;
+  
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* Pending states - Orange/Amber theme */
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border-color: #f59e0b20;
+}
+
+/* Processing states - Blue theme */
+.status-processing {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-color: #3b82f620;
+}
+
+/* Approved/Success states - Green theme */
+.status-approved,
+.status-paid {
+  background-color: #d1fae5;
+  color: #059669;
+  border-color: #10b98120;
+}
+
+/* Denied/Error states - Red theme */
+.status-denied,
+.status-error {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-color: #ef444420;
+}
+
+/* Waiting states - Gray theme */
+.status-waiting {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border-color: #9ca3af20;
+}
+
+/* Unknown/Generic states */
+.status-unknown,
+.status-generic {
+  background-color: #f9fafb;
+  color: #4b5563;
+  border-color: #d1d5db;
+}
+
+/* Icon styling within badges */
+.status-badge .fas {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .status-badge {
+    font-size: 0.8125rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
+
+/* Icon color classes for consistent theming */
+.info-icon {
+  &.icon-primary {
+    color: #0d6efd;
+  }
+  
+  &.icon-secondary {
+    color: #6c757d;
+  }
+  
+  &.icon-success {
+    color: #198754;
+  }
+  
+  &.icon-warning {
+    color: #ffc107;
+  }
+  
+  &.icon-danger {
+    color: #dc3545;
+  }
+  
+  &.icon-neutral {
+    color: #495057;
+  }
+  
+  &.icon-muted {
+    color: #6c757d;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .status-pending {
+    background-color: #451a03;
+    color: #fbbf24;
+    border-color: #92400e40;
+  }
+  
+  .status-processing {
+    background-color: #1e3a8a;
+    color: #93c5fd;
+    border-color: #3b82f640;
+  }
+  
+  .status-approved,
+  .status-paid {
+    background-color: #064e3b;
+    color: #6ee7b7;
+    border-color: #10b98140;
+  }
+  
+  .status-denied,
+  .status-error {
+    background-color: #7f1d1d;
+    color: #fca5a5;
+    border-color: #dc262640;
+  }
+  
+  .status-waiting {
+    background-color: #374151;
+    color: #d1d5db;
+    border-color: #6b728040;
+  }
+  
+  /* Dark mode icon colors */
+  .info-icon {
+    &.icon-primary {
+      color: #6ea8fe;
+    }
+    
+    &.icon-secondary {
+      color: #adb5bd;
+    }
+    
+    &.icon-success {
+      color: #75b798;
+    }
+    
+    &.icon-warning {
+      color: #ffda6a;
+    }
+    
+    &.icon-danger {
+      color: #ea868f;
+    }
+    
+    &.icon-neutral {
+      color: #adb5bd;
+    }
+    
+    &.icon-muted {
+      color: #6c757d;
+    }
+  }
+}

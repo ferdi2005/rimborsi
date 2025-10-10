@@ -34,11 +34,11 @@ class Reimboursement < ApplicationRecord
   # Metodi per la traduzione degli status
   def self.status_translations
     {
-      "created" => "Creato",
-      "in_process" => "In Elaborazione",
+      "created" => "In attesa di elaborazione",
+      "in_process" => "In elaborazione",
       "approved" => "Approvato",
       "paid" => "Pagato",
-      "waiting" => "In Attesa"
+      "waiting" => "In attesa dell'utente"
     }
   end
 
