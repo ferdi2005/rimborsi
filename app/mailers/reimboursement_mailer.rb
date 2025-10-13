@@ -1,5 +1,5 @@
 class ReimboursementMailer < ApplicationMailer
-  default from: "noreply@rimborsi.app"
+  default from: ENV["MAIL_USERNAME"]
 
   def note_added(note)
     @note = note
@@ -31,7 +31,7 @@ class ReimboursementMailer < ApplicationMailer
     @user = @reimboursement.user
     @author = note.user
 
-    admin_email = ENV["EMAIL_AMMINISTRAZIONE"] || ENV["ADDRESS"]
+    admin_email = ENV["EMAIL_AMMINISTRAZIONE"] || ENV["MAIL_USERNAME"]
 
     mail(
       to: admin_email,

@@ -83,11 +83,11 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address:         ENV["ADDRESS"],
-    port:            ENV["PORT"],
-    domain:          ENV["DOMAIN"],
-    user_name:       ENV["ADDRESS"],
-    password:        ENV["PASSWORD"],
+    address:         ENV["EMAIL_SMTP_ADDRESS"] || "mail.wikimedia.it",
+    port:            ENV["PORT"] || 587,
+    domain:          ENV["HOST"] || "rimborsi.wikimedia.it",
+    user_name:       ENV["MAIL_USERNAME"],
+    password:        ENV["MAIL_PASSWORD"],
     authentication:  "plain",
     enable_starttls: true,
     open_timeout:    5,
