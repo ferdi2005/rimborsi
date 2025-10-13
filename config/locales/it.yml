@@ -14,6 +14,7 @@ it:
     attributes:
       expense:
         amount: "Importo"
+        requested_amount:: "Importo richiesto"
         purpose: "Descrizione"
         date: "Data"
         attachment: "Allegato"
@@ -205,6 +206,7 @@ it:
         inclusion: "non è incluso nella lista"
         exclusion: "è riservato"
         confirmation: "non corrisponde"
+        required: "è richiesto"
 
   # Traduzioni per enum e status
   enums:
@@ -297,7 +299,7 @@ it:
         attachment: "Allegato"
       
       reimboursement:
-        title: "Nuovo Rimborso"
+        title: "Nuovo rimborso"
         basic_info: "Informazioni Generali"
         payment_method: "Metodo di Pagamento"
         expenses: "Spese"
