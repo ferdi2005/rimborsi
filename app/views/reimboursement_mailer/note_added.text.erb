@@ -18,11 +18,11 @@ Contenuto:
 STATO ATTUALE: <%= @reimboursement.status_in_italian %>
 TOTALE RIMBORSO: € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
 
-GESTIONE RIMBORSI
+WIKIMEDIA ITALIA - GESTIONE RIMBORSI
 =================
 <% admin_email = ENV['EMAIL_AMMINISTRAZIONE'] || ENV["ADDRESS"] %>
 Per chiarimenti contatta: <%= admin_email %>
-Puoi anche rispondere con eventuali note direttamente sulla piattaforma.
+Ti preghiamo di rispondere a richieste di chiarimenti e integrazioni con una nota direttamente sulla piattaforma.
 
 Link utili:
 - Visualizza questo rimborso: <%= reimboursement_url(@reimboursement) %>
