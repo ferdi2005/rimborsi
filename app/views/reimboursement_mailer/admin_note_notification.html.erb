@@ -90,10 +90,10 @@
       </div>
       
       <p style="text-align: center; margin-top: 20px;">
-        <a href="<%= Rails.application.routes.url_helpers.reimboursement_url(@reimboursement, host: request.base_url rescue 'localhost:3000') %>" class="btn">
+        <a href="<%= reimboursement_url(@reimboursement) %>" class="btn">
           🔍 Visualizza Rimborso
         </a>
-        <a href="<%= Rails.application.routes.url_helpers.reimboursements_url(host: request.base_url rescue 'localhost:3000') %>" class="btn btn-secondary">
+        <a href="<%= reimboursements_url %>" class="btn btn-secondary">
           📋 Tutti i Rimborsi
         </a>
       </p>

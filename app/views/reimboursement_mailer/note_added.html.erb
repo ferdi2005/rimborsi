@@ -87,17 +87,13 @@
         Puoi anche rispondere con eventuali note direttamente sulla piattaforma.
       </p>
       <p style="margin-top: 15px;">
-        <a href="<%= Rails.application.routes.url_helpers.reimboursement_url(@reimboursement, host: request.base_url rescue 'localhost:3000') %>" style="color: white; text-decoration: underline;">
+        <a href="<%= reimboursement_url(@reimboursement) %>" style="color: white; text-decoration: underline;">
           🔗 Vai al Rimborso
         </a> | 
-        <a href="<%= Rails.application.routes.url_helpers.reimboursements_url(host: request.base_url rescue 'localhost:3000') %>" style="color: white; text-decoration: underline;">
+        <a href="<%= reimboursements_url %>" style="color: white; text-decoration: underline;">
           📋 Tutti i Rimborsi
         </a>
       </p>
     </div>
   </body>
-</html>eimboursement#note_added</h1>
-
-<p>
-  <%= @greeting %>, find me in app/views/reimboursement_mailer/note_added.html.erb
-</p>
+</html>
