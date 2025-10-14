@@ -6,5 +6,5 @@ Rails.application.configure do
   config.active_job.queue_adapter = Rails.env.production? ? :sidekiq : :async
 
   # Job queue name prefix (optional)
-  config.active_job.queue_name_prefix = "rimborsi_#{Rails.env}"
+  # config.active_job.queue_name_prefix = "rimborsi_#{Rails.env}"
 end
