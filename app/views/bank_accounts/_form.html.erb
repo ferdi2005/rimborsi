@@ -32,7 +32,7 @@
                         placeholder: "IT60X0542811101000000123456",
                         style: "text-transform: uppercase;",
                         id: "bank_account_iban" %>
-    <small class="form-text text-muted">Inserisci l'IBAN senza spazi (verrà formattato automaticamente)</small>
+    <small class="form-text text-muted">Inserisci l'IBAN senza spazi</small>
   </div>
 
   <div class="col-md-6">
@@ -59,23 +59,27 @@
   </div>
 
   <div class="col-md-8">
-    <%= form.label :address, "Indirizzo", class: "form-label" %>
+    <%= form.label :address, "Indirizzo dell'intestatario", class: "form-label" %>
     <%= form.text_field :address, class: "form-control" %>
+    <small class="form-text text-muted">Residenza dell'intestatario (opzionale)</small>
   </div>
 
   <div class="col-md-4">
     <%= form.label :cap, "CAP", class: "form-label" %>
     <%= form.text_field :cap, class: "form-control", pattern: "[0-9]{5}", title: "CAP a 5 cifre" %>
+    <small class="form-text text-muted">(opzionale)</small>
   </div>
 
   <div class="col-md-6">
     <%= form.label :town, "Città", class: "form-label" %>
     <%= form.text_field :town, class: "form-control" %>
+    <small class="form-text text-muted">(opzionale)</small>
   </div>
 
   <div class="col-md-6">
     <%= form.label :fiscal_code, "Codice Fiscale", class: "form-label" %>
     <%= form.text_field :fiscal_code, class: "form-control", title: "Codice fiscale" %>
+    <small class="form-text text-muted">(opzionale)</small>
   </div>
 
   <div class="col-12">
