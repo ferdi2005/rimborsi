@@ -112,8 +112,8 @@ class Expense < ApplicationRecord
     
     if requested_amount > amount
       # logga l'intera expense per debug
-      Rails.logger.debug "Expense details: #{self.inspect}"
-      Rails.logger.debug "Requested amount (€#{requested_amount}) exceeds expense amount (€#{amount})"
+      Rails.logger.warn "Expense details: #{self.inspect}"
+      Rails.logger.warn "Requested amount (€#{requested_amount}) exceeds expense amount (€#{amount})"
       errors.add(:requested_amount, "non può essere maggiore dell'importo della spesa (€#{amount})")
     end
   end
