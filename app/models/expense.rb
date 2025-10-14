@@ -111,7 +111,7 @@ class Expense < ApplicationRecord
     return unless amount.present? && requested_amount.present?
     
     if requested_amount > amount
-      errors.add(:requested_amount, "(€#{requested_amount}) non può essere maggiore dell'importo della spesa (€#{amount}) #{self.inspect}")
+      errors.add(:requested_amount, "(€#{requested_amount}) non può essere maggiore dell'importo della spesa (€#{amount})")
     end
   end
 

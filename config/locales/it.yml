@@ -14,7 +14,7 @@ it:
     attributes:
       expense:
         amount: "Importo"
-        requested_amount:: "Importo richiesto"
+        requested_amount: "Importo richiesto"
         purpose: "Descrizione"
         date: "Data"
         attachment: "Allegato"
@@ -37,7 +37,7 @@ it:
         reimboursement_id: "Rimborso"
         created_at: "Creato il"
         updated_at: "Aggiornato il"
-      
+        
       reimboursement:
         status: "Stato"
         user: "Utente"
