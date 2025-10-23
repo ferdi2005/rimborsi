@@ -33,7 +33,7 @@ Per fare il setup dell'ambiente:
 * `exit` # exit psql shell
 * `exit` # back to root user
 
-Installare libvips.
+Installare poppler-utils e libvips.
 
 A questo punto siamo pronti! 
 * `cap production deploy`
