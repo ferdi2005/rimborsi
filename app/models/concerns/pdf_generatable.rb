@@ -258,8 +258,8 @@ module PdfGeneratable
       encrypted
     rescue => e
       Rails.logger.error "Error checking PDF encryption for #{File.basename(pdf_path)}: #{e.message}"
-      # In caso di errore, assumiamo che non sia crittografato per evitare di bloccare il processo
-      false
+      # In caso di errore, assumiamo che sia crittografato per evitare di bloccare il processo
+      true
     end
   end
 
@@ -278,11 +278,19 @@ module PdfGeneratable
       end
 
       # Genera l'anteprima usando Active Storage
-      # resize_to_limit: [nil, nil] mantiene le dimensioni originali
-      preview_blob = attachment.preview(resize_to_limit: [ nil, nil ])
+      # Usa resize_to_fit per mantenere le proporzioni e ottenere alta risoluzione
+      # 2480x3508 è A4 a 300 DPI (alta qualità per documenti)
+      preview = attachment.preview(resize_to_fit: [ 2480, 3508 ])
+
+      Rails.logger.info "Preview object created for #{attachment.filename}, forcing processing..."
+
+      # Forza il processing sincrono della preview
+      processed_preview = preview.processed
+
+      Rails.logger.info "Preview processing completed for #{attachment.filename}"
 
       # Scarica l'anteprima generata (PNG ad alta qualità)
-      preview_image_data = preview_blob.download
+      preview_image_data = processed_preview.download
 
       Rails.logger.info "Generated preview for #{attachment.filename}: #{preview_image_data.bytesize} bytes"
 

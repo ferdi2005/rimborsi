@@ -33,5 +33,7 @@ Per fare il setup dell'ambiente:
 * `exit` # exit psql shell
 * `exit` # back to root user
 
+Installare libvips.
+
 A questo punto siamo pronti! 
 * `cap production deploy`
