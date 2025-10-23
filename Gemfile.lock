@@ -259,6 +259,7 @@ GEM
       hashery (~> 2.0)
       ruby-rc4
       ttfunk
+    pdfinfo (1.4.2)
     pg (1.5.9)
     popper_js (2.11.8)
     pp (0.6.2)
@@ -474,6 +475,7 @@ DEPENDENCIES
   mysql2 (~> 0.5.7)
   nokogiri (~> 1.13)
   pdf-reader (~> 2.11)
+  pdfinfo
   pg (~> 1.1)
   prawn (~> 2.4)
   prawn-table (~> 0.2)

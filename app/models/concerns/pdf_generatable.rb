@@ -79,14 +79,22 @@ module PdfGeneratable
       receipt = expense.attachment
       begin
         if receipt.content_type == "application/pdf"
-          # For PDF receipts, add all pages
+          # For PDF receipts, check if encrypted and handle accordingly
           temp_receipt = Tempfile.new([ "receipt", ".pdf" ])
           temp_receipt.binmode
           temp_receipt.write(receipt.download)
           temp_receipt.close
 
-          receipt_pdf = CombinePDF.load(temp_receipt.path)
-          combined_pdf << receipt_pdf
+          # Check if PDF is encrypted using pdfinfo gem
+          if pdf_encrypted?(temp_receipt.path)
+            Rails.logger.info "PDF attachment #{receipt.filename} is encrypted, converting to image"
+            converted_pdf = convert_encrypted_pdf_to_image(receipt, expense.id)
+            combined_pdf << converted_pdf if converted_pdf
+          else
+            Rails.logger.info "PDF attachment #{receipt.filename} is not encrypted, processing normally"
+            receipt_pdf = CombinePDF.load(temp_receipt.path)
+            combined_pdf << receipt_pdf
+          end
 
           temp_receipt.unlink
         else
@@ -237,5 +245,129 @@ module PdfGeneratable
     pdf.move_down 30
     pdf.text "Documento generato il #{Time.current.strftime('%d/%m/%Y alle %H:%M')}",
              size: 8, align: :right, color: "666666"
+  end
+
+  # Verifica se un PDF è crittografato usando la gem pdfinfo
+  def pdf_encrypted?(pdf_path)
+    begin
+      pdf_info = Pdfinfo.new(pdf_path)
+      encrypted = pdf_info.encrypted?
+
+      Rails.logger.info "PDF encryption check for #{File.basename(pdf_path)}: #{encrypted ? 'encrypted' : 'not encrypted'}"
+
+      encrypted
+    rescue => e
+      Rails.logger.error "Error checking PDF encryption for #{File.basename(pdf_path)}: #{e.message}"
+      # In caso di errore, assumiamo che non sia crittografato per evitare di bloccare il processo
+      false
+    end
+  end
+
+  # Converte un PDF crittografato in immagine usando Active Storage Previewer
+  def convert_encrypted_pdf_to_image(attachment, expense_id)
+    begin
+      Rails.logger.info "Converting encrypted PDF #{attachment.filename} to image using Active Storage Previewer"
+
+      # Usa Active Storage Previewer per generare un'anteprima del PDF
+      # Active Storage usa pdftoppm internamente per i PDF e gestisce automaticamente la cache
+
+      # Verifica se l'attachment può essere previsualizato
+      unless attachment.previewable?
+        Rails.logger.warn "PDF #{attachment.filename} is not previewable, falling back to notice"
+        return create_encrypted_pdf_fallback_notice(attachment.filename.to_s)
+      end
+
+      # Genera l'anteprima usando Active Storage
+      # resize_to_limit: [nil, nil] mantiene le dimensioni originali
+      preview_blob = attachment.preview(resize_to_limit: [ nil, nil ])
+
+      # Scarica l'anteprima generata (PNG ad alta qualità)
+      preview_image_data = preview_blob.download
+
+      Rails.logger.info "Generated preview for #{attachment.filename}: #{preview_image_data.bytesize} bytes"
+
+      # Crea un nuovo PDF con l'immagine dell'anteprima
+      converted_pdf_content = Prawn::Document.new(page_size: "A4", margin: 20) do |pdf|
+        # Crea un file temporaneo per l'immagine di anteprima
+        temp_preview = Tempfile.new([ "preview_image", ".png" ])
+        temp_preview.binmode
+        temp_preview.write(preview_image_data)
+        temp_preview.close
+
+        begin
+          # Aggiungi l'immagine al PDF mantenendo le proporzioni
+          pdf.image temp_preview.path,
+                   fit: [ pdf.bounds.width, pdf.bounds.height - 30 ], # Lascia spazio per la nota
+                   position: :center,
+                   vposition: :top
+
+          # Aggiungi una nota discreta che indica la conversione
+          pdf.move_down 10
+          pdf.text "Nota: Documento convertito da PDF protetto per la visualizzazione nel rimborso.",
+                  size: 8, style: :italic, color: "666666", align: :center
+
+        ensure
+          temp_preview.unlink
+        end
+      end
+
+      # Salva il PDF convertito in un file temporaneo e caricalo con CombinePDF
+      temp_converted_pdf = Tempfile.new([ "converted_from_preview", ".pdf" ])
+      temp_converted_pdf.binmode
+      temp_converted_pdf.write(converted_pdf_content.render)
+      temp_converted_pdf.close
+
+      # Carica il PDF convertito con CombinePDF per l'uso nella combinazione
+      result = CombinePDF.load(temp_converted_pdf.path)
+      temp_converted_pdf.unlink
+
+      Rails.logger.info "Successfully converted encrypted PDF #{attachment.filename} to image-based PDF using Active Storage Previewer (#{result.pages.count} pages)"
+      result
+
+    rescue => e
+      Rails.logger.error "Error converting encrypted PDF #{attachment.filename} using Active Storage Previewer: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+
+      # Fallback: crea un PDF con messaggio di errore
+      Rails.logger.info "Falling back to encrypted PDF notice for #{attachment.filename}"
+      create_encrypted_pdf_fallback_notice(attachment.filename.to_s)
+    end
+  end
+
+  # Crea un PDF di notifica per file crittografati che non possono essere convertiti
+  def create_encrypted_pdf_fallback_notice(filename)
+    begin
+      notice_pdf_content = Prawn::Document.new do |pdf|
+        pdf.text "🔒 DOCUMENTO PROTETTO", size: 20, style: :bold, align: :center
+        pdf.move_down 20
+
+        pdf.text "Il seguente allegato è protetto e non può essere visualizzato:", size: 12, align: :center
+        pdf.move_down 10
+
+        pdf.text "\"#{filename}\"", size: 14, align: :center, style: :italic
+        pdf.move_down 20
+
+        pdf.text "Il documento originale è disponibile separatamente", size: 10, align: :center, color: "666666"
+        pdf.move_down 30
+
+        pdf.text "Sistema di Gestione Rimborsi", size: 8, align: :right, color: "999999"
+        pdf.text "Documento generato automaticamente", size: 8, align: :right, color: "999999"
+      end
+
+      # Salva e carica con CombinePDF
+      temp_notice = Tempfile.new([ "encrypted_notice", ".pdf" ])
+      temp_notice.write(notice_pdf_content.render)
+      temp_notice.close
+
+      result = CombinePDF.load(temp_notice.path)
+      temp_notice.unlink
+
+      Rails.logger.info "Created fallback notice for encrypted PDF: #{filename}"
+      result
+
+    rescue => e
+      Rails.logger.error "Error creating fallback notice for #{filename}: #{e.message}"
+      nil
+    end
   end
 end

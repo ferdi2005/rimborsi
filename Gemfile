@@ -44,7 +44,7 @@ group :production do
   gem "mysql2", "~> 0.5.7"
 end
 
-group :development, :test, :staging do 
+group :development, :test, :staging do
   gem "pg", "~> 1.1"
 end
 group :development, :test do
@@ -60,7 +60,7 @@ group :development, :test do
     gem "capistrano",         require: false
   gem "capistrano-yarn",     require: false
   gem "capistrano-rvm",     require: false
-  gem 'capistrano-rbenv', '~> 2.2'
+  gem "capistrano-rbenv", "~> 2.2"
 
   gem "capistrano-rails",   require: false
   gem "capistrano-bundler", require: false
@@ -103,3 +103,4 @@ gem "iban-tools"
 
 gem "sidekiq", "~> 7.3"
 
+gem "pdfinfo"
