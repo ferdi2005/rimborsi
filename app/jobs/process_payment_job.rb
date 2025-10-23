@@ -64,7 +64,7 @@ class ProcessPaymentJob < ApplicationJob
     base_uri = URI(nextcloud_url)
     ensure_directory_exists(base_uri, username, password, base_path)
 
-    filename = "rimborso_#{reimboursement.user.surname}#{reimboursement.user.name}_#{Date.current.strftime("%Y%m%d")}"
+    filename = "rimborso_#{reimboursement.user.surname}#{reimboursement.user.name}_#{Date.current.strftime("%Y%m%d")}".gsub(" ", "")
 
     # Carica il PDF del rimborso
     pdf_path = "#{base_path}/#{filename}.pdf"
@@ -84,7 +84,7 @@ class ProcessPaymentJob < ApplicationJob
           content_type = expense.attachment.content_type || "application/xml"
 
           # Costruisci il nome del file per la fattura elettronica
-          fattura_elettronica_name = "rimborso_#{reimboursement.user.surname}#{reimboursement.user.name}_#{Date.current.strftime("%Y%m%d")}_fattura#{expense.id}"
+          fattura_elettronica_name = "rimborso_#{reimboursement.user.surname}#{reimboursement.user.name}_#{Date.current.strftime("%Y%m%d")}_fattura#{expense.id}".gsub(" ", "")
 
           # Mantieni l'estensione originale del file
           original_extension = File.extname(expense.attachment.filename.to_s)
