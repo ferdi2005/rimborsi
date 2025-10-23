@@ -60,7 +60,7 @@
               <% end %>
 
               <% if payment.can_be_retried? %>
-                <%= link_to retry_admin_payment_path(payment), method: :patch, 
+                <%= button_to retry_admin_payment_path(payment), method: :patch, 
                     class: "btn btn-outline-warning btn-sm", 
                     data: { confirm: "Sei sicuro di voler ritentare il processamento?" } do %>
                   <i class="fas fa-redo me-1"></i>Riprova
