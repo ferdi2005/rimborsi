@@ -554,5 +554,30 @@ document.addEventListener('DOMContentLoaded', function() {
   // Calcola il totale iniziale
   updateTotal();
 
+  // Funzioni globali per gestione sostituzione allegati
+  window.toggleFileReplacement = function(button) {
+    const attachmentField = button.closest('.attachment-field');
+    const alertBox = attachmentField.querySelector('.alert');
+    const replacementField = attachmentField.querySelector('.file-replacement-field');
+    
+    if (alertBox && replacementField) {
+      alertBox.style.display = 'none';
+      replacementField.style.display = 'block';
+    }
+  };
+
+  window.cancelFileReplacement = function(button) {
+    const attachmentField = button.closest('.attachment-field');
+    const alertBox = attachmentField.querySelector('.alert');
+    const replacementField = attachmentField.querySelector('.file-replacement-field');
+    const fileInput = attachmentField.querySelector('input[type="file"]');
+    
+    if (alertBox && replacementField && fileInput) {
+      alertBox.style.display = 'block';
+      replacementField.style.display = 'none';
+      fileInput.value = ''; // Reset del campo file
+    }
+  };
+
 });
 </script>

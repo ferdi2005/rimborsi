@@ -95,8 +95,58 @@
   <div class="row mt-4 attachment-field" style="<%= 'display: none;' if f.object.car? %>">
     <div class="col-md-12">
       <%= f.label :attachment, "Allegato", class: "form-label" %>
-      <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
-      <small class="form-text text-muted">Carica ricevuta o fattura (immagine o PDF) o fattura elettronica (.xml, .xml.p7m)</small>
+      
+      <% if f.object.attachment.attached? %>
+        <!-- Allegato esistente -->
+        <div class="alert alert-info mb-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <i class="<%= file_icon(f.object) %> me-2"></i>
+              <div>
+                <strong>File attuale:</strong> <%= f.object.attachment.filename %>
+                <br>
+                <small class="text-muted">
+                  <%= number_to_human_size(f.object.attachment.byte_size) %> • 
+                  <span class="badge <%= file_badge_class(f.object) %>">
+                    <%= file_type_text(f.object) %>
+                  </span>
+                </small>
+              </div>
+            </div>
+            <div class="btn-group btn-group-sm">
+              <%= link_to f.object.attachment, target: "_blank", 
+                          class: "btn btn-outline-primary btn-sm",
+                          title: "Visualizza file" do %>
+                <i class="fas fa-eye"></i>
+              <% end %>
+              <button type="button" class="btn btn-outline-warning btn-sm" 
+                      onclick="toggleFileReplacement(this)"
+                      title="Sostituisci file">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Campo nascosto per sostituire il file -->
+        <div class="file-replacement-field" style="display: none;">
+          <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
+          <small class="form-text text-muted">
+            <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+            Carica un nuovo file per sostituire quello esistente
+          </small>
+          <div class="mt-2">
+            <button type="button" class="btn btn-sm btn-secondary" 
+                    onclick="cancelFileReplacement(this)">
+              <i class="fas fa-times"></i> Annulla
+            </button>
+          </div>
+        </div>
+      <% else %>
+        <!-- Nessun allegato esistente -->
+        <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
+        <small class="form-text text-muted">Carica ricevuta o fattura (immagine o PDF) o fattura elettronica (.xml, .xml.p7m)</small>
+      <% end %>
     </div>
   </div>
 
