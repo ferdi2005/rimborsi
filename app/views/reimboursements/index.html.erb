@@ -6,6 +6,88 @@
     <% end %>
   </div>
 
+  <!-- Sezione Filtri -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h6 class="mb-0 d-flex align-items-center">
+        <%= neutral_icon("filter", class: "me-2") %>Filtri
+        <button class="btn btn-sm btn-outline-secondary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" aria-expanded="false">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </h6>
+    </div>
+    <div class="collapse show" id="filtersCollapse">
+      <div class="card-body">
+        <%= form_with url: reimboursements_path, method: :get, local: true, class: "row g-3" do |form| %>
+          <!-- Filtro Stati -->
+          <div class="col-md-8">
+            <%= form.label :statuses, "Stati", class: "form-label" %>
+            <div class="d-flex flex-wrap gap-2">
+              <% Reimboursement.status_translations.each do |key, value| %>
+                <div class="form-check">
+                  <%= check_box_tag "statuses[]", key, 
+                                   @filter_statuses.include?(key), 
+                                   { id: "status_#{key}", class: "form-check-input" } %>
+                  <%= label_tag "status_#{key}", value, class: "form-check-label" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Filtro Utente (solo per admin) -->
+          <% if current_user.admin? %>
+            <div class="col-md-4">
+              <%= form.label :user_id, "Utente", class: "form-label" %>
+              <%= form.collection_select :user_id, @users, :id, 
+                                        ->(user) { "#{user.name} #{user.surname}" }, 
+                                        { prompt: "Tutti gli utenti", selected: @filter_user_id }, 
+                                        { class: "form-select" } %>
+            </div>
+          <% end %>
+          
+          <!-- Bottoni azione -->
+          <div class="col-12">
+            <div class="d-flex gap-2">
+              <%= form.submit "Applica Filtri", class: "btn btn-primary btn-sm" %>
+              <%= link_to "Reset", reimboursements_path, class: "btn btn-outline-secondary btn-sm" %>
+              <small class="text-muted align-self-center ms-3">
+                Trovati <%= pluralize(@reimboursements.count, 'rimborso', 'rimborsi') %>
+              </small>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicatori filtri attivi -->
+  <% if @filter_statuses.present? || @filter_user_id.present? %>
+    <div class="mb-3">
+      <div class="d-flex align-items-center flex-wrap gap-2">
+        <small class="text-muted">Filtri attivi:</small>
+        
+        <!-- Stati filtrati -->
+        <% if @filter_statuses.present? %>
+          <% @filter_statuses.each do |status| %>
+            <span class="badge bg-primary me-1">
+              <%= Reimboursement.status_translations[status] %>
+            </span>
+          <% end %>
+        <% end %>
+        
+        <!-- Utente filtrato -->
+        <% if @filter_user_id.present? && current_user.admin? %>
+          <% filtered_user = @users.find { |u| u.id.to_s == @filter_user_id.to_s } %>
+          <% if filtered_user %>
+            <span class="badge bg-info">
+              <i class="fas fa-user me-1"></i><%= filtered_user.name %> <%= filtered_user.surname %>
+            </span>
+          <% end %>
+        <% end %>
+              </div>
+    </div>
+  <% end %>
+
   <div class="row">
     <% @reimboursements.each do |reimboursement| %>
       <div class="col-md-6 col-lg-4 mb-4">
@@ -68,8 +150,86 @@
   <% if @reimboursements.empty? %>
     <div class="alert alert-info text-center">
       <h5>Nessun rimborso trovato</h5>
-      <p>Puoi creare il tuo primo rimborso.</p>
-      <%= link_to 'Crea Nuovo Rimborso', new_reimboursement_path, class: "btn btn-primary" %>
+      <% if @filter_statuses.present? || @filter_user_id.present? %>
+        <p>Non ci sono rimborsi che corrispondono ai filtri selezionati.</p>
+        <%= link_to 'Rimuovi filtri', reimboursements_path, class: "btn btn-outline-primary me-2" %>
+        <%= link_to 'Crea Nuovo Rimborso', new_reimboursement_path, class: "btn btn-primary" %>
+      <% else %>
+        <p>Puoi creare il tuo primo rimborso.</p>
+        <%= link_to 'Crea Nuovo Rimborso', new_reimboursement_path, class: "btn btn-primary" %>
+      <% end %>
     </div>
   <% end %>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Gestione del toggle del collasso filtri
+  const collapseElement = document.getElementById('filtersCollapse');
+  const toggleButton = document.querySelector('[data-bs-target="#filtersCollapse"] i');
+  
+  if (collapseElement && toggleButton) {
+    collapseElement.addEventListener('show.bs.collapse', function () {
+      toggleButton.className = 'fas fa-chevron-up';
+    });
+    
+    collapseElement.addEventListener('hide.bs.collapse', function () {
+      toggleButton.className = 'fas fa-chevron-down';
+    });
+  }
+  
+  // Auto-submit del form quando si cambia la selezione utente (solo per admin)
+  const userSelect = document.querySelector('select[name="user_id"]');
+  if (userSelect) {
+    userSelect.addEventListener('change', function() {
+      // Piccolo delay per dare feedback visivo
+      setTimeout(() => {
+        this.closest('form').submit();
+      }, 200);
+    });
+  }
+  
+  // Funzionalità "Seleziona tutti" / "Deseleziona tutti" per gli stati
+  function createToggleAllButton() {
+    const statusContainer = document.querySelector('.d-flex.flex-wrap.gap-2');
+    if (!statusContainer) return;
+    
+    const allCheckboxes = statusContainer.querySelectorAll('input[type="checkbox"]');
+    const checkedCount = statusContainer.querySelectorAll('input[type="checkbox"]:checked').length;
+    
+    // Rimuovi il bottone esistente se presente
+    const existingButton = statusContainer.querySelector('.toggle-all-btn');
+    if (existingButton) {
+      existingButton.remove();
+    }
+    
+    // Crea il nuovo bottone
+    const toggleButton = document.createElement('button');
+    toggleButton.type = 'button';
+    toggleButton.className = 'btn btn-sm btn-outline-secondary toggle-all-btn';
+    toggleButton.innerHTML = checkedCount === allCheckboxes.length ? 
+      '<i class="fas fa-square-minus me-1"></i>Deseleziona tutti' : 
+      '<i class="fas fa-square-check me-1"></i>Seleziona tutti';
+    
+    toggleButton.addEventListener('click', function() {
+      const shouldCheck = checkedCount < allCheckboxes.length;
+      allCheckboxes.forEach(checkbox => {
+        checkbox.checked = shouldCheck;
+      });
+      createToggleAllButton(); // Ricrea il bottone con il testo aggiornato
+    });
+    
+    statusContainer.appendChild(toggleButton);
+  }
+  
+  // Inizializza il bottone toggle
+  createToggleAllButton();
+  
+  // Aggiorna il bottone quando cambiano le checkbox
+  document.addEventListener('change', function(e) {
+    if (e.target.name === 'statuses[]') {
+      createToggleAllButton();
+    }
+  });
+});
+</script>
