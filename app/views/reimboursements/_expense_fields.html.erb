@@ -96,7 +96,7 @@
     <div class="col-md-12">
       <%= f.label :attachment, "Allegato", class: "form-label" %>
       
-      <% if f.object.attachment.attached? %>
+      <% if f.object.attachment.attached? && f.object.attachment.persisted? %>
         <!-- Allegato esistente -->
         <div class="alert alert-info mb-3">
           <div class="d-flex align-items-center justify-content-between">
