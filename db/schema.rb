@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_14_134818) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_25_191432) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -69,10 +69,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_14_134818) do
     t.string "arrival"
     t.integer "distance"
     t.boolean "return_trip"
-    t.decimal "quota_capitale"
-    t.decimal "carburante"
-    t.decimal "pneumatici"
-    t.decimal "manutenzione"
+    t.decimal "quota_capitale", precision: 10, scale: 4
+    t.decimal "carburante", precision: 10, scale: 4
+    t.decimal "pneumatici", precision: 10, scale: 4
+    t.decimal "manutenzione", precision: 10, scale: 4
     t.bigint "fund_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
