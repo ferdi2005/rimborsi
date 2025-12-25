@@ -52,7 +52,7 @@
       <%= f.label :date, class: "form-label" do %>
         Data giustificativo <span class="text-danger">*</span>
       <% end %>
-      <%= f.date_field :date, class: "form-control", value: Date.current %>
+      <%= f.date_field :date, class: "form-control", value: f.object.date || Date.current %>
     </div>
 
     <div class="col-md-1">
