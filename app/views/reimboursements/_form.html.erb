@@ -405,8 +405,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const returnTrip = returnTripCheckbox ? returnTripCheckbox.checked : false;
     
     if (quotaCapitale > 0 && carburante > 0 && pneumatici > 0 && manutenzione > 0 && distance > 0) {
-      // Somma delle quote (assicura precisione a 2 decimali)
-      const costPerKm = Number((quotaCapitale + carburante + pneumatici + manutenzione).toFixed(2));
+      // Somma delle quote (mantieni la massima precisione)
+      const costPerKm = quotaCapitale + carburante + pneumatici + manutenzione;
       
       // Moltiplica per la distanza
       let totalDistance = distance;
@@ -416,8 +416,8 @@ document.addEventListener('DOMContentLoaded', function() {
         totalDistance *= 2;
       }
       
-      // Calcola il totale e dividi sempre per 2 (con precisione a 2 decimali)
-      const calculatedAmount = Number(((costPerKm * totalDistance) / 2).toFixed(2));
+      // Calcola il totale, dividi sempre per 2 e arrotonda alla fine a 2 decimali
+      const calculatedAmount = Math.round((costPerKm * totalDistance / 2) * 100) / 100;
       
       // Aggiorna i campi
       const calculatedField = expenseRow.querySelector('.calculated-amount');
