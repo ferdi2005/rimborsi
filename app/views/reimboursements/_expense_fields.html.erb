@@ -10,7 +10,9 @@
   <div class="row g-3">
     <!-- Campo importo unificato -->
     <div class="col-md-3">
-      <%= f.label :amount, f.object.car? ? "Importo calcolato" : "Importo spesa", class: "form-label" %>
+      <%= f.label :amount, class: "form-label" do %>
+        <%= f.object.car? ? "Importo calcolato" : "Importo spesa" %> <span class="text-danger">*</span>
+      <% end %>
       <div class="input-group">
         <span class="input-group-text">€</span>
         <%= f.number_field :amount, 
@@ -25,7 +27,9 @@
     
     <!-- Campo requested_amount -->
     <div class="col-md-3">
-      <%= f.label :requested_amount, "Importo richiesto come rimborso", class: "form-label" %>
+      <%= f.label :requested_amount, class: "form-label" do %>
+        Importo richiesto come rimborso <span class="text-danger">*</span>
+      <% end %>
       <div class="input-group">
         <span class="input-group-text">€</span>
         <%= f.number_field :requested_amount, 
@@ -38,17 +42,21 @@
     </div>
     
     <div class="col-md-3">
-      <%= f.label :purpose, "Descrizione", class: "form-label" %>
+      <%= f.label :purpose, class: "form-label" do %>
+        Descrizione <span class="text-danger">*</span>
+      <% end %>
       <%= f.text_field :purpose, class: "form-control", placeholder: "Descrivi la spesa..." %>
     </div>
     
     <div class="col-md-2">
-      <%= f.label :date, "Data giustificativo", class: "form-label" %>
+      <%= f.label :date, class: "form-label" do %>
+        Data giustificativo <span class="text-danger">*</span>
+      <% end %>
       <%= f.date_field :date, class: "form-control", value: Date.current %>
     </div>
 
     <div class="col-md-1">
-      <label class="form-label">Tipo</label>
+      <label class="form-label">Tipo <span class="text-danger">*</span></label>
       <div class="form-check">
         <%= f.radio_button :car, false, class: "form-check-input", id: "#{f.object_name}_car_false", checked: !f.object.car? %>
         <%= f.label :car, "Normale", class: "form-check-label", for: "#{f.object_name}_car_false" %>
@@ -63,14 +71,18 @@
   <!-- Fondo e Progetto -->
   <div class="row mt-3">
     <div class="col-md-6">
-      <%= f.label :fund_id, "Fondo", class: "form-label" %>
+      <%= f.label :fund_id, class: "form-label" do %>
+        Fondo <span class="text-danger">*</span>
+      <% end %>
       <%= f.select :fund_id, 
           options_from_collection_for_select(Fund.active.order(:name), :id, :name, f.object.fund_id),
           { prompt: "Seleziona fondo" },
           { class: "form-select" } %>
     </div>
     <div class="col-md-6">
-      <%= f.label :project, "Progetto", class: "form-label" %>
+      <%= f.label :project, class: "form-label" do %>
+        Progetto <span class="text-danger">*</span>
+      <% end %>
       <%= f.text_field :project, class: "form-control", placeholder: "Nome del progetto (es. Microgrant Wiki Loves Puglia 2025)..." %>
     </div>
   </div>
@@ -94,7 +106,9 @@
   <!-- Campo allegato per spese non auto -->
   <div class="row mt-4 attachment-field" style="<%= 'display: none;' if f.object.car? %>">
     <div class="col-md-12">
-      <%= f.label :attachment, "Allegato", class: "form-label" %>
+      <%= f.label :attachment, class: "form-label" do %>
+        Allegato <span class="text-danger">*</span>
+      <% end %>
       
       <% if f.object.attachment.attached? && f.object.attachment.persisted? %>
         <!-- Allegato esistente -->
@@ -159,29 +173,39 @@
     
     <div class="row g-3">
       <div class="col-md-4">
-        <%= f.label :calculation_date, "Data di calcolo", class: "form-label" %>
+        <%= f.label :calculation_date, class: "form-label" do %>
+          Data di calcolo <span class="text-danger">*</span>
+        <% end %>
         <%= f.date_field :calculation_date, class: "form-control" %>
       </div>
       
       <div class="col-md-4">
-        <%= f.label :departure, "Città di partenza", class: "form-label" %>
+        <%= f.label :departure, class: "form-label" do %>
+          Città di partenza <span class="text-danger">*</span>
+        <% end %>
         <%= f.text_field :departure, class: "form-control", placeholder: "Es: Milano" %>
       </div>
       
       <div class="col-md-4">
-        <%= f.label :arrival, "Città di arrivo", class: "form-label" %>
+        <%= f.label :arrival, class: "form-label" do %>
+          Città di arrivo <span class="text-danger">*</span>
+        <% end %>
         <%= f.text_field :arrival, class: "form-control", placeholder: "Es: Roma" %>
       </div>
     </div>
     
     <div class="row g-3 mt-3">
       <div class="col-md-3">
-        <%= f.label :distance, "Distanza (km)", class: "form-label" %>
+        <%= f.label :distance, class: "form-label" do %>
+          Distanza (km) <span class="text-danger">*</span>
+        <% end %>
         <%= f.number_field :distance, class: "form-control distance-input", min: 0.01, step: 0.01 %>
       </div>
       
       <div class="col-md-3">
-        <%= f.label :vehicle_id, "Veicolo", class: "form-label" %>
+        <%= f.label :vehicle_id, class: "form-label" do %>
+          Veicolo <span class="text-danger">*</span>
+        <% end %>
         <%= f.collection_select :vehicle_id, 
                                 (current_user.admin? ? Vehicle.includes(:user).all : current_user.vehicles), 
                                 :id, 
@@ -203,7 +227,9 @@
     
     <div class="row g-3 mt-3">
       <div class="col-md-3">
-        <%= f.label :quota_capitale, "Quota capitale", class: "form-label" %>
+        <%= f.label :quota_capitale, class: "form-label" do %>
+          Quota capitale <span class="text-danger">*</span>
+        <% end %>
         <div class="input-group">
           <span class="input-group-text">€</span>
           <%= f.number_field :quota_capitale, step: 0.01, min: 0, class: "form-control cost-input" %>
@@ -211,7 +237,9 @@
       </div>
       
       <div class="col-md-3">
-        <%= f.label :carburante, "Quota carburante", class: "form-label" %>
+        <%= f.label :carburante, class: "form-label" do %>
+          Quota carburante <span class="text-danger">*</span>
+        <% end %>
         <div class="input-group">
           <span class="input-group-text">€</span>
           <%= f.number_field :carburante, step: 0.01, min: 0, class: "form-control cost-input" %>
@@ -219,7 +247,9 @@
       </div>
       
       <div class="col-md-3">
-        <%= f.label :pneumatici, "Pneumatici", class: "form-label" %>
+        <%= f.label :pneumatici, class: "form-label" do %>
+          Pneumatici <span class="text-danger">*</span>
+        <% end %>
         <div class="input-group">
           <span class="input-group-text">€</span>
           <%= f.number_field :pneumatici, step: 0.01, min: 0, class: "form-control cost-input" %>
@@ -227,7 +257,9 @@
       </div>
       
       <div class="col-md-3">
-        <%= f.label :manutenzione, "Manutenzione", class: "form-label" %>
+        <%= f.label :manutenzione, class: "form-label" do %>
+          Manutenzione <span class="text-danger">*</span>
+        <% end %>
         <div class="input-group">
           <span class="input-group-text">€</span>
           <%= f.number_field :manutenzione, step: 0.01, min: 0, class: "form-control cost-input" %>

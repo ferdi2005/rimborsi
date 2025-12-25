@@ -54,6 +54,9 @@ class Expense < ApplicationRecord
 
   # Callback per aggiornare lo stato del rimborso quando una spesa viene approvata
   after_update :update_reimboursement_status, if: :saved_change_to_status?
+  
+  # Callback per controllare file duplicati dopo la creazione
+  after_create :check_for_duplicate_attachments
 
   # Scopes
   scope :car_expenses, -> { where(car: true) }
@@ -182,5 +185,41 @@ class Expense < ApplicationRecord
     if reimboursement.status_created? && reimboursement.expenses.status_approved.count == 1
       reimboursement.update!(status: "in_process")
     end
+  end
+
+  # Controlla se esistono file duplicati e crea una nota
+  def check_for_duplicate_attachments
+    return unless attachment.attached?
+    return unless attachment.blob.present?
+    
+    current_checksum = attachment.blob.checksum
+    
+    # Trova altre spese con lo stesso checksum, escludendo la spesa corrente
+    duplicate_expenses = Expense.joins(attachment_attachment: :blob)
+                                .where.not(id: id)
+                                .where(active_storage_blobs: { checksum: current_checksum })
+                                .includes(:reimboursement)
+    
+    return if duplicate_expenses.empty?
+    
+    # Crea il messaggio con la lista dei file duplicati
+    file_list = duplicate_expenses.map do |exp|
+      "- #{exp.attachment.filename} (Rimborso ##{exp.reimboursement_id})"
+    end.join("\n")
+    
+    note_text = "Attenzione! Sono presenti dei file duplicati:\n\n#{file_list}"
+    
+    # Crea una nota per il rimborso corrente
+    # Usa il primo utente admin disponibile come autore della nota di sistema
+    admin_user = User.find_by(admin: true)
+    
+    if admin_user && reimboursement
+      reimboursement.notes.create!(
+        user: admin_user,
+        text: note_text
+      )
+    end
+  rescue => e
+    Rails.logger.error("Errore nel controllo duplicati: #{e.message}")
   end
 end
