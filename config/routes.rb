@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
   resources :notes
   root to: "reimboursements#index"
-  resources :reimboursements do
+  resources :reimboursements, path: "reimbursement" do
     resources :notes, only: [ :create, :destroy ]
     member do
       get :approve_expenses
@@ -20,6 +20,10 @@ Rails.application.routes.draw do
       get :download_pdf
     end
   end
+  get "reimbursements", to: redirect("/reimbursement")
+  get "reimbursements/:id", to: redirect("/reimbursement/%{id}")
+  get "reimbursements/:id/:action", to: redirect("/reimbursement/%{id}/%{action}")
+
   resources :roles
   devise_for :users, controllers: {
     registrations: "users/registrations"
