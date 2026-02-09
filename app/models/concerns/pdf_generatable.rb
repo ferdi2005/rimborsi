@@ -1,8 +1,14 @@
 require "hexapdf"
+require "timeout"
 
 module PdfGeneratable
   extend ActiveSupport::Concern
   include ActionView::Helpers::NumberHelper
+
+  # Limiti di sicurezza per l'elaborazione dei file
+  MAX_FILE_SIZE = 50.megabytes        # Massimo 50 MB per file
+  MAX_PDF_PAGES = 1000               # Massimo 1000 pagine per PDF
+  FILE_PROCESSING_TIMEOUT = 30       # Timeout 30 secondi per file
 
   def generate_pdf
     return nil if expenses.empty?
@@ -40,6 +46,142 @@ module PdfGeneratable
     expenses.any? { |expense| expense.attachment.attached? || expense.pdf_attachment.attached? }
   end
 
+  def validate_file_before_processing!(file)
+    """
+    Valida il file prima di elaborarlo.
+    Lancia un'eccezione se il file non è valido.
+    """
+    # 1. Verifica la dimensione
+    file_size = file.byte_size
+    raise StandardError, "File troppo grande (max #{MAX_FILE_SIZE.to_i / 1.megabyte}MB)" if file_size > MAX_FILE_SIZE
+    raise StandardError, "File vuoto o corrotto" if file_size.zero?
+
+    # 2. Verifica magic bytes per i PDF
+    beginning = file.download[0..4]
+    unless beginning.start_with?("%PDF")
+      raise StandardError, "File non è un PDF valido (magic bytes assenti)"
+    end
+  end
+
+  def validate_pdf_structure!(pdf_path)
+    """
+    Valida la struttura del PDF dopo l'apertura.
+    Rimuove JavaScript e oggetti malevoli per la sicurezza.
+    """
+    begin
+      doc = HexaPDF::Document.open(pdf_path)
+      pages_count = doc.pages.count
+
+      if pages_count > MAX_PDF_PAGES
+        raise StandardError, "PDF contiene troppi pagine (#{pages_count} > #{MAX_PDF_PAGES})"
+      end
+
+      if pages_count.zero?
+        raise StandardError, "PDF vuoto"
+      end
+
+      # Sanitizza il documento rimuovendo JavaScript e oggetti pericolosi
+      sanitize_pdf!(doc)
+
+      doc
+    rescue HexaPDF::EncryptionError => e
+      raise StandardError, "PDF protetto da password: #{e.message}"
+    rescue HexaPDF::Error => e
+      raise StandardError, "Struttura PDF corrotta: #{e.message}"
+    end
+  end
+
+  def sanitize_pdf!(doc)
+    """
+    Rimuove JavaScript, azioni, e altri elementi potenzialmente pericolosi dal PDF.
+    """
+    # Rimuovi JavaScript a livello di documento
+    if doc.catalog[:OpenAction]
+      Rails.logger.warn "Rimosso OpenAction dal PDF"
+      doc.catalog.delete(:OpenAction)
+    end
+
+    if doc.catalog[:AA]
+      Rails.logger.warn "Rimosso Additional Actions (AA) dal PDF"
+      doc.catalog.delete(:AA)
+    end
+
+    # Rimuovi JavaScript dai nomi del catalogo
+    if doc.catalog[:Names] && doc.catalog[:Names][:JavaScript]
+      Rails.logger.warn "Rimosso JavaScript Name Tree dal PDF"
+      doc.catalog[:Names].delete(:JavaScript)
+    end
+
+    # Itera attraverso tutte le pagine e rimuovi azioni/JavaScript
+    doc.pages.each do |page|
+      next unless page.data
+
+      # Rimuovi azioni dalla pagina
+      if page[:AA]
+        Rails.logger.warn "Rimosso Additional Actions da pagina"
+        page.delete(:AA)
+      end
+
+      if page[:OpenAction]
+        Rails.logger.warn "Rimosso OpenAction da pagina"
+        page.delete(:OpenAction)
+      end
+
+      # Rimuovi azioni da annotazioni
+      if page[:Annots]
+        page[:Annots].each do |annot|
+          next unless annot
+
+          if annot[:AA]
+            Rails.logger.warn "Rimosso Additional Actions da annotazione"
+            annot.delete(:AA)
+          end
+
+          if annot[:A]
+            # Verifica se l'azione contiene JavaScript
+            action = annot[:A]
+            if action.is_a?(Hash) && (action[:S] == :JavaScript || action[:JS])
+              Rails.logger.warn "Rimosso JavaScript Action da annotazione"
+              annot.delete(:A)
+            end
+          end
+        end
+      end
+    end
+
+    # Rimuovi oggetti JavaScript dal document object store
+    doc.objects.each do |obj|
+      next unless obj.is_a?(Hash)
+
+      # Rimuovi stream JavaScript
+      if obj[:S] == :JavaScript || obj[:Type] == :JavaScript
+        Rails.logger.warn "Rimosso oggetto JavaScript dal PDF"
+        # Marca per eliminazione (HexaPDF pulirà i riferimenti)
+        next
+      end
+
+      # Rimuovi azioni contenenti JavaScript
+      if obj[:A].is_a?(Hash)
+        action = obj[:A]
+        if action[:S] == :JavaScript || action[:JS]
+          Rails.logger.warn "Rimosso JavaScript Action"
+          obj.delete(:A)
+        end
+      end
+    end
+  end
+
+  def safe_process_file_with_timeout(file, &block)
+    """
+    Processa il file con timeout per prevenire blocchi infiniti.
+    """
+    Timeout.timeout(FILE_PROCESSING_TIMEOUT) do
+      yield(file)
+    end
+  rescue Timeout::Error
+    raise StandardError, "Elaborazione file scaduta - file potrebbe essere malevolo"
+  end
+
   def combine_with_attachments(main_doc)
     # Create combined PDF using HexaPDF (more robust than CombinePDF)
     target_doc = HexaPDF::Document.new
@@ -54,16 +196,25 @@ module PdfGeneratable
         begin
           temp_invoice = Tempfile.new([ "invoice", ".pdf" ])
           temp_invoice.binmode
-          temp_invoice.write(expense.pdf_attachment.download)
+          invoice_data = expense.pdf_attachment.download
+
+          # Validazione del file prima del salvataggio
+          validate_file_before_processing!(expense.pdf_attachment)
+
+          temp_invoice.write(invoice_data)
           temp_invoice.close
 
-          # Load PDF with HexaPDF (handles problematic PDFs automatically)
-          invoice_doc = HexaPDF::Document.open(temp_invoice.path)
-          invoice_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+          # Processa con timeout e validazione struttura
+          safe_process_file_with_timeout(temp_invoice) do |file|
+            invoice_doc = validate_pdf_structure!(file.path)
+            invoice_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+          end
 
           temp_invoice.unlink
+        rescue Timeout::Error => e
+          Rails.logger.error "Timeout elaborazione fattura #{expense.id}: #{e.message}"
         rescue StandardError => e
-          Rails.logger.error "Error adding invoice PDF: #{e.message}"
+          Rails.logger.error "Errore fattura #{expense.id}: #{e.message}"
         end
       end
 
@@ -72,19 +223,25 @@ module PdfGeneratable
 
       receipt = expense.attachment
       begin
+        # Validazione del file prima del processamento
+        validate_file_before_processing!(receipt)
+
         if receipt.content_type == "application/pdf"
           # For PDF receipts, try to open with HexaPDF (handles most encrypted PDFs automatically)
           temp_receipt = Tempfile.new([ "receipt", ".pdf" ])
           temp_receipt.binmode
-          temp_receipt.write(receipt.download)
+          receipt_data = receipt.download
+          temp_receipt.write(receipt_data)
           temp_receipt.close
 
           begin
-            # HexaPDF can handle encrypted PDFs without passwords automatically
-            receipt_doc = HexaPDF::Document.open(temp_receipt.path)
-            receipt_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+            # Processa con timeout e validazione struttura
+            safe_process_file_with_timeout(temp_receipt) do |file|
+              receipt_doc = validate_pdf_structure!(file.path)
+              receipt_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+            end
           rescue HexaPDF::EncryptionError => e
-            Rails.logger.error "PDF attachment #{receipt.filename} is password-protected and cannot be processed: #{e.message}"
+            Rails.logger.error "PDF ricevuta #{receipt.filename} è protetto da password: #{e.message}"
             raise StandardError, "PDF #{receipt.filename} è protetto da password e non può essere elaborato"
           end
 
@@ -93,28 +250,35 @@ module PdfGeneratable
           # For image receipts, convert to PDF first using HexaPDF
           temp_image = Tempfile.new([ "receipt", receipt.filename.extension ])
           temp_image.binmode
-          temp_image.write(receipt.download)
+          receipt_data = receipt.download
+          temp_image.write(receipt_data)
           temp_image.close
 
-          # Create a temporary PDF with the image using HexaPDF
-          image_composer = HexaPDF::Composer.new
-          image_composer.image(temp_image.path,
-                              width: image_composer.frame.width,
-                              height: image_composer.frame.height,
-                              position: :center)
+          # Processa con timeout
+          safe_process_file_with_timeout(temp_image) do |file|
+            # Create a temporary PDF with the image using HexaPDF
+            image_composer = HexaPDF::Composer.new
+            image_composer.image(file.path,
+                                width: image_composer.frame.width,
+                                height: image_composer.frame.height,
+                                position: :center)
 
-          temp_image_pdf = Tempfile.new([ "receipt_pdf", ".pdf" ])
-          temp_image_pdf.close
-          image_composer.write(temp_image_pdf.path)
+            temp_image_pdf = Tempfile.new([ "receipt_pdf", ".pdf" ])
+            temp_image_pdf.close
+            image_composer.write(temp_image_pdf.path)
 
-          image_doc = HexaPDF::Document.open(temp_image_pdf.path)
-          image_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+            image_doc = HexaPDF::Document.open(temp_image_pdf.path)
+            image_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+
+            File.unlink(temp_image_pdf.path)
+          end
 
           temp_image.unlink
-          File.unlink(temp_image_pdf.path)
         end
+      rescue Timeout::Error => e
+        Rails.logger.error "Timeout elaborazione ricevuta #{expense.id}: #{e.message}"
       rescue StandardError => e
-        Rails.logger.error "Error adding receipt for expense #{expense.id}: #{e.message}"
+        Rails.logger.error "Errore ricevuta #{expense.id}: #{e.message}"
       end
     end
 
@@ -123,8 +287,8 @@ module PdfGeneratable
     target_doc.write(io, optimize: true)
     io.string
   rescue StandardError => e
-    Rails.logger.error "Error combining PDFs: #{e.message}"
-    puts "Error combining PDFs: #{e.message}"
+    Rails.logger.error "Errore combinazione PDF: #{e.message}"
+    puts "Errore combinazione PDF: #{e.message}"
     puts e.backtrace
     # Fallback to main PDF only
     io = StringIO.new
