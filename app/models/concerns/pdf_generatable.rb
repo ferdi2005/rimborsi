@@ -148,27 +148,6 @@ module PdfGeneratable
         end
       end
     end
-
-    # Rimuovi oggetti JavaScript dal document object store
-    doc.objects.each do |obj|
-      next unless obj.is_a?(Hash)
-
-      # Rimuovi stream JavaScript
-      if obj[:S] == :JavaScript || obj[:Type] == :JavaScript
-        Rails.logger.warn "Rimosso oggetto JavaScript dal PDF"
-        # Marca per eliminazione (HexaPDF pulirà i riferimenti)
-        next
-      end
-
-      # Rimuovi azioni contenenti JavaScript
-      if obj[:A].is_a?(Hash)
-        action = obj[:A]
-        if action[:S] == :JavaScript || action[:JS]
-          Rails.logger.warn "Rimosso JavaScript Action"
-          obj.delete(:A)
-        end
-      end
-    end
   end
 
   def safe_process_file_with_timeout(file, &block)
@@ -360,8 +339,9 @@ module PdfGeneratable
 
       # Aggiungi una linea separatrice se non è l'ultima spesa
       if index < expenses.count - 1
+        right_edge = composer.frame.left + composer.frame.width
         composer.canvas.line_width(1)
-                       .line(composer.frame.left, composer.y, composer.frame.right, composer.y)
+                 .line(composer.frame.left, composer.y, right_edge, composer.y)
                        .stroke
         composer.text("", margin: [ 0, 0, 8 ])
       end
