@@ -119,6 +119,12 @@
           <%= render 'expense_fields', f: expense_form %>
         <% end %>
       </div>
+
+      <div class="d-flex justify-content-end mt-3">
+        <button type="button" class="btn btn-primary btn-sm" id="add-expense-bottom">
+          <i class="fas fa-plus"></i> Aggiungi spesa
+        </button>
+      </div>
       
       <div id="expense-template" style="display: none;">
         <%= form.fields_for :expenses, Expense.new, child_index: 'NEW_RECORD' do |expense_form| %>
@@ -156,7 +162,7 @@
                 placeholder: "Inserisci qui eventuali informazioni aggiuntive sul rimborso..." %>
             <div class="form-text">
               <i class="fas fa-info-circle me-1"></i>
-              Questa nota sarà visibile agli amministratori e potrà aiutarli nella valutazione del rimborso.
+              Questa nota sarà visibile alla segreteria e potrà aiutarli nella valutazione del rimborso.
             </div>
           </div>
         </div>
@@ -167,8 +173,12 @@
   <!-- Bottoni di azione -->
   <div class="d-flex justify-content-between">
     <%= link_to 'Annulla', reimboursements_path, class: 'btn btn-secondary' %>
-    <%= form.submit "Salva Rimborso", class: 'btn btn-success' %>
+    <%= form.submit "Salva e invia rimborso", class: 'btn btn-success' %>
   </div>
+  <div class="form-text text-end">
+    Potrai modificare il rimborso anche dopo l'invio fino a quando non passerà in approvazione dalla segreteria.
+  </div>
+
 <% end %>
 
 <script>
@@ -235,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Aggiungi nuova spesa
-  document.getElementById('add-expense').addEventListener('click', function() {
+  function handleAddExpenseClick() {
     const container = document.getElementById('expenses-container');
     const template = document.getElementById('expense-template');
     const newExpense = template.innerHTML.replace(/NEW_RECORD/g, new Date().getTime());
@@ -281,7 +291,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 10);
     
     updateTotal();
-  });
+  }
+
+  document.getElementById('add-expense').addEventListener('click', handleAddExpenseClick);
+  const addExpenseBottomButton = document.getElementById('add-expense-bottom');
+  if (addExpenseBottomButton) {
+    addExpenseBottomButton.addEventListener('click', handleAddExpenseClick);
+  }
 
   // Funzione globale per rimuovere una spesa (chiamata dal pulsante cestino)
   window.removeExpense = function(button) {
