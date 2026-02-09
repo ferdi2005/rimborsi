@@ -48,9 +48,8 @@ class Reimboursement < ApplicationRecord
 
   # Metodo per verificare se il rimborso può essere approvato
   def can_be_approved?
-    # Tutte le spese devono essere approvate o negate (non in created)
-    # e deve esserci almeno una spesa approvata
-    expenses.any? && expenses.all? { |expense| expense.status != "created" } && expenses.any? { |expense| expense.status == "approved" } && status != "approved" && status != "paid"
+    # Tutte le spese devono essere approvate
+    expenses.any? && expenses.all?(&:status_approved?) && status != "approved" && status != "paid"
   end
 
   # Metodi di utilità
