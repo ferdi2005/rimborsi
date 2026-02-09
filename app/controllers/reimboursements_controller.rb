@@ -122,10 +122,15 @@ class ReimboursementsController < ApplicationController
 
   # DELETE /reimboursements/1 or /reimboursements/1.json
   def destroy
+    unless @reimboursement.status_created?
+      redirect_to reimboursements_path, alert: "Non puoi eliminare un rimborso che non è in attesa di elaborazione. Solo i rimborsi in stato 'Creato' possono essere eliminati."
+      return
+    end
+
     @reimboursement.destroy!
 
     respond_to do |format|
-      format.html { redirect_to reimboursements_path, status: :see_other, notice: "Reimboursement was successfully destroyed." }
+      format.html { redirect_to reimboursements_path, status: :see_other, notice: "Rimborso eliminato con successo." }
       format.json { head :no_content }
     end
   end

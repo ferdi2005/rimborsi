@@ -136,9 +136,15 @@
               <% end %>
               <% if reimboursement.user_id == current_user.id || current_user.admin? %>
                 <%= link_to 'Modifica', edit_reimboursement_path(reimboursement), class: "btn btn-outline-secondary btn-sm" %>
-                <%= link_to 'Elimina', reimboursement, method: :delete, 
-                            data: { confirm: 'Sei sicuro di voler eliminare questo rimborso?' }, 
-                            class: "btn btn-outline-danger btn-sm" %>
+                <% if reimboursement.status == "created" %>
+                  <%= button_to 'Elimina', reimboursement, method: :delete, 
+                              data: { confirm: 'Sei sicuro di voler eliminare questo rimborso?' }, 
+                              class: "btn btn-outline-danger btn-sm" %>
+                <% else %>
+                  <button class="btn btn-outline-danger btn-sm" disabled title="Puoi eliminare solo rimborsi in attesa di elaborazione">
+                    Elimina
+                  </button>
+                <% end %>
               <% end %>
             </div>
           </div>
