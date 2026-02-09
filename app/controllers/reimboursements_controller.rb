@@ -4,30 +4,30 @@ class ReimboursementsController < ApplicationController
   # GET /reimboursements or /reimboursements.json
   def index
     # Definisci gli stati di default
-    default_statuses = ['created', 'in_process', 'waiting']
-    
+    default_statuses = [ "created", "in_process", "waiting" ]
+
     # Ottieni i parametri di filtro
     @filter_statuses = params[:statuses].present? ? params[:statuses].reject(&:blank?) : default_statuses
     @filter_user_id = params[:user_id].presence
-    
+
     # Base query
     if current_user.admin?
       @reimboursements = Reimboursement.all
       @users = User.joins(:reimboursements).distinct.order(:name, :surname)
     else
       @reimboursements = current_user.reimboursements
-      @users = [current_user] # Solo l'utente corrente
+      @users = [ current_user ] # Solo l'utente corrente
     end
-    
+
     # Applica filtri
     if @filter_statuses.present?
       @reimboursements = @reimboursements.where(status: @filter_statuses)
     end
-    
+
     if @filter_user_id.present? && current_user.admin?
       @reimboursements = @reimboursements.where(user_id: @filter_user_id)
     end
-    
+
     @reimboursements = @reimboursements.includes(:user, :bank_account, :expenses).order(created_at: :desc)
   end
 
@@ -230,7 +230,8 @@ class ReimboursementsController < ApplicationController
       send_data pdf_content,
                 filename: "rimborso_#{@reimboursement.id}_#{Date.current.strftime('%Y%m%d')}.pdf",
                 type: "application/pdf",
-                disposition: "attachment"
+                disposition: "attachment",
+                content_length: pdf_content.bytesize
     rescue => e
       Rails.logger.error "Error generating PDF for reimboursement #{@reimboursement.id}: #{e.message}"
       redirect_to @reimboursement, alert: "Errore nella generazione del PDF. Riprova più tardi."

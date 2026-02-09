@@ -132,9 +132,7 @@ GEM
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
     cgi (0.5.0)
-    combine_pdf (1.0.31)
-      matrix
-      ruby-rc4 (>= 0.1.5)
+    cmdparse (3.0.7)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.4)
     crass (1.0.6)
@@ -169,6 +167,7 @@ GEM
     ffi (1.17.2-arm64-darwin)
     ffi (1.17.2-x86_64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
+    geom2d (0.4.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
     google-protobuf (4.31.1)
@@ -187,6 +186,11 @@ GEM
       bigdecimal
       rake (>= 13)
     hashery (2.1.2)
+    hexapdf (1.5.0)
+      cmdparse (~> 3.0, >= 3.0.3)
+      geom2d (~> 0.4, >= 0.4.1)
+      openssl (>= 2.2.1)
+      strscan (>= 3.1.2)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     iban-tools (1.2.1)
@@ -256,13 +260,13 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-gnu)
       racc (~> 1.4)
+    openssl (4.0.0)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
     parallel (1.26.3)
     parser (3.3.5.0)
       ast (~> 2.4.1)
       racc
-    pdf-core (0.10.0)
     pdf-reader (2.14.1)
       Ascii85 (>= 1.0, < 3.0, != 2.0.0)
       afm (~> 0.2.1)
@@ -274,12 +278,6 @@ GEM
     popper_js (2.11.8)
     pp (0.6.2)
       prettyprint
-    prawn (2.5.0)
-      matrix (~> 0.4)
-      pdf-core (~> 0.10.0)
-      ttfunk (~> 1.8)
-    prawn-table (0.2.2)
-      prawn (>= 1.3.0, < 3.0.0)
     prettyprint (0.2.0)
     psych (5.2.6)
       date
@@ -423,6 +421,7 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.1.7)
+    strscan (3.1.7)
     thor (1.3.2)
     tilt (2.6.0)
     timeout (0.4.1)
@@ -475,12 +474,12 @@ DEPENDENCIES
   capistrano-yarn
   capistrano3-puma (~> 6.2.0)
   capybara
-  combine_pdf
   dartsass-sprockets
   debug
   devise (~> 4.9)
   dotenv-rails
   error_highlight (>= 0.4.0)
+  hexapdf
   iban-tools
   image_processing (~> 1.2)
   importmap-rails
@@ -491,8 +490,6 @@ DEPENDENCIES
   pdf-reader (~> 2.11)
   pdfinfo
   pg (~> 1.1)
-  prawn (~> 2.4)
-  prawn-table (~> 0.2)
   puma (>= 5.0)
   rails (~> 7.2.1, >= 7.2.1.1)
   rubocop-rails-omakase

@@ -89,10 +89,8 @@ gem "devise", "~> 4.9"
 # Load environment variables from .env file
 gem "dotenv-rails"
 
-# PDF generation
-gem "prawn", "~> 2.4"
-gem "prawn-table", "~> 0.2"
-gem "combine_pdf"
+# PDF generation and manipulation
+gem "hexapdf"
 gem "pdf-reader", "~> 2.11"
 
 # XML parsing for electronic invoices
