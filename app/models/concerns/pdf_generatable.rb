@@ -46,7 +46,7 @@ module PdfGeneratable
     expenses.any? { |expense| expense.attachment.attached? || expense.pdf_attachment.attached? }
   end
 
-  def validate_file_before_processing!(file)
+  def validate_file_before_processing!(file, allow_images: false)
     """
     Valida il file prima di elaborarlo.
     Lancia un'eccezione se il file non è valido.
@@ -56,11 +56,33 @@ module PdfGeneratable
     raise StandardError, "File troppo grande (max #{MAX_FILE_SIZE.to_i / 1.megabyte}MB)" if file_size > MAX_FILE_SIZE
     raise StandardError, "File vuoto o corrotto" if file_size.zero?
 
-    # 2. Verifica magic bytes per i PDF
-    beginning = file.download[0..4]
-    unless beginning.start_with?("%PDF")
-      raise StandardError, "File non è un PDF valido (magic bytes assenti)"
+    # 2. Verifica magic bytes per PDF o immagini
+    beginning = file.download.byteslice(0, 8)
+    return if beginning.start_with?("%PDF".b)
+
+    if allow_images
+      # Se è un'immagine valida, accetta
+      return if image_magic_bytes?(beginning) || (file.respond_to?(:content_type) && file.content_type.to_s.start_with?("image/"))
     end
+
+    raise StandardError, "File non è un PDF o immagine valida (magic bytes assenti)"
+  end
+
+  def image_magic_bytes?(bytes)
+    return false unless bytes
+
+    # PNG: 89 50 4E 47 0D 0A 1A 0A
+    return true if bytes.start_with?("\x89PNG\r\n\x1A\n".b)
+    # JPEG: FF D8 FF
+    return true if bytes.bytes[0, 3] == [ 0xFF, 0xD8, 0xFF ]
+    # GIF: GIF87a / GIF89a
+    return true if bytes.start_with?("GIF87a".b) || bytes.start_with?("GIF89a".b)
+    # TIFF: II*\x00 or MM\x00*
+    return true if bytes.start_with?("II*\x00".b) || bytes.start_with?("MM\x00*".b)
+    # BMP: BM
+    return true if bytes.start_with?("BM".b)
+
+    false
   end
 
   def validate_pdf_structure!(pdf_path)
@@ -178,7 +200,7 @@ module PdfGeneratable
           invoice_data = expense.pdf_attachment.download
 
           # Validazione del file prima del salvataggio
-          validate_file_before_processing!(expense.pdf_attachment)
+          validate_file_before_processing!(expense.pdf_attachment, allow_images: false)
 
           temp_invoice.write(invoice_data)
           temp_invoice.close
@@ -203,7 +225,7 @@ module PdfGeneratable
       receipt = expense.attachment
       begin
         # Validazione del file prima del processamento
-        validate_file_before_processing!(receipt)
+        validate_file_before_processing!(receipt, allow_images: true)
 
         if receipt.content_type == "application/pdf"
           # For PDF receipts, try to open with HexaPDF (handles most encrypted PDFs automatically)
@@ -237,10 +259,7 @@ module PdfGeneratable
           safe_process_file_with_timeout(temp_image) do |file|
             # Create a temporary PDF with the image using HexaPDF
             image_composer = HexaPDF::Composer.new
-            image_composer.image(file.path,
-                                width: image_composer.frame.width,
-                                height: image_composer.frame.height,
-                                position: :center)
+            image_composer.image(file.path)
 
             temp_image_pdf = Tempfile.new([ "receipt_pdf", ".pdf" ])
             temp_image_pdf.close
