@@ -1067,6 +1067,6 @@ it:
         telephone_label: "Telefono"
         telephone_help: "Numero di cellulare senza spazi e senza prefisso: 3331234567"
         telephone_title: "Numero di telefono italiano senza spazi e senza prefisso (es: 3331234567)"
-        fiscal_code_label: "Codice Fiscale"
+        fiscal_code_label: "Codice fiscale"
         fiscal_code_help: "Codice fiscale"
         fiscal_code_title: "Codice fiscale"
