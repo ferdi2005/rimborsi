@@ -7,10 +7,12 @@ class ReimboursementMailer < ApplicationMailer
     @user = @reimboursement.user
     @author = note.user
 
-    mail(
-      to: @user.email,
-      subject: "Nuova nota aggiunta al Rimborso ##{@reimboursement.id}"
-    )
+    I18n.with_locale(@user.locale.to_sym) do
+      mail(
+        to: @user.email,
+        subject: "Nuova nota aggiunta al Rimborso ##{@reimboursement.id}"
+      )
+    end
   end
 
   def status_changed(reimboursement, note = nil)
@@ -19,10 +21,12 @@ class ReimboursementMailer < ApplicationMailer
     @note = note
     @author = note&.user
 
-    mail(
-      to: @user.email,
-      subject: "Stato rimborso ##{@reimboursement.id} aggiornato a: #{@reimboursement.status_in_italian}"
-    )
+    I18n.with_locale(@user.locale.to_sym) do
+      mail(
+        to: @user.email,
+        subject: "Stato rimborso ##{@reimboursement.id} aggiornato a: #{@reimboursement.status_in_italian}"
+      )
+    end
   end
 
   def admin_note_notification(note)
@@ -33,9 +37,11 @@ class ReimboursementMailer < ApplicationMailer
 
     admin_email = ENV["EMAIL_AMMINISTRAZIONE"] || ENV["MAIL_USERNAME"]
 
-    mail(
-      to: admin_email,
-      subject: "Nuova nota da utente - Rimborso ##{@reimboursement.id}"
-    )
+    I18n.with_locale(@user.locale.to_sym) do
+      mail(
+        to: admin_email,
+        subject: "Nuova nota da utente - Rimborso ##{@reimboursement.id}"
+      )
+    end
   end
 end

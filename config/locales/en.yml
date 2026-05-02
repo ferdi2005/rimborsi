@@ -961,6 +961,7 @@ en:
         status_th: "Status"
         actions_th: "Actions"
         na: "N/A"
+      new:
           title: "New payment"
           back_to_payments: "Back to payments"
           details_header: "Payment details"
@@ -987,7 +988,7 @@ en:
           available_count_label: "reimbursements"
           for_a_total: "for a total of"
           selected_total: "Selected total:"
-        no_available_text: "There are no approved reimbursements with available bank accounts to create a payment."
+          no_available_text: "There are no approved reimbursements with available bank accounts to create a payment."
       edit:
         title: "Edit payment"
         back: "Back to payment"

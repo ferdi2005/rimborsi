@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   # Callbacks per prevenire eliminazione se ci sono rimborsi
   before_destroy :check_associated_reimboursements
+  before_create :set_default_locale
 
   # Associations
   belongs_to :role, optional: true
@@ -34,6 +35,9 @@ class User < ApplicationRecord
     with: /\A[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\z/,
     message: "deve essere un indirizzo email valido"
   }
+
+  # Validazione locale
+  validates :locale, inclusion: { in: %w(it en), message: "deve essere 'it' o 'en'" }
 
   # Metodi per gestire il conto predefinito
   def default_account
@@ -77,6 +81,10 @@ class User < ApplicationRecord
   end
 
   private
+
+  def set_default_locale
+    self.locale ||= I18n.default_locale.to_s
+  end
 
   def check_associated_reimboursements
     if reimboursements.any?
