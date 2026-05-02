@@ -1,7 +1,7 @@
 <%= form_with(model: reimboursement, local: true) do |form| %>
   <% if reimboursement.errors.any? %>
     <div class="alert alert-danger">
-      <h6><%= pluralize(reimboursement.errors.count, "errore", "errori") %> ha impedito il salvataggio:</h6>
+      <h6><%= t('reimboursements.form.errors_title', count: reimboursement.errors.count) %></h6>
       <ul class="mb-0">
         <% reimboursement.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -16,27 +16,27 @@
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">
           <h5 class="mb-0">
-            <i class="fas fa-info-circle me-2"></i>Informazioni Generali
+            <i class="fas fa-info-circle me-2"></i><%= t('reimboursements.form.general_info_title') %>
           </h5>
         </div>
         <div class="card-body">
           <% if current_user.admin? %>
             <div class="mb-3">
-              <%= form.label :status, "Stato", class: "form-label" %>
+              <%= form.label :status, t('reimboursements.form.status_label'), class: "form-label" %>
               <%= form.select :status, 
                             options_for_select(
                               Reimboursement.status_translations.map { |key, value| [value, key] },
                               reimboursement.status
                             ), 
-                            { prompt: "Seleziona stato" }, 
+                            { prompt: t('reimboursements.form.select_status') }, 
                             { class: "form-select" } %>
             </div>
 
             <div class="mb-3">
-              <%= form.label :user_id, "Utente", class: "form-label" %>
+              <%= form.label :user_id, t('reimboursements.form.user_label'), class: "form-label" %>
               <%= form.collection_select :user_id, User.all, :id, 
                                         ->(user) { "#{user.name} #{user.surname}" }, 
-                                        { prompt: "Seleziona utente" }, 
+                                        { prompt: t('reimboursements.form.select_user') }, 
                                         { class: "form-select" } %>
             </div>
           <% else %>
@@ -47,7 +47,7 @@
                 </div>
                 <div>
                   <h6 class="mb-1">
-                    <i class="fas fa-id-card me-2"></i>Richiedente
+                    <i class="fas fa-id-card me-2"></i><%= t('reimboursements.form.requester_title') %>
                   </h6>
                   <p class="mb-0 fw-bold"><%= current_user.name %> <%= current_user.surname %></p>
                 </div>
@@ -61,13 +61,13 @@
                 </div>
                 <div>
                   <h6 class="mb-1">
-                    <i class="fas fa-clipboard-check me-2"></i>Stato iniziale
+                    <i class="fas fa-clipboard-check me-2"></i><%= t('reimboursements.form.initial_status_title') %>
                   </h6>
                   <p class="mb-2">
                   <%= status_badge("created", :reimboursement) %>
                   </p>
                   <small class="text-muted">
-                    Il rimborso verrà sottoposto a revisione e riceverai notifiche via email per ogni aggiornamento
+                    <%= t('reimboursements.form.initial_status_text') %>
                   </small>
                 </div>
               </div>
@@ -81,23 +81,23 @@
     <div class="col-md-6">
       <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Metodo di Pagamento</h5>
+          <h5 class="mb-0"><%= t('reimboursements.form.payment_method_title') %></h5>
           <div class="btn-group btn-group-sm">
-            <%= link_to "Nuovo Conto", new_bank_account_path, 
+            <%= link_to t('reimboursements.form.add_bank_account'), new_bank_account_path, 
                         class: "btn btn-outline-primary btn-sm", 
                         target: "_blank", 
-                        title: "Aggiungi nuovo conto bancario" %>
+                        title: t('reimboursements.form.add_bank_account_help') %>
           </div>
         </div>
         <div class="card-body">
           <div class="mb-3">
-            <label class="form-label">Seleziona conto bancario</label>
-            <%= form.label :bank_account_id, "conto bancario", class: "form-label" %>
+            <label class="form-label"><%= t('reimboursements.form.select_bank_account') %></label>
+            <%= form.label :bank_account_id, t('reimboursements.form.bank_account_label'), class: "form-label" %>
             <%= form.collection_select :bank_account_id, 
                                       current_user.admin? ? BankAccount.all : current_user.bank_accounts, 
                                       :id, 
                                       ->(account) { "#{account.iban} - #{account.owner}#{account.default? ? ' (Predefinito)' : ''}" }, 
-                                      { prompt: "Seleziona conto bancario" }, 
+                                      { prompt: t('reimboursements.form.select_bank_account') }, 
                                       { class: "form-select" } %>
           </div>
         </div>
@@ -108,9 +108,9 @@
   <!-- Spese -->
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Spese</h5>
+      <h5 class="mb-0"><%= t('reimboursements.form.expenses_title') %></h5>
       <button type="button" class="btn btn-primary btn-sm" id="add-expense">
-        <i class="fas fa-plus"></i> Aggiungi spesa
+        <i class="fas fa-plus"></i> <%= t('reimboursements.form.add_expense') %>
       </button>
     </div>
     <div class="card-body">
@@ -122,7 +122,7 @@
 
       <div class="d-flex justify-content-end mt-3">
         <button type="button" class="btn btn-primary btn-sm" id="add-expense-bottom">
-          <i class="fas fa-plus"></i> Aggiungi spesa
+          <i class="fas fa-plus"></i> <%= t('reimboursements.form.add_expense') %>
         </button>
       </div>
       
@@ -136,7 +136,7 @@
         <div class="col-md-12">
           <div class="card bg-light">
             <div class="card-body text-center">
-              <h5 class="mb-0">Totale: <span id="total-amount" class="text-primary">€ 0,00</span></h5>
+              <h5 class="mb-0"><%= t('reimboursements.form.total_label') %>: <span id="total-amount" class="text-primary">€ 0,00</span></h5>
             </div>
           </div>
         </div>
@@ -150,19 +150,19 @@
       <div class="card mb-4">
         <div class="card-header bg-info text-white">
           <h5 class="mb-0">
-            <i class="fas fa-sticky-note me-2"></i>Nota iniziale (opzionale)
+            <i class="fas fa-sticky-note me-2"></i><%= t('reimboursements.form.initial_note_title') %>
           </h5>
         </div>
         <div class="card-body">
           <div class="mb-3">
-            <%= form.label :initial_note, "Aggiungi una nota al rimborso", class: "form-label" %>
+            <%= form.label :initial_note, t('reimboursements.form.initial_note_label'), class: "form-label" %>
             <%= form.text_area :initial_note, 
                 class: "form-control", 
                 rows: 4, 
-                placeholder: "Inserisci qui eventuali informazioni aggiuntive sul rimborso..." %>
+                placeholder: t('reimboursements.form.initial_note_placeholder') %>
             <div class="form-text">
               <i class="fas fa-info-circle me-1"></i>
-              Questa nota sarà visibile alla segreteria e potrà aiutarli nella valutazione del rimborso.
+              <%= t('reimboursements.form.initial_note_help') %>
             </div>
           </div>
         </div>
@@ -172,11 +172,11 @@
 
   <!-- Bottoni di azione -->
   <div class="d-flex justify-content-between">
-    <%= link_to 'Annulla', reimboursements_path, class: 'btn btn-secondary' %>
-    <%= form.submit "Salva e invia rimborso", class: 'btn btn-success' %>
+    <%= link_to t('reimboursements.form.cancel'), reimboursements_path, class: 'btn btn-secondary' %>
+    <%= form.submit t('reimboursements.form.submit'), class: 'btn btn-success' %>
   </div>
   <div class="form-text text-end">
-    Potrai modificare il rimborso anche dopo l'invio fino a quando non passerà in approvazione dalla segreteria.
+    <%= t('reimboursements.form.submit_hint') %>
   </div>
 
 <% end %>
@@ -268,11 +268,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (amountField) {
       amountField.readOnly = false;
       amountField.className = 'form-control';
-      amountField.placeholder = 'Inserisci importo';
+      amountField.placeholder = '<%= j t("reimboursements.form.amount_placeholder") %>';
       amountField.style.backgroundColor = '';
     }
     if (amountLabel) {
-      amountLabel.textContent = 'Importo';
+      amountLabel.textContent = '<%= j t("activerecord.attributes.expense.amount") %>';
     }
     
     // Seleziona "Normale" per default
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Se la spesa ha un campo _destroy, significa che è già salvata nel database
     if (destroyField) {
       // Conferma prima di cancellare
-      if (confirm('Sei sicuro di voler cancellare questa spesa?')) {
+      if (confirm('<%= j t("reimboursements.expense_fields.delete_confirm") %>')) {
         // Imposta il campo _destroy su true per marcare la spesa per la cancellazione
         destroyField.value = 'true';
         
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Aggiungi un overlay per indicare che sarà cancellata
         const overlay = document.createElement('div');
         overlay.className = 'deletion-overlay';
-        overlay.innerHTML = '<div class="deletion-message"><i class="fas fa-trash"></i> Spesa marcata per la cancellazione</div>';
+        overlay.innerHTML = '<div class="deletion-message"><i class="fas fa-trash"></i> <%= j t("reimboursements.expense_fields.marked_for_deletion") %></div>';
         overlay.style.cssText = `
           position: absolute;
           top: 0;

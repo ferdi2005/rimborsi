@@ -3,7 +3,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h2 class="mb-0">Modifica Rimborso #<%= @reimboursement.id %></h2>
+          <h2 class="mb-0"><%= t('reimboursements.edit.title') %> #<%= @reimboursement.id %></h2>
         </div>
         <div class="card-body">
           <%= render 'form', reimboursement: @reimboursement %>

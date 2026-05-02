@@ -1,8 +1,8 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1><%= neutral_icon("file-invoice-dollar", class: "me-2") %>Rimborsi</h1>
+    <h1><%= neutral_icon("file-invoice-dollar", class: "me-2") %><%= t('.title') %></h1>
     <%= link_to new_reimboursement_path, class: "btn btn-primary" do %>
-      <%= neutral_icon("plus", class: "me-2") %>Nuovo Rimborso
+      <%= neutral_icon("plus", class: "me-2") %><%= t('.new') %>
     <% end %>
   </div>
 
@@ -10,7 +10,7 @@
   <div class="card mb-4">
     <div class="card-header">
       <h6 class="mb-0 d-flex align-items-center">
-        <%= neutral_icon("filter", class: "me-2") %>Filtri
+        <%= neutral_icon("filter", class: "me-2") %><%= t('.filters') %>
         <button class="btn btn-sm btn-outline-secondary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" aria-expanded="false">
           <i class="fas fa-chevron-down"></i>
         </button>
@@ -21,7 +21,7 @@
         <%= form_with url: reimboursements_path, method: :get, local: true, class: "row g-3" do |form| %>
           <!-- Filtro Stati -->
           <div class="col-md-8">
-            <%= form.label :statuses, "Stati", class: "form-label" %>
+            <%= form.label :statuses, t('.statuses_label'), class: "form-label" %>
             <div class="d-flex flex-wrap gap-2">
               <% Reimboursement.status_translations.each do |key, value| %>
                 <div class="form-check">
@@ -37,10 +37,10 @@
           <!-- Filtro Utente (solo per admin) -->
           <% if current_user.admin? %>
             <div class="col-md-4">
-              <%= form.label :user_id, "Utente", class: "form-label" %>
+              <%= form.label :user_id, t('.user_label'), class: "form-label" %>
               <%= form.collection_select :user_id, @users, :id, 
                                         ->(user) { "#{user.name} #{user.surname}" }, 
-                                        { prompt: "Tutti gli utenti", selected: @filter_user_id }, 
+                                        { prompt: t('.all_users'), selected: @filter_user_id }, 
                                         { class: "form-select" } %>
             </div>
           <% end %>
@@ -48,10 +48,10 @@
           <!-- Bottoni azione -->
           <div class="col-12">
             <div class="d-flex gap-2">
-              <%= form.submit "Applica Filtri", class: "btn btn-primary btn-sm" %>
-              <%= link_to "Reset", reimboursements_path, class: "btn btn-outline-secondary btn-sm" %>
+              <%= form.submit t('.apply_filters'), class: "btn btn-primary btn-sm" %>
+              <%= link_to t('.reset'), reimboursements_path, class: "btn btn-outline-secondary btn-sm" %>
               <small class="text-muted align-self-center ms-3">
-                Trovati <%= pluralize(@reimboursements.count, 'rimborso', 'rimborsi') %>
+                <%= t('.found', count: @reimboursements.count) %>
               </small>
             </div>
           </div>
@@ -64,7 +64,7 @@
   <% if @filter_statuses.present? || @filter_user_id.present? %>
     <div class="mb-3">
       <div class="d-flex align-items-center flex-wrap gap-2">
-        <small class="text-muted">Filtri attivi:</small>
+        <small class="text-muted"><%= t('.active_filters') %></small>
         
         <!-- Stati filtrati -->
         <% if @filter_statuses.present? %>
@@ -93,16 +93,16 @@
       <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h6 class="mb-0">Rimborso #<%= reimboursement.id %></h6>
+            <h6 class="mb-0"><%= t('.reimbursement_number', id: reimboursement.id) %></h6>
             <%= status_badge(reimboursement.status, :reimboursement) %>
           </div>
           <div class="card-body">
             <% if current_user.admin? %>
-              <p class="card-text"><strong>Utente:</strong> <%= reimboursement.user&.name %> <%= reimboursement.user&.surname %></p>
+              <p class="card-text"><strong><%= t('.user_info') %></strong> <%= reimboursement.user&.name %> <%= reimboursement.user&.surname %></p>
             <% end %>
             
             <p class="card-text">
-              <strong><%= neutral_icon("credit-card", class: "me-2") %>Metodo di pagamento:</strong><br>
+              <strong><%= neutral_icon("credit-card", class: "me-2") %><%= t('.payment_method') %></strong><br>
               <span class="text-muted">
                 <% if reimboursement.bank_account.present? %>
                   <%= neutral_icon("university", class: "me-1") %><%= reimboursement.payment_method_type %>
@@ -116,33 +116,33 @@
             </p>
             
             <p class="card-text">
-              <strong><%= neutral_icon("euro-sign", class: "me-2") %>Totale:</strong> 
+              <strong><%= neutral_icon("euro-sign", class: "me-2") %><%= t('.total') %></strong> 
               <span class="h5 text-primary">€ <%= number_with_precision(reimboursement.total_amount, precision: 2) %></span>
             </p>
             
             <p class="card-text">
-              <strong><%= neutral_icon("receipt", class: "me-2") %>Spese:</strong> <%= pluralize(reimboursement.expenses.count, 'spesa', 'spese') %>
+              <strong><%= neutral_icon("receipt", class: "me-2") %><%= t('.expenses_count') %></strong> <%= pluralize(reimboursement.expenses.count, 'spesa', 'spese') %>
             </p>
             
             <p class="card-text">
-              <small class="text-muted">Creato il <%= reimboursement.created_at.strftime("%d/%m/%Y alle %H:%M") %></small>
+              <small class="text-muted"><%= t('.created_at', time: reimboursement.created_at.strftime("%d/%m/%Y alle %H:%M")) %></small>
             </p>
           </div>
           <div class="card-footer">
             <div class="btn-group w-100" role="group">
-              <%= link_to 'Visualizza', reimboursement, class: "btn btn-outline-primary btn-sm" %>
+              <%= link_to t('.view'), reimboursement, class: "btn btn-outline-primary btn-sm" %>
               <%= link_to download_pdf_reimboursement_path(reimboursement), class: "btn btn-outline-danger btn-sm" do %>
                 <%= neutral_icon("file-pdf") %>
               <% end %>
               <% if reimboursement.user_id == current_user.id || current_user.admin? %>
-                <%= link_to 'Modifica', edit_reimboursement_path(reimboursement), class: "btn btn-outline-secondary btn-sm" %>
+                <%= link_to t('.edit'), edit_reimboursement_path(reimboursement), class: "btn btn-outline-secondary btn-sm" %>
                 <% if reimboursement.status == "created" %>
-                  <%= button_to 'Elimina', reimboursement, method: :delete, 
-                              data: { confirm: 'Sei sicuro di voler eliminare questo rimborso?' }, 
+                  <%= button_to t('.delete'), reimboursement, method: :delete, 
+                              data: { confirm: t('.delete_confirm') }, 
                               class: "btn btn-outline-danger btn-sm" %>
                 <% else %>
-                  <button class="btn btn-outline-danger btn-sm" disabled title="Puoi eliminare solo rimborsi in attesa di elaborazione">
-                    Elimina
+                  <button class="btn btn-outline-danger btn-sm" disabled title="<%= t('.delete_disabled_title') %>">
+                    <%= t('.delete') %>
                   </button>
                 <% end %>
               <% end %>
@@ -155,14 +155,14 @@
   
   <% if @reimboursements.empty? %>
     <div class="alert alert-info text-center">
-      <h5>Nessun rimborso trovato</h5>
+      <h5><%= t('.empty_title') %></h5>
       <% if @filter_statuses.present? || @filter_user_id.present? %>
-        <p>Non ci sono rimborsi che corrispondono ai filtri selezionati.</p>
-        <%= link_to 'Rimuovi filtri', reimboursements_path, class: "btn btn-outline-primary me-2" %>
-        <%= link_to 'Crea Nuovo Rimborso', new_reimboursement_path, class: "btn btn-primary" %>
+        <p><%= t('.empty_filtered') %></p>
+        <%= link_to t('.remove_filters'), reimboursements_path, class: "btn btn-outline-primary me-2" %>
+        <%= link_to t('.create_new'), new_reimboursement_path, class: "btn btn-primary" %>
       <% else %>
-        <p>Puoi creare il tuo primo rimborso.</p>
-        <%= link_to 'Crea Nuovo Rimborso', new_reimboursement_path, class: "btn btn-primary" %>
+        <p><%= t('.empty_text') %></p>
+        <%= link_to t('.create_new'), new_reimboursement_path, class: "btn btn-primary" %>
       <% end %>
     </div>
   <% end %>
@@ -214,8 +214,8 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleButton.type = 'button';
     toggleButton.className = 'btn btn-sm btn-outline-secondary toggle-all-btn';
     toggleButton.innerHTML = checkedCount === allCheckboxes.length ? 
-      '<i class="fas fa-square-minus me-1"></i>Deseleziona tutti' : 
-      '<i class="fas fa-square-check me-1"></i>Seleziona tutti';
+      '<i class="fas fa-square-minus me-1"></i><%= j t('.deselect_all') %>' : 
+      '<i class="fas fa-square-check me-1"></i><%= j t('.select_all') %>';
     
     toggleButton.addEventListener('click', function() {
       const shouldCheck = checkedCount < allCheckboxes.length;

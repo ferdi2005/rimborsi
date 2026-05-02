@@ -11,7 +11,7 @@
     <!-- Campo importo unificato -->
     <div class="col-md-3">
       <%= f.label :amount, class: "form-label" do %>
-        <%= f.object.car? ? "Importo calcolato" : "Importo spesa" %> <span class="text-danger">*</span>
+        <%= f.object.car? ? t('reimboursements.expense_fields.calculated_amount_label') : t('reimboursements.expense_fields.amount_label') %> <span class="text-danger">*</span>
       <% end %>
       <div class="input-group">
         <span class="input-group-text">€</span>
@@ -20,7 +20,7 @@
             min: 0, 
             readonly: f.object.car?, 
             class: "form-control #{'calculated-amount' if f.object.car?}", 
-            placeholder: f.object.car? ? "Autocalcolato" : "Inserisci importo",
+            placeholder: f.object.car? ? t('reimboursements.expense_fields.auto_calculated') : t('reimboursements.form.amount_placeholder'),
             style: f.object.car? ? "background-color: #f8f9fa;" : "" %>
       </div>
     </div>
@@ -28,7 +28,7 @@
     <!-- Campo requested_amount -->
     <div class="col-md-3">
       <%= f.label :requested_amount, class: "form-label" do %>
-        Importo richiesto come rimborso <span class="text-danger">*</span>
+        <%= t('reimboursements.expense_fields.requested_amount_label') %> <span class="text-danger">*</span>
       <% end %>
       <div class="input-group">
         <span class="input-group-text">€</span>
@@ -36,34 +36,34 @@
             step: 0.01, 
             min: 0, 
             class: "form-control", 
-            placeholder: "Importo richiesto" %>
+            placeholder: t('reimboursements.expense_fields.requested_amount_placeholder') %>
       </div>
-      <small class="form-text text-muted">Eventuale importo parziale o totale richiesto</small>
+      <small class="form-text text-muted"><%= t('reimboursements.expense_fields.requested_amount_help') %></small>
     </div>
     
     <div class="col-md-3">
       <%= f.label :purpose, class: "form-label" do %>
-        Descrizione <span class="text-danger">*</span>
+        <%= t('activerecord.attributes.expense.purpose') %> <span class="text-danger">*</span>
       <% end %>
-      <%= f.text_field :purpose, class: "form-control", placeholder: "Descrivi la spesa..." %>
+      <%= f.text_field :purpose, class: "form-control", placeholder: t('reimboursements.expense_fields.purpose_placeholder') %>
     </div>
     
     <div class="col-md-2">
       <%= f.label :date, class: "form-label" do %>
-        Data giustificativo <span class="text-danger">*</span>
+        <%= t('reimboursements.expense_fields.date_label') %> <span class="text-danger">*</span>
       <% end %>
       <%= f.date_field :date, class: "form-control", value: f.object.date || Date.current %>
     </div>
 
     <div class="col-md-1">
-      <label class="form-label">Tipo <span class="text-danger">*</span></label>
+      <label class="form-label"><%= t('reimboursements.expense_fields.type_label') %> <span class="text-danger">*</span></label>
       <div class="form-check">
         <%= f.radio_button :car, false, class: "form-check-input", id: "#{f.object_name}_car_false", checked: !f.object.car? %>
-        <%= f.label :car, "Normale", class: "form-check-label", for: "#{f.object_name}_car_false" %>
+        <%= f.label :car, t('reimboursements.expense_fields.normal'), class: "form-check-label", for: "#{f.object_name}_car_false" %>
       </div>
       <div class="form-check">
         <%= f.radio_button :car, true, class: "form-check-input car-type", id: "#{f.object_name}_car_true", checked: f.object.car? %>
-        <%= f.label :car, "Auto", class: "form-check-label", for: "#{f.object_name}_car_true" %>
+        <%= f.label :car, t('reimboursements.expense_fields.car'), class: "form-check-label", for: "#{f.object_name}_car_true" %>
       </div>
     </div>
   </div>
@@ -72,18 +72,18 @@
   <div class="row mt-3">
     <div class="col-md-6">
       <%= f.label :fund_id, class: "form-label" do %>
-        Fondo <span class="text-danger">*</span>
+        <%= t('reimboursements.expense_fields.fund_label') %> <span class="text-danger">*</span>
       <% end %>
       <%= f.select :fund_id, 
           options_from_collection_for_select(Fund.active.order(:name), :id, :name, f.object.fund_id),
-          { prompt: "Seleziona fondo" },
+          { prompt: t('reimboursements.expense_fields.select_fund') },
           { class: "form-select" } %>
     </div>
     <div class="col-md-6">
       <%= f.label :project, class: "form-label" do %>
-        Progetto <span class="text-danger">*</span>
+        <%= t('reimboursements.expense_fields.project_label') %> <span class="text-danger">*</span>
       <% end %>
-      <%= f.text_field :project, class: "form-control", placeholder: "Nome del progetto (es. Microgrant Wiki Loves Puglia 2025)..." %>
+      <%= f.text_field :project, class: "form-control", placeholder: t('reimboursements.expense_fields.project_placeholder') %>
     </div>
   </div>
 
@@ -91,13 +91,13 @@
   <% if current_user.admin? %>
     <div class="row mt-4">
       <div class="col-md-3">
-        <%= f.label :status, "Status", class: "form-label" %>
+        <%= f.label :status, t('reimboursements.expense_fields.status_label'), class: "form-label" %>
         <%= f.select :status, 
                     options_for_select(
                       Expense.status_translations.map { |key, value| [value, key] },
                       f.object.status
                     ), 
-                    { prompt: "Seleziona status" }, 
+                    { prompt: t('reimboursements.expense_fields.select_status') }, 
                     { class: "form-select" } %>
       </div>
     </div>
@@ -107,7 +107,7 @@
   <div class="row mt-4 attachment-field" style="<%= 'display: none;' if f.object.car? %>">
     <div class="col-md-12">
       <%= f.label :attachment, class: "form-label" do %>
-        Allegato <span class="text-danger">*</span>
+        <%= t('reimboursements.expense_fields.attachment_label') %> <span class="text-danger">*</span>
       <% end %>
       
       <% if f.object.attachment.attached? && f.object.attachment.persisted? %>
@@ -117,7 +117,7 @@
             <div class="d-flex align-items-center">
               <i class="<%= file_icon(f.object) %> me-2"></i>
               <div>
-                <strong>File attuale:</strong> <%= f.object.attachment.filename %>
+                <strong><%= t('reimboursements.expense_fields.current_file') %>:</strong> <%= f.object.attachment.filename %>
                 <br>
                 <small class="text-muted">
                   <%= number_to_human_size(f.object.attachment.byte_size) %> • 
@@ -130,12 +130,12 @@
             <div class="btn-group btn-group-sm">
               <%= link_to f.object.attachment, target: "_blank", 
                           class: "btn btn-outline-primary btn-sm",
-                          title: "Visualizza file" do %>
+                          title: t('reimboursements.expense_fields.view_file') do %>
                 <i class="fas fa-eye"></i>
               <% end %>
               <button type="button" class="btn btn-outline-warning btn-sm" 
                       onclick="toggleFileReplacement(this)"
-                      title="Sostituisci file">
+                      title="<%= t('reimboursements.expense_fields.replace_file') %>">
                 <i class="fas fa-edit"></i>
               </button>
             </div>
@@ -147,19 +147,19 @@
           <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
           <small class="form-text text-muted">
             <i class="fas fa-exclamation-triangle text-warning me-1"></i>
-            Carica un nuovo file per sostituire quello esistente
+            <%= t('reimboursements.expense_fields.replace_file_help') %>
           </small>
           <div class="mt-2">
             <button type="button" class="btn btn-sm btn-secondary" 
                     onclick="cancelFileReplacement(this)">
-              <i class="fas fa-times"></i> Annulla
+              <i class="fas fa-times"></i> <%= t('reimboursements.form.cancel') %>
             </button>
           </div>
         </div>
       <% else %>
         <!-- Nessun allegato esistente -->
         <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
-        <small class="form-text text-muted">Carica ricevuta o fattura (immagine o PDF) o fattura elettronica (.xml, .xml.p7m)</small>
+        <small class="form-text text-muted"><%= t('reimboursements.expense_fields.attachment_help') %></small>
       <% end %>
     </div>
   </div>
@@ -167,60 +167,60 @@
   <!-- Campi specifici per spese auto -->
   <div class="car-fields mt-4" style="<%= 'display: none;' unless f.object.car? %>">
     <div class="alert alert-info mb-4">
-      <strong>Calcolo del rimborso auto</strong><br>
-      Utilizza <a href="https://costikm.aci.it/" target="_blank" class="alert-link">https://costikm.aci.it/</a> per calcolare i parametri necessari.
+      <strong><%= t('reimboursements.expense_fields.car_calculation_title') %></strong><br>
+      <%= t('reimboursements.expense_fields.car_calculation_help_html', url: 'https://costikm.aci.it/') %>
     </div>
     
     <div class="row g-3">
       <div class="col-md-4">
         <%= f.label :calculation_date, class: "form-label" do %>
-          Data di calcolo <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.calculation_date_label') %> <span class="text-danger">*</span>
         <% end %>
         <%= f.date_field :calculation_date, class: "form-control" %>
       </div>
       
       <div class="col-md-4">
         <%= f.label :departure, class: "form-label" do %>
-          Città di partenza <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.departure_label') %> <span class="text-danger">*</span>
         <% end %>
-        <%= f.text_field :departure, class: "form-control", placeholder: "Es: Milano" %>
+        <%= f.text_field :departure, class: "form-control", placeholder: t('reimboursements.expense_fields.departure_placeholder') %>
       </div>
       
       <div class="col-md-4">
         <%= f.label :arrival, class: "form-label" do %>
-          Città di arrivo <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.arrival_label') %> <span class="text-danger">*</span>
         <% end %>
-        <%= f.text_field :arrival, class: "form-control", placeholder: "Es: Roma" %>
+        <%= f.text_field :arrival, class: "form-control", placeholder: t('reimboursements.expense_fields.arrival_placeholder') %>
       </div>
     </div>
     
     <div class="row g-3 mt-3">
       <div class="col-md-3">
         <%= f.label :distance, class: "form-label" do %>
-          Distanza (km) <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.distance_label') %> <span class="text-danger">*</span>
         <% end %>
         <%= f.number_field :distance, class: "form-control distance-input", min: 1, step: 0.1 %>
       </div>
       
       <div class="col-md-3">
         <%= f.label :vehicle_id, class: "form-label" do %>
-          Veicolo <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.vehicle_label') %> <span class="text-danger">*</span>
         <% end %>
         <%= f.collection_select :vehicle_id, 
                                 (current_user.admin? ? Vehicle.includes(:user).all : current_user.vehicles), 
                                 :id, 
                                 ->(vehicle) { current_user.admin? ? "#{vehicle.display_name} (#{vehicle.user.name} #{vehicle.user.surname})" : vehicle.display_name },
-                                { prompt: "Seleziona veicolo", selected: current_user.default_vehicle&.id },
+                                { prompt: t('reimboursements.expense_fields.select_vehicle'), selected: current_user.default_vehicle&.id },
                                 { class: "form-select" } %>
         <small class="form-text text-muted">
-          <%= link_to "Aggiungi nuovo veicolo", new_vehicle_path, target: "_blank", class: "text-decoration-none" %>
+          <%= link_to t('reimboursements.expense_fields.add_new_vehicle'), new_vehicle_path, target: "_blank", class: "text-decoration-none" %>
         </small>
       </div>
       
       <div class="col-md-3">
         <div class="form-check mt-4">
           <%= f.check_box :return_trip, class: "form-check-input return-trip-input" %>
-          <%= f.label :return_trip, "Andata e ritorno", class: "form-check-label" %>
+          <%= f.label :return_trip, t('reimboursements.expense_fields.return_trip'), class: "form-check-label" %>
         </div>
       </div>
     </div>
@@ -228,7 +228,7 @@
     <div class="row g-3 mt-3">
       <div class="col-md-3">
         <%= f.label :quota_capitale, class: "form-label" do %>
-          Quota capitale <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.quota_capitale') %> <span class="text-danger">*</span>
         <% end %>
         <div class="input-group">
           <span class="input-group-text">€</span>
@@ -238,7 +238,7 @@
       
       <div class="col-md-3">
         <%= f.label :carburante, class: "form-label" do %>
-          Quota carburante <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.carburante') %> <span class="text-danger">*</span>
         <% end %>
         <div class="input-group">
           <span class="input-group-text">€</span>
@@ -248,7 +248,7 @@
       
       <div class="col-md-3">
         <%= f.label :pneumatici, class: "form-label" do %>
-          Pneumatici <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.pneumatici') %> <span class="text-danger">*</span>
         <% end %>
         <div class="input-group">
           <span class="input-group-text">€</span>
@@ -258,7 +258,7 @@
       
       <div class="col-md-3">
         <%= f.label :manutenzione, class: "form-label" do %>
-          Manutenzione <span class="text-danger">*</span>
+          <%= t('reimboursements.expense_fields.manutenzione') %> <span class="text-danger">*</span>
         <% end %>
         <div class="input-group">
           <span class="input-group-text">€</span>
