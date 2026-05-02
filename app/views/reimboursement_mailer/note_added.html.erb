@@ -50,31 +50,31 @@
   </head>
   <body>
     <div class="header">
-      <h1>Nuova Nota - Rimborso #<%= @reimboursement.id %></h1>
+      <h1><%= t('mailers.reimboursement.note_added.title', id: @reimboursement.id) %></h1>
     </div>
     
     <div class="content">
-      <p>Ciao <strong><%= @user.name %></strong>,</p>
+      <p><%= t('mailers.reimboursement.note_added.greeting', name: @user.name) %></p>
       
-      <p>È stata aggiunta una nuova nota al tuo rimborso #<%= @reimboursement.id %>.</p>
+      <p><%= t('mailers.reimboursement.note_added.new_note_message', id: @reimboursement.id) %></p>
       
       <div class="note">
-        <p><strong>Autore:</strong> <%= @author.name %> <%= @author.surname %></p>
-        <p><strong>Data:</strong> <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %></p>
+        <p><strong><%= t('mailers.reimboursement.note_added.author') %>:</strong> <%= @author.name %> <%= @author.surname %></p>
+        <p><strong><%= t('mailers.reimboursement.note_added.date') %>:</strong> <%= @note.created_at.strftime("%d/%m/%Y #{I18n.t('common.at_time')} %H:%M") %></p>
         <% if @note.status_change.present? %>
-          <p><strong>Cambio di stato:</strong> <%= Reimboursement.status_translations[@note.status_change] %></p>
+          <p><strong><%= t('mailers.reimboursement.note_added.status_change') %>:</strong> <%= Reimboursement.status_translations[@note.status_change] %></p>
         <% end %>
-        <p><strong>Contenuto:</strong></p>
+        <p><strong><%= t('mailers.reimboursement.note_added.content') %>:</strong></p>
         <p><%= simple_format(@note.text) %></p>
       </div>
       
       <p>
-        <strong>Stato attuale del rimborso:</strong> 
+        <strong><%= t('mailers.reimboursement.note_added.current_status_label') %>:</strong>
         <%= @reimboursement.status_in_italian %>
       </p>
       
       <p>
-        <strong>Totale rimborso:</strong> 
+        <strong><%= t('mailers.reimboursement.note_added.total_label') %>:</strong>
         € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
       </p>
     </div>
@@ -83,15 +83,15 @@
       <p><strong>Wikimedia Italia - Gestione rimborsi</strong></p>
       <% admin_email = ENV['EMAIL_AMMINISTRAZIONE'] || ENV["ADDRESS"] %>
       <p>
-        Per chiarimenti contatta: <a href="mailto:<%= admin_email %>" style="color: white;"><%= admin_email %></a><br>
-        Ti preghiamo di rispondere a richieste di chiarimenti e integrazioni con una nota direttamente sulla piattaforma.
+        <%= t('mailers.reimboursement.note_added.contact_label') %>: <a href="mailto:<%= admin_email %>" style="color: white;"><%= admin_email %></a><br>
+        <%= t('mailers.reimboursement.note_added.reply_request') %>
       </p>
       <p style="margin-top: 15px;">
         <a href="<%= reimboursement_url(@reimboursement) %>" style="color: white; text-decoration: underline;">
-          🔗 Vai al Rimborso
+          🔗 <%= t('mailers.reimboursement.note_added.view_reimbursement') %>
         </a> | 
         <a href="<%= reimboursements_url %>" style="color: white; text-decoration: underline;">
-          📋 Tutti i Rimborsi
+          📋 <%= t('mailers.reimboursement.note_added.all_reimbursements') %>
         </a>
       </p>
     </div>

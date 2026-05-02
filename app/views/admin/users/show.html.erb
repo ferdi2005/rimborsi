@@ -1,10 +1,10 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Dettagli Utente</h1>
+    <h1><%= t('.title') %></h1>
     <% if @user.active? %>
-      <span class="badge bg-success fs-6">Attivo</span>
+      <span class="badge bg-success fs-6"><%= t('.status.active') %></span>
     <% else %>
-      <span class="badge bg-danger fs-6">Disattivato</span>
+      <span class="badge bg-danger fs-6"><%= t('.status.deactivated') %></span>
     <% end %>
   </div>
   
@@ -14,25 +14,25 @@
       
       <div class="row">
         <div class="col-md-6">
-          <p><strong>Email:</strong> <%= @user.email %></p>
-          <p><strong>Telefono:</strong> <%= @user.telephone %></p>
-          <p><strong>Codice Fiscale:</strong> <%= @user.fiscal_code %></p>
+          <p><strong><%= t('.email_label') %>:</strong> <%= @user.email %></p>
+          <p><strong><%= t('.phone_label') %>:</strong> <%= @user.telephone %></p>
+          <p><strong><%= t('.fiscal_code_label') %>:</strong> <%= @user.fiscal_code %></p>
         </div>
         <div class="col-md-6">
-          <p><strong>Ruolo:</strong> <%= @user.role&.label || "Nessun ruolo assegnato" %></p>
-          <p><strong>Amministratore:</strong> 
+          <p><strong><%= t('.role_label') %>:</strong> <%= @user.role&.label || t('.no_role') %></p>
+          <p><strong><%= t('.admin_label') %>:</strong> 
             <% if @user.admin? %>
-              <span class="badge bg-success">Sì</span>
+              <span class="badge bg-success"><%= t('.yes') %></span>
             <% else %>
-              <span class="badge bg-secondary">No</span>
+              <span class="badge bg-secondary"><%= t('.no') %></span>
             <% end %>
           </p>
-          <p><strong>Registrato il:</strong> <%= @user.created_at.strftime("%d/%m/%Y") %></p>
-          <p><strong>Stato account:</strong> 
+          <p><strong><%= t('.registered_label') %>:</strong> <%= @user.created_at.strftime("%d/%m/%Y") %></p>
+          <p><strong><%= t('.account_status_label') %>:</strong> 
             <% if @user.active? %>
-              <span class="badge bg-success">Attivo</span>
+              <span class="badge bg-success"><%= t('.status.active') %></span>
             <% else %>
-              <span class="badge bg-danger">Disattivato</span>
+              <span class="badge bg-danger"><%= t('.status.deactivated') %></span>
             <% end %>
           </p>
         </div>
@@ -42,14 +42,14 @@
       <hr>
       <div class="row">
         <div class="col-md-12">
-          <h6>Statistiche Rimborsi</h6>
-          <p><strong>Totale rimborsi:</strong> 
+          <h6><%= t('.stats_title') %></h6>
+          <p><strong><%= t('.total_reimbursements') %>:</strong> 
             <span class="badge bg-<%= @user.reimboursements.any? ? 'warning' : 'secondary' %>">
               <%= @user.reimboursements.count %>
             </span>
           </p>
           <% if @user.reimboursements.any? %>
-            <p><strong>Totale importo richiesto:</strong> 
+            <p><strong><%= t('.total_amount') %>:</strong> 
               € <%= number_with_precision(@user.reimboursements.sum(&:total_amount), precision: 2) %>
             </p>
           <% end %>
@@ -57,30 +57,30 @@
       </div>
       
       <div class="mt-3">
-        <%= link_to 'Modifica', edit_admin_user_path(@user), class: 'btn btn-warning' %>
+        <%= link_to t('admin.users.show.edit'), edit_admin_user_path(@user), class: 'btn btn-warning' %>
         
         <% unless @user == current_user %>
-          <% if @user.active? %>
-            <%= link_to 'Disattiva Account', deactivate_admin_user_path(@user), method: :patch,
-                        data: { confirm: 'Sei sicuro di voler disattivare questo utente?' },
+            <% if @user.active? %>
+            <%= link_to t('.deactivate'), deactivate_admin_user_path(@user), method: :patch,
+                        data: { confirm: t('.deactivate_confirm') },
                         class: 'btn btn-outline-warning' %>
           <% else %>
-            <%= link_to 'Attiva Account', activate_admin_user_path(@user), method: :patch,
+            <%= link_to t('.activate'), activate_admin_user_path(@user), method: :patch,
                         class: 'btn btn-outline-success' %>
           <% end %>
           
-          <% if @user.can_be_deleted? %>
-            <%= link_to 'Elimina Utente', admin_user_path(@user), method: :delete,
-                        data: { confirm: 'Sei sicuro? Questa azione non può essere annullata.' },
+            <% if @user.can_be_deleted? %>
+            <%= link_to t('.delete'), admin_user_path(@user), method: :delete,
+                        data: { confirm: t('.delete_confirm') },
                         class: 'btn btn-outline-danger' %>
           <% else %>
-            <span class="btn btn-secondary disabled" title="L'utente ha dei rimborsi associati">
-              <i class="fas fa-ban"></i> Non eliminabile
+            <span class="btn btn-secondary disabled" title="<%= t('.has_reimbursements') %>">
+              <i class="fas fa-ban"></i> <%= t('.not_deletable') %>
             </span>
           <% end %>
         <% end %>
         
-        <%= link_to 'Torna alla lista', admin_users_path, class: 'btn btn-secondary' %>
+        <%= link_to t('common.actions.back'), admin_users_path, class: 'btn btn-secondary' %>
       </div>
     </div>
   </div>

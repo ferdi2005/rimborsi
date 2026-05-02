@@ -1,8 +1,8 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1><i class="fas fa-money-bill-wave me-2"></i>Pagamenti</h1>
+    <h1><i class="fas fa-money-bill-wave me-2"></i><%= t('admin.payments.index.title') %></h1>
     <%= link_to new_admin_payment_path, class: "btn btn-primary" do %>
-      <i class="fas fa-plus me-2"></i>Nuovo Pagamento
+      <i class="fas fa-plus me-2"></i><%= t('admin.payments.index.new') %>
     <% end %>
   </div>
 
@@ -11,7 +11,7 @@
       <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h6 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Pagamento #<%= payment.id %></h6>
+            <h6 class="mb-0"><i class="fas fa-file-invoice me-2"></i><%= t('admin.payments.index.payment') %> #<%= payment.id %></h6>
             <% 
               status_config = case payment.status
                              when 'created' then { class: 'warning', icon: 'fas fa-edit' }
@@ -26,18 +26,18 @@
           </div>
           <div class="card-body">
             <p class="card-text">
-              <strong><i class="fas fa-euro-sign me-2"></i>Totale:</strong> 
+              <strong><i class="fas fa-euro-sign me-2"></i><%= t('admin.payments.index.total_label') %></strong> 
               <span class="h5 text-primary">€ <%= number_with_precision(payment.total, precision: 2) %></span>
             </p>
             
             <p class="card-text">
-              <strong><i class="fas fa-file-invoice-dollar me-2"></i>Rimborsi:</strong> 
-              <%= pluralize(payment.reimboursements.count, 'rimborso', 'rimborsi') %>
+              <strong><i class="fas fa-file-invoice-dollar me-2"></i><%= t('admin.payments.index.reimbursements_label') %></strong> 
+              <%= pluralize(payment.reimboursements.count, t('admin.payments.index.reimbursement_singular'), t('admin.payments.index.reimbursement_plural')) %>
             </p>
             
             <% if payment.payment_date %>
-              <p class="card-text">
-                <strong><i class="fas fa-calendar me-2"></i>Data pagamento:</strong><br>
+                <p class="card-text">
+                <strong><i class="fas fa-calendar me-2"></i><%= t('admin.payments.index.payment_date_label') %></strong><br>
                 <span class="text-muted"><%= payment.payment_date.strftime('%d/%m/%Y') %></span>
               </p>
             <% end %>
@@ -50,20 +50,20 @@
           <div class="card-footer">
             <div class="btn-group w-100" role="group">
               <%= link_to admin_payment_path(payment), class: "btn btn-outline-primary btn-sm" do %>
-                <i class="fas fa-eye me-1"></i>Dettagli
+                <i class="fas fa-eye me-1"></i><%= t('admin.payments.index.details') %>
               <% end %>
               
               <% if payment.can_be_modified? %>
                 <%= link_to edit_admin_payment_path(payment), class: "btn btn-outline-secondary btn-sm" do %>
-                  <i class="fas fa-edit me-1"></i>Modifica
+                  <i class="fas fa-edit me-1"></i><%= t('admin.payments.index.edit') %>
                 <% end %>
               <% end %>
 
               <% if payment.can_be_retried? %>
                 <%= button_to retry_admin_payment_path(payment), method: :patch, 
                     class: "btn btn-outline-warning btn-sm", 
-                    data: { confirm: "Sei sicuro di voler ritentare il processamento?" } do %>
-                  <i class="fas fa-redo me-1"></i>Riprova
+                    data: { confirm: t('admin.payments.index.retry_confirm') } do %>
+                  <i class="fas fa-redo me-1"></i><%= t('admin.payments.index.retry') %>
                 <% end %>
               <% end %>
             </div>
@@ -76,10 +76,10 @@
   <% if @payments.empty? %>
     <div class="alert alert-info text-center">
       <i class="fas fa-info-circle fa-2x mb-3"></i>
-      <h5>Nessun pagamento trovato</h5>
-      <p>Inizia creando il primo pagamento per i rimborsi approvati.</p>
+      <h5><%= t('admin.payments.index.empty_title') %></h5>
+      <p><%= t('admin.payments.index.empty_text') %></p>
       <%= link_to new_admin_payment_path, class: "btn btn-primary" do %>
-        <i class="fas fa-plus me-2"></i>Crea Primo Pagamento
+        <i class="fas fa-plus me-2"></i><%= t('admin.payments.index.create_first') %>
       <% end %>
     </div>
   <% end %>

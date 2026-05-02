@@ -6,11 +6,11 @@
           <div>
             <h2 class="mb-1">
               <%= primary_icon("file-invoice-dollar", class: "me-2") %>
-              Rimborso #<%= @reimboursement.id %>
+              <%= t('.title', id: @reimboursement.id) %>
             </h2>
             <small class="text-muted">
               <%= neutral_icon("calendar", class: "me-1") %>
-              Creato il <%= @reimboursement.created_at.strftime("%d/%m/%Y alle %H:%M") %>
+              <%= t('.created', time: @reimboursement.created_at.strftime("%d/%m/%Y alle %H:%M")) %>
             </small>
           </div>
           <div class="d-flex align-items-center">
@@ -43,16 +43,16 @@
                 </div>
                 <div>
                   <h6 class="alert-heading mb-1">
-                    <i class="fas fa-rocket me-2"></i>Rimborso creato con successo!
+                    <i class="fas fa-rocket me-2"></i><%= t('.created_success_title') %>
                   </h6>
-                  <p class="mb-2">Il tuo rimborso è stato registrato nel sistema. Ecco cosa succederà ora:</p>
+                  <p class="mb-2"><%= t('.created_message') %></p>
                   <ul class="mb-2 small">
-                    <li><strong>Revisione:</strong> La segreteria controllerà i tuoi giustificativi</li>
-                    <li><strong>Approvazione:</strong> Riceverai una notifica email per ogni aggiornamento</li>
-                    <li><strong>Pagamento:</strong> Una volta approvato, il rimborso verrà elaborato</li>
+                    <li><strong><%= t('.created_step_revision_label') %>:</strong> <%= t('.created_step_revision') %></li>
+                    <li><strong><%= t('.created_step_approval_label') %>:</strong> <%= t('.created_step_approval') %></li>
+                    <li><strong><%= t('.created_step_payment_label') %>:</strong> <%= t('.created_step_payment') %></li>
                   </ul>
                   <small class="text-muted">
-                    <i class="fas fa-envelope me-1"></i>Ti invieremo aggiornamenti via email per ogni cambio di stato
+                    <i class="fas fa-envelope me-1"></i><%= t('.created_updates_via_email') %>
                   </small>
                 </div>
               </div>
@@ -65,9 +65,9 @@
                 </div>
                 <div>
                   <h6 class="alert-heading mb-1">
-                    <i class="fas fa-hourglass-half me-2"></i>Rimborso in Attesa
+                    <i class="fas fa-hourglass-half me-2"></i><%= t('.waiting_title') %>
                   </h6>
-                  <p class="mb-0">Il tuo rimborso richiede attenzione. Controlla le note per eventuali richieste di chiarimenti.</p>
+                  <p class="mb-0"><%= t('.waiting_message') %></p>
                 </div>
               </div>
             </div>
@@ -79,7 +79,7 @@
               <div class="card h-100">
                 <div class="card-header bg-primary text-white">
                   <h5 class="mb-0">
-                    <%= info_icon("info-circle", class: "me-2") %> Informazioni
+                    <%= info_icon("info-circle", class: "me-2") %> <%= t('.info.title') %>
                   </h5>
                 </div>
                 <div class="card-body">
@@ -90,7 +90,7 @@
                           <%= neutral_icon("user") %>
                         </div>
                         <div>
-                          <small class="text-muted">Richiedente</small>
+                          <small class="text-muted"><%= t('.labels.requester') %></small>
                           <div class="fw-bold">
                             <%= @reimboursement.user&.name %> <%= @reimboursement.user&.surname %>
                           </div>
@@ -104,7 +104,7 @@
                           <%= neutral_icon("clock") %>
                         </div>
                         <div class="flex-grow-1">
-                          <small class="text-muted">Stato attuale</small>
+                          <small class="text-muted"><%= t('.labels.current_status') %></small>
                           <div class="d-flex align-items-center">
                             <%= status_badge(@reimboursement.status, :reimboursement) %>
                           </div>
@@ -118,10 +118,10 @@
                           <%= neutral_icon("calendar-plus") %>
                         </div>
                         <div>
-                          <small class="text-muted">Data creazione</small>
+                          <small class="text-muted"><%= t('.labels.created_at') %></small>
                           <div class="fw-bold">
                             <%= @reimboursement.created_at.strftime("%d/%m/%Y") %>
-                            <small class="text-muted">alle <%= @reimboursement.created_at.strftime("%H:%M") %></small>
+                            <small class="text-muted"><%= t('common.at_time') %> <%= @reimboursement.created_at.strftime("%H:%M") %></small>
                           </div>
                         </div>
                       </div>
@@ -133,10 +133,10 @@
                           <%= neutral_icon("edit") %>
                         </div>
                         <div>
-                          <small class="text-muted">Ultima modifica</small>
+                          <small class="text-muted"><%= t('.labels.updated_at') %></small>
                           <div class="fw-bold">
                             <%= @reimboursement.updated_at.strftime("%d/%m/%Y") %>
-                            <small class="text-muted">alle <%= @reimboursement.updated_at.strftime("%H:%M") %></small>
+                            <small class="text-muted"><%= t('common.at_time') %> <%= @reimboursement.updated_at.strftime("%H:%M") %></small>
                           </div>
                         </div>
                       </div>
@@ -148,13 +148,13 @@
                           <%= success_icon("euro-sign") %>
                         </div>
                         <div>
-                          <small class="text-muted">Importo totale</small>
+                          <small class="text-muted"><%= t('.labels.total_amount') %></small>
                           <div class="fw-bold fs-5 text-success">
                             € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
                           </div>
                           <% if @reimboursement.denied_amount > 0 %>
                             <small class="text-danger">
-                              (€ <%= number_with_precision(@reimboursement.denied_amount, precision: 2) %> negate)
+                              <%= t('reimboursements.show.denied_parenthetical', amount: number_with_precision(@reimboursement.denied_amount, precision: 2), label: t('reimboursements.show.totals.denied')) %>
                             </small>
                           <% end %>
                         </div>
@@ -169,8 +169,8 @@
             <div class="col-md-6">
               <div class="card h-100">
                 <div class="card-header bg-info text-white">
-                  <h5 class="mb-0">
-                    <%= info_icon("credit-card", class: "me-2") %> Metodo di Pagamento
+                    <h5 class="mb-0">
+                    <%= info_icon("credit-card", class: "me-2") %> <%= t('.payment.title') %>
                   </h5>
                 </div>
                 <div class="card-body">
@@ -185,7 +185,7 @@
                           <% end %>
                         </div>
                         <div>
-                          <small class="text-muted">Tipo di pagamento</small>
+                          <small class="text-muted"><%= t('.payment.type') %></small>
                           <div class="fw-bold">
                             <%= @reimboursement.payment_method_type %>
                           </div>
@@ -200,7 +200,7 @@
                             <%= primary_icon("hashtag") %>
                           </div>
                           <div>
-                            <small class="text-muted">IBAN</small>
+                            <small class="text-muted"><%= t('.payment.iban') %></small>
                             <div class="fw-bold font-monospace">
                               <%= @reimboursement.bank_account.iban %>
                             </div>
@@ -214,7 +214,7 @@
                             <%= secondary_icon("user-tie") %>
                           </div>
                           <div>
-                            <small class="text-muted">Intestatario</small>
+                            <small class="text-muted"><%= t('.payment.owner') %></small>
                             <div class="fw-bold">
                               <%= @reimboursement.bank_account.owner %>
                             </div>
@@ -223,9 +223,9 @@
                       </div>
                     <% else %>
                       <div class="col-12">
-                        <div class="alert alert-warning mb-0">
+                          <div class="alert alert-warning mb-0">
                           <i class="fas fa-exclamation-triangle me-2"></i>
-                          Nessun metodo di pagamento configurato
+                          <%= t('.payment.none_configured') %>
                         </div>
                       </div>
                     <% end %>
@@ -240,19 +240,19 @@
           <!-- Spese -->
           <div class="row">
             <div class="col-12">
-              <h5>Spese (<%= pluralize(@reimboursement.expenses.count, 'spesa', 'spese') %>)</h5>
+              <h5><%= t('.expenses.title', count: @reimboursement.expenses.count) %></h5>
               
               <% if @reimboursement.expenses.any? %>
                 <div class="table-responsive">
                   <table class="table table-striped">
                     <thead class="table-dark">
                       <tr>
-                        <th>Data</th>
-                        <th>Descrizione</th>
-                        <th>Tipo</th>
-                        <th>Status</th>
-                        <th>Importo</th>
-                        <th>Dettagli/Allegato</th>
+                        <th><%= t('.expenses.headers.date') %></th>
+                        <th><%= t('.expenses.headers.description') %></th>
+                        <th><%= t('.expenses.headers.type') %></th>
+                        <th><%= t('.expenses.headers.status') %></th>
+                        <th><%= t('.expenses.headers.amount') %></th>
+                        <th><%= t('.expenses.headers.details') %></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -274,7 +274,7 @@
                               <div>
                                 <del>€ <%= number_with_precision(expense.requested_amount, precision: 2) %></del>
                                 <small class="text-muted d-block">
-                                  <del>richiesto di € <%= number_with_precision(expense.amount, precision: 2) %></del>
+                                  <del><%= t('reimboursements.show.expenses.requested_of', amount: number_with_precision(expense.amount, precision: 2)) %></del>
                                 </small>
                               </div>
                             <% else %>
@@ -290,26 +290,26 @@
                           </td>
                           <td>
                             <div class="small">
-                                <strong>Fondo:</strong> <%= expense.fund.name %><br/>
-                                <strong>Progetto:</strong> <%= expense.project %><br/>
+                                <strong><%= t('.expenses.fund') %>:</strong> <%= expense.fund.name %><br/>
+                                <strong><%= t('.expenses.project') %>:</strong> <%= expense.project %><br/>
                             </div>
                             <% if expense.car? %>
                               <!-- Dettagli spesa auto -->
                               <div class="small">
                                 <% if expense.vehicle %>
-                                  <strong>Veicolo:</strong> <%= expense.vehicle.display_name %><br>
+                                  <strong><%= t('reimboursements.show.vehicle_label') %></strong> <%= expense.vehicle.display_name %><br>
                                 <% end %>
                                 <% if expense.departure && expense.arrival %>
-                                  <strong>Percorso:</strong> <%= expense.departure %> → <%= expense.arrival %><br>
+                                  <strong><%= t('reimboursements.show.route_label') %></strong> <%= expense.departure %> → <%= expense.arrival %><br>
                                 <% end %>
                                 <% if expense.distance %>
-                                  <strong>Distanza:</strong> <%= expense.distance %> km
+                                  <strong><%= t('reimboursements.show.distance_label') %></strong> <%= expense.distance %> <%= t('common.labels.distance') if I18n.exists?('common.labels.distance') %>
                                   <% if expense.return_trip? %>
-                                    (A/R)
+                                    (<%= t('rimborsi.expense_fields.return_trip') %>)
                                   <% end %><br>
                                 <% end %>
                                 <% if expense.calculation_date %>
-                                  <strong>Data calcolo:</strong> <%= expense.calculation_date.strftime("%d/%m/%Y") %>
+                                  <strong><%= t('reimboursements.show.calculation_date_label') %></strong> <%= expense.calculation_date.strftime("%d/%m/%Y") %>
                                 <% end %>
                               </div>
                             <% else %>
@@ -321,19 +321,19 @@
                                   <div class="mt-2">
                                     <div class="d-flex align-items-center mb-2">
                                       <span class="badge bg-success me-2">
-                                        <i class="fas fa-file-invoice me-1"></i>Fattura Elettronica
+                                        <i class="fas fa-file-invoice me-1"></i><%= t('.expenses.e_invoice') %>
                                       </span>
                                     </div>
                                     <div class="btn-group" role="group">
                                       <%= link_to download_invoice_pdf_expense_path(expense), 
                                                   class: "btn btn-sm btn-primary", 
-                                                  title: "Scarica PDF della fattura" do %>
-                                        <i class="fas fa-download me-1"></i>PDF
+                                                  title: t('.expenses.download_invoice_title') do %>
+                                        <i class="fas fa-download me-1"></i><%= t('.expenses.pdf') %>
                                       <% end %>
                                       <%= link_to expense.attachment, target: "_blank", 
                                                   class: "btn btn-sm btn-outline-secondary",
-                                                  title: "Visualizza file XML originale" do %>
-                                        <i class="fas fa-file-code me-1"></i>XML
+                                                  title: t('.expenses.view_xml_title') do %>
+                                        <i class="fas fa-file-code me-1"></i><%= t('.expenses.xml') %>
                                       <% end %>
                                     </div>
                                   </div>
@@ -341,11 +341,11 @@
                                   <!-- Allegato normale -->
                                   <div class="mt-2">
                                     <%= link_to expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" do %>
-                                      <i class="<%= file_icon(expense) %> me-1"></i>Visualizza
+                                      <i class="<%= file_icon(expense) %> me-1"></i><%= t('.expenses.view') %>
                                     <% end %>
                                   </div>
                                 <% else %>
-                                  <span class="text-muted">Nessun allegato</span>
+                                  <span class="text-muted"><%= t('.expenses.no_attachment') %></span>
                                 <% end %>
                               </div>
                             <% end %>
@@ -355,16 +355,16 @@
                     </tbody>
                     <tfoot class="table-light">
                       <tr>
-                        <th colspan="5">Totale Netto</th>
+                        <th colspan="5"><%= t('.totals.net') %></th>
                         <th class="text-end">€ <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></th>
                       </tr>
                       <% if @reimboursement.denied_amount > 0 %>
                         <tr class="table-danger">
-                          <th colspan="5">Spese Negate</th>
+                          <th colspan="5"><%= t('.totals.denied') %></th>
                           <th class="text-end">€ <%= number_with_precision(@reimboursement.denied_amount, precision: 2) %></th>
                         </tr>
                         <tr>
-                          <th colspan="5">Totale Lordo</th>
+                          <th colspan="5"><%= t('.totals.gross') %></th>
                           <th class="text-end">€ <%= number_with_precision(@reimboursement.gross_total_amount, precision: 2) %></th>
                         </tr>
                       <% end %>
@@ -373,7 +373,7 @@
                 </div>
               <% else %>
                 <div class="alert alert-info">
-                  Nessuna spesa presente in questo rimborso.
+                  <%= t('.expenses.none') %>
                 </div>
               <% end %>
             </div>
@@ -384,36 +384,36 @@
           <!-- Note -->
           <div class="row">
             <div class="col-12">
-              <h5>Note e comunicazioni</h5>
+              <h5><%= t('.notes.title') %></h5>
               
               <!-- Form per aggiungere nuova nota -->
               <div class="card mb-3">
                 <div class="card-header">
-                  <h6 class="mb-0">Aggiungi Nota</h6>
+                  <h6 class="mb-0"><%= t('.notes.add_title') %></h6>
                 </div>
                 <div class="card-body">
                   <%= form_with model: [@reimboursement, Note.new], local: true, class: "mb-3" do |form| %>
                     <div class="mb-3">
-                      <%= form.label :text, "Messaggio", class: "form-label" %>
-                      <%= form.text_area :text, rows: 3, class: "form-control", required: true, placeholder: "Scrivi un messaggio..." %>
+                      <%= form.label :text, t('.notes.message_label'), class: "form-label" %>
+                      <%= form.text_area :text, rows: 3, class: "form-control", required: true, placeholder: t('.notes.message_placeholder') %>
                     </div>
                     
                     <% if current_user.admin? %>
                       <div class="mb-3">
-                        <%= form.label :status_change, "Cambia stato (opzionale)", class: "form-label" %>
+                        <%= form.label :status_change, t('.notes.change_status_label'), class: "form-label" %>
                         <%= form.select :status_change, 
                                       options_for_select(
-                                        [['Nessun cambio', '']] + 
+                                        [[t('.notes.no_change'), '']] + 
                                         Reimboursement.status_translations.map { |key, value| [value, key] }
                                       ), 
                                       {}, 
                                       { class: "form-select" } %>
-                        <small class="form-text text-muted">Se selezioni un nuovo stato, il rimborso verrà aggiornato automaticamente</small>
+                        <small class="form-text text-muted"><%= t('.notes.change_status_help') %></small>
                       </div>
                     <% end %>
                     
                     <div class="d-flex justify-content-end">
-                      <%= form.submit "Aggiungi Nota", class: "btn btn-primary" %>
+                      <%= form.submit t('.notes.submit'), class: "btn btn-primary" %>
                     </div>
                   <% end %>
                 </div>
@@ -428,18 +428,18 @@
                         <div>
                           <strong><%= note.user.name %> <%= note.user.surname %></strong>
                           <% if note.user.admin? %>
-                            <span class="badge bg-danger ms-1">Admin</span>
+                            <span class="badge bg-danger ms-1"><%= t('.notes.admin_badge') %></span>
                           <% end %>
                           <% if (note.created_at - @reimboursement.created_at) < 60 %>
                             <span class="badge bg-info ms-1">
-                              <i class="fas fa-sticky-note me-1"></i>Nota Iniziale
+                              <i class="fas fa-sticky-note me-1"></i><%= t('.notes.initial') %>
                             </span>
                           <% end %>
-                          <small class="text-muted ms-2"><%= note.created_at.strftime("%d/%m/%Y alle %H:%M") %></small>
+                          <small class="text-muted ms-2"><%= t('.notes.note_time', time: note.created_at.strftime("%d/%m/%Y alle %H:%M")) %></small>
                         </div>
                         <% if current_user.admin? %>
                           <%= button_to [@reimboursement, note], method: :delete, 
-                                      confirm: "Sei sicuro di voler eliminare questa nota?", 
+                                      confirm: t('.notes.confirm_delete'), 
                                       class: "btn btn-sm btn-outline-danger" do %>
                             <i class="fas fa-trash"></i>
                           <% end %>
@@ -449,7 +449,7 @@
                         <% if note.status_change.present? %>
                           <div class="alert alert-info mb-2">
                             <i class="fas fa-info-circle"></i> 
-                            <strong>Stato cambiato in:</strong> <%= Reimboursement.status_translations[note.status_change] %>
+                            <strong><%= t('.notes.status_changed_label') %></strong> <%= Reimboursement.status_translations[note.status_change] %>
                           </div>
                         <% end %>
                         <p class="mb-0"><%= simple_format(note.text) %></p>
@@ -459,7 +459,7 @@
                 </div>
               <% else %>
                 <div class="alert alert-info">
-                  Nessuna nota presente per questo rimborso.
+                  <%= t('.notes.none') %>
                 </div>
               <% end %>
             </div>
@@ -468,12 +468,12 @@
         
         <div class="card-footer">
           <%= link_to download_pdf_reimboursement_path(@reimboursement), class: "btn btn-outline-danger me-2" do %>
-            <i class="fas fa-file-pdf me-2"></i>Scarica PDF
+            <i class="fas fa-file-pdf me-2"></i><%= t('.download_pdf') %>
           <% end %>
           <% if @reimboursement.can_be_edited_by?(current_user) %>
-            <%= link_to 'Modifica', edit_reimboursement_path(@reimboursement), class: "btn btn-primary" %>
+            <%= link_to t('common.actions.edit'), edit_reimboursement_path(@reimboursement), class: "btn btn-primary" %>
           <% end %>
-          <%= link_to 'Indietro', reimboursements_path, class: "btn btn-secondary" %>
+          <%= link_to t('common.actions.back'), reimboursements_path, class: "btn btn-secondary" %>
         </div>
       </div>
     </div>

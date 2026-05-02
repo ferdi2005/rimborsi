@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <h1>Modifica Utente: <%= @user.name %> <%= @user.surname %></h1>
+  <h1><%= t('admin.users.edit.title', name: @user.name, surname: @user.surname) %></h1>
   
   <%= form_with(model: [:admin, @user], local: true, class: "row g-3") do |form| %>
     <% if @user.errors.any? %>
@@ -34,28 +34,28 @@
     </div>
 
     <div class="col-md-6">
-      <%= form.label :fiscal_code, "Codice Fiscale", class: "form-label" %>
+      <%= form.label :fiscal_code, t('admin.users.edit.fiscal_code_label'), class: "form-label" %>
       <%= form.text_field :fiscal_code, class: "form-control", required: true,
-                          title: "Codice fiscale",
+                          title: t('admin.users.edit.fiscal_code_title'),
                           style: "text-transform: uppercase;" %>
     </div>
 
     <div class="col-md-6">
-      <%= form.label :role_id, "Ruolo", class: "form-label" %>
-      <%= form.collection_select :role_id, Role.all, :id, :label, { prompt: "Seleziona un ruolo" }, { class: "form-select" } %>
+      <%= form.label :role_id, t('admin.users.edit.role_label'), class: "form-label" %>
+      <%= form.collection_select :role_id, Role.all, :id, :label, { prompt: t('admin.users.edit.select_role_prompt') }, { class: "form-select" } %>
     </div>
 
     <div class="col-md-6">
       <div class="form-check mt-4">
         <%= form.check_box :active, class: "form-check-input" %>
-        <%= form.label :active, "Account Attivo", class: "form-check-label" %>
-        <small class="form-text text-muted d-block">Deseleziona per disattivare l'accesso dell'utente</small>
+        <%= form.label :active, t('admin.users.edit.account_active_label'), class: "form-check-label" %>
+        <small class="form-text text-muted d-block"><%= t('admin.users.edit.account_active_help') %></small>
       </div>
     </div>
 
     <div class="col-12">
-      <%= form.submit "Aggiorna Utente", class: "btn btn-primary" %>
-      <%= link_to "Annulla", admin_user_path(@user), class: "btn btn-secondary" %>
+      <%= form.submit t('admin.users.edit.update_user'), class: "btn btn-primary" %>
+      <%= link_to t('common.actions.cancel'), admin_user_path(@user), class: "btn btn-secondary" %>
     </div>
   <% end %>
 </div>
