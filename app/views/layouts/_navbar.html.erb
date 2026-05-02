@@ -38,39 +38,17 @@
         <% end %>
       </ul>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-globe me-1"></i><%= I18n.locale.to_s.upcase %>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-            <li>
-              <%= button_to t('layouts.footer.italian'), set_locale_path(locale: :it),
-                  method: :post,
-                  form: { class: 'd-inline' },
-                  class: 'dropdown-item btn btn-link border-0 text-start w-100',
-                  style: 'background: none; padding: 0.25rem 1rem;' %>
-            </li>
-            <li>
-              <%= button_to t('layouts.footer.english'), set_locale_path(locale: :en),
-                  method: :post,
-                  form: { class: 'd-inline' },
-                  class: 'dropdown-item btn btn-link border-0 text-start w-100',
-                  style: 'background: none; padding: 0.25rem 1rem;' %>
-            </li>
-          </ul>
-        </li>
         <% if user_signed_in? %>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-globe me-1"></i><%= current_user.locale == 'it' ? 'Italiano' : 'English' %>
+              <i class="fas fa-globe me-1"></i><%= current_user.locale.upcase %>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+              <% I18n.available_locales.each do |locale| %>
               <li>
-                <%= button_to 'Italiano', user_registration_path, method: :patch, params: { user: { locale: 'it' } }, class: 'dropdown-item btn btn-link border-0 text-start w-100', style: 'background: none; padding: 0.25rem 1rem;' %>
+                <%= button_to locale.upcase, user_registration_path, method: :patch, params: { user: { locale: locale } }, class: 'dropdown-item btn btn-link border-0 text-start w-100', style: 'background: none; padding: 0.25rem 1rem;' %>
               </li>
-              <li>
-                <%= button_to 'English', user_registration_path, method: :patch, params: { user: { locale: 'en' } }, class: 'dropdown-item btn btn-link border-0 text-start w-100', style: 'background: none; padding: 0.25rem 1rem;' %>
-              </li>
+              <% end %>
             </ul>
           </li>
           <li class="nav-item dropdown">
