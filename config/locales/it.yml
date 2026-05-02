@@ -114,14 +114,6 @@ it:
       models:
         expense:
           attributes:
-            amount:
-              blank: "è obbligatorio"
-              not_a_number: "deve essere un numero"
-              greater_than: "deve essere maggiore di %{count}"
-            purpose:
-              blank: "è obbligatoria"
-            date:
-              blank: "è obbligatoria"
             attachment:
               blank: "è obbligatorio per le spese non auto"
             calculation_date:
@@ -152,47 +144,6 @@ it:
               blank: "è obbligatoria per le spese auto"
               greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
               not_a_number: "deve essere un numero valido"
-        
-        reimboursement:
-          attributes:
-            user:
-              blank: "è obbligatorio"
-            status:
-              blank: "è obbligatorio"
-        
-        user:
-          attributes:
-            name:
-              blank: "è obbligatorio"
-            surname:
-              blank: "è obbligatorio"
-            email:
-              blank: "è obbligatoria"
-              invalid: "non è valida"
-          required: "è richiesto"
-        
-        vehicle:
-          attributes:
-            brand:
-              blank: "è obbligatoria"
-            model:
-              blank: "è obbligatorio"
-            license_plate:
-              blank: "è obbligatoria"
-        
-        bank_account:
-          attributes:
-            iban:
-              blank: "è obbligatorio"
-              invalid: "non è valido"
-            owner:
-              blank: "è obbligatorio"
-        
-        paypal_account:
-          attributes:
-            email:
-              blank: "è obbligatoria"
-              invalid: "non è valida"
 
       messages:
         blank: "non può essere vuoto"
