@@ -59,49 +59,49 @@
   </head>
   <body>
     <div class="header">
-      <h1>🔔 Nuova Nota da Utente</h1>
-      <p>Rimborso #<%= @reimboursement.id %></p>
+      <h1>🔔 <%= t('mailers.reimboursement.admin_note_notification.title') %></h1>
+      <p><%= t('mailers.reimboursement.admin_note_notification.reimbursement_number', id: @reimboursement.id) %></p>
     </div>
     
     <div class="content">
-      <p><strong>Un utente ha aggiunto una nuova nota al rimborso.</strong></p>
+      <p><strong><%= t('mailers.reimboursement.admin_note_notification.new_note') %></strong></p>
       
       <div class="user-info">
-        <h6>Informazioni Utente:</h6>
-        <p><strong>Nome:</strong> <%= @user.name %> <%= @user.surname %></p>
-        <p><strong>Email:</strong> <%= @user.email %></p>
+        <h6><%= t('mailers.reimboursement.admin_note_notification.user_info') %></h6>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.name') %>:</strong> <%= @user.name %> <%= @user.surname %></p>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.email') %>:</strong> <%= @user.email %></p>
         <% if @user.telephone.present? %>
-          <p><strong>Telefono:</strong> <%= @user.telephone %></p>
+          <p><strong><%= t('mailers.reimboursement.admin_note_notification.phone') %>:</strong> <%= @user.telephone %></p>
         <% end %>
       </div>
       
       <div class="note">
-        <p><strong>Nota aggiunta il:</strong> <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %></p>
-        <p><strong>Contenuto:</strong></p>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.note_added_on') %>:</strong> <%= @note.created_at.strftime("%d/%m/%Y #{I18n.t('common.at_time')} %H:%M") %></p>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.content') %>:</strong></p>
         <p><%= simple_format(@note.text) %></p>
       </div>
       
       <div class="user-info">
-        <h6>Dettagli Rimborso:</h6>
-        <p><strong>Stato attuale:</strong> <%= @reimboursement.status_in_italian %></p>
-        <p><strong>Totale:</strong> € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></p>
-        <p><strong>Metodo di pagamento:</strong> <%= @reimboursement.payment_method_type %></p>
-        <p><strong>Numero di spese:</strong> <%= @reimboursement.expenses.count %></p>
+        <h6><%= t('mailers.reimboursement.admin_note_notification.reimbursement_info') %></h6>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.current_status') %>:</strong> <%= @reimboursement.status_in_italian %></p>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.total') %>:</strong> € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></p>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.payment_method') %>:</strong> <%= @reimboursement.payment_method_type %></p>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.expenses_count') %>:</strong> <%= @reimboursement.expenses.count %></p>
       </div>
       
       <p style="text-align: center; margin-top: 20px;">
         <a href="<%= reimboursement_url(@reimboursement) %>" class="btn">
-          🔍 Visualizza Rimborso
+          🔍 <%= t('mailers.reimboursement.admin_note_notification.view_reimbursement') %>
         </a>
         <a href="<%= reimboursements_url %>" class="btn btn-secondary">
-          📋 Tutti i Rimborsi
+          📋 <%= t('mailers.reimboursement.admin_note_notification.all_reimbursements') %>
         </a>
       </p>
     </div>
     
     <div class="footer">
-      <p><strong>Gestione Rimborsi - Notifica Amministratori</strong></p>
-      <p>Accedi alla piattaforma per rispondere alla nota dell'utente.</p>
+      <p><strong><%= t('mailers.reimboursement.admin_note_notification.footer_title') %></strong></p>
+      <p><%= t('mailers.reimboursement.admin_note_notification.footer_text') %></p>
     </div>
   </body>
 </html>

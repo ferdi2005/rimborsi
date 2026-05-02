@@ -1,29 +1,27 @@
-NUOVA NOTA - RIMBORSO #<%= @reimboursement.id %>
-================================================
+<%= t('mailers.reimboursement.note_added.subject', id: @reimboursement.id) %>
 
-Ciao <%= @user.name %>,
+<%= t('mailers.reimboursement.note_added.greeting', name: @user.name) %>
 
-È stata aggiunta una nuova nota al tuo rimborso #<%= @reimboursement.id %>.
+<%= t('mailers.reimboursement.note_added.new_note_message', id: @reimboursement.id) %>
 
-DETTAGLI NOTA:
-Autore: <%= @author.name %> <%= @author.surname %>
-Data: <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %>
+<%= t('mailers.reimboursement.note_added.details') %>
+<%= t('mailers.reimboursement.note_added.author', name: @author.name, surname: @author.surname) %>
+<%= t('mailers.reimboursement.note_added.date', date: @note.created_at.strftime("%d/%m/%Y alle %H:%M")) %>
 <% if @note.status_change.present? %>
-Cambio di stato: <%= Reimboursement.status_translations[@note.status_change] %>
+<%= t('mailers.reimboursement.note_added.status_change', status: Reimboursement.status_translations[@note.status_change]) %>
 <% end %>
 
-Contenuto:
+<%= t('mailers.reimboursement.note_added.content') %>
 <%= @note.text %>
 
-STATO ATTUALE: <%= @reimboursement.status_in_italian %>
-TOTALE RIMBORSO: € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
+<%= t('mailers.reimboursement.note_added.current_status', status: @reimboursement.status_in_italian) %>
+<%= t('mailers.reimboursement.note_added.total', total: number_with_precision(@reimboursement.total_amount, precision: 2)) %>
 
-WIKIMEDIA ITALIA - GESTIONE RIMBORSI
-=================
+<%= t('mailers.reimboursement.note_added.signature') %>
 <% admin_email = ENV['EMAIL_AMMINISTRAZIONE'] || ENV["ADDRESS"] %>
-Per chiarimenti contatta: <%= admin_email %>
-Ti preghiamo di rispondere a richieste di chiarimenti e integrazioni con una nota direttamente sulla piattaforma.
+<%= t('mailers.reimboursement.note_added.contact', email: admin_email) %>
+<%= t('mailers.reimboursement.note_added.reply_request') %>
 
-Link utili:
-- Visualizza questo rimborso: <%= reimboursement_url(@reimboursement) %>
-- Tutti i rimborsi: <%= reimboursements_url %>
+<%= t('mailers.reimboursement.note_added.links') %>
+- <%= t('mailers.reimboursement.note_added.view_reimbursement') %>: <%= reimboursement_url(@reimboursement) %>
+- <%= t('mailers.reimboursement.note_added.all_reimbursements') %>: <%= reimboursements_url %>

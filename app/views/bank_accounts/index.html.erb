@@ -1,8 +1,8 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1><i class="fas fa-university me-2"></i>Conti bancari</h1>
+    <h1><i class="fas fa-university me-2"></i><%= t('bank_accounts.index.title') %></h1>
     <%= link_to new_bank_account_path, class: "btn btn-primary" do %>
-      <i class="fas fa-plus me-2"></i>Nuovo conto bancario
+      <i class="fas fa-plus me-2"></i><%= t('bank_accounts.index.new') %>
     <% end %>
   </div>
 
@@ -11,16 +11,16 @@
       <thead class="table-dark">
         <tr>
           <% if current_user.admin? %>
-            <th><i class="fas fa-user me-2"></i>Utente</th>
+            <th><i class="fas fa-user me-2"></i><%= t('bank_accounts.index.user_th') %></th>
           <% end %>
-          <th><i class="fas fa-credit-card me-2"></i>IBAN</th>
-          <th><i class="fas fa-id-card me-2"></i>Intestatario</th>
-          <th><i class="fas fa-map-marker-alt me-2"></i>Indirizzo</th>
-          <th><i class="fas fa-mail-bulk me-2"></i>CAP</th>
-          <th><i class="fas fa-city me-2"></i>Città</th>
-          <th><i class="fas fa-id-badge me-2"></i>Codice Fiscale</th>
-          <th><i class="fas fa-star me-2"></i>Predefinito</th>
-          <th><i class="fas fa-cogs me-2"></i>Azioni</th>
+          <th><i class="fas fa-credit-card me-2"></i><%= t('bank_accounts.index.iban_th') %></th>
+          <th><i class="fas fa-id-card me-2"></i><%= t('bank_accounts.index.owner_th') %></th>
+          <th><i class="fas fa-map-marker-alt me-2"></i><%= t('bank_accounts.index.address_th') %></th>
+          <th><i class="fas fa-mail-bulk me-2"></i><%= t('bank_accounts.index.cap_th') %></th>
+          <th><i class="fas fa-city me-2"></i><%= t('bank_accounts.index.town_th') %></th>
+          <th><i class="fas fa-id-badge me-2"></i><%= t('bank_accounts.index.fiscal_code_th') %></th>
+          <th><i class="fas fa-star me-2"></i><%= t('bank_accounts.index.default_th') %></th>
+          <th><i class="fas fa-cogs me-2"></i><%= t('bank_accounts.index.actions_th') %></th>
         </tr>
       </thead>
       <tbody>
@@ -40,22 +40,22 @@
             <td><%= bank_account.fiscal_code %></td>
             <td>
               <% if bank_account.default %>
-                <span class="badge bg-success"><i class="fas fa-star me-1"></i>Predefinito</span>
+                <span class="badge bg-success"><i class="fas fa-star me-1"></i><%= t('bank_accounts.index.is_default') %></span>
               <% else %>
-                <span class="badge bg-secondary">No</span>
+                <span class="badge bg-secondary"><%= t('bank_accounts.index.not_default') %></span>
               <% end %>
             </td>
             <td>
               <%= link_to bank_account, class: "btn btn-sm btn-outline-primary" do %>
-                <i class="fas fa-eye me-1"></i>Visualizza
+                <i class="fas fa-eye me-1"></i><%= t('bank_accounts.index.view') %>
               <% end %>
               <%= link_to edit_bank_account_path(bank_account), class: "btn btn-sm btn-outline-secondary" do %>
-                <i class="fas fa-edit me-1"></i>Modifica
+                <i class="fas fa-edit me-1"></i><%= t('bank_accounts.index.edit') %>
               <% end %>
               <%= link_to bank_account, method: :delete, 
-                          data: { confirm: 'Sei sicuro di voler eliminare questo conto bancario?' }, 
+                          data: { confirm: t('bank_accounts.index.delete_confirm') }, 
                           class: "btn btn-sm btn-outline-danger" do %>
-                <i class="fas fa-trash me-1"></i>Elimina
+                <i class="fas fa-trash me-1"></i><%= t('bank_accounts.index.delete') %>
               <% end %>
             </td>
           </tr>
@@ -67,10 +67,10 @@
   <% if @bank_accounts.empty? %>
     <div class="alert alert-info text-center">
       <i class="fas fa-info-circle fa-2x mb-3"></i>
-      <h5>Nessun conto bancario trovato</h5>
-      <p>Inizia aggiungendo il tuo primo conto bancario.</p>
+      <h5><%= t('bank_accounts.index.empty_title') %></h5>
+      <p><%= t('bank_accounts.index.empty_text') %></p>
       <%= link_to new_bank_account_path, class: "btn btn-primary" do %>
-        <i class="fas fa-plus me-2"></i>Aggiungi conto bancario
+        <i class="fas fa-plus me-2"></i><%= t('bank_accounts.index.add') %>
       <% end %>
     </div>
   <% end %>

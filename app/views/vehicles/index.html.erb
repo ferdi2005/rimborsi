@@ -1,8 +1,8 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1><i class="fas fa-car me-2"></i>I Miei Veicoli</h1>
+    <h1><i class="fas fa-car me-2"></i><%= t('.title') %></h1>
     <%= link_to new_vehicle_path, class: "btn btn-primary" do %>
-      <i class="fas fa-plus me-2"></i>Nuovo Veicolo
+      <i class="fas fa-plus me-2"></i><%= t('.add') %>
     <% end %>
   </div>
 
@@ -11,14 +11,14 @@
       <thead class="table-dark">
         <tr>
           <% if current_user.admin? %>
-            <th><i class="fas fa-user me-2"></i>Utente</th>
+            <th><i class="fas fa-user me-2"></i><%= t('.user_th') %></th>
           <% end %>
-          <th><i class="fas fa-tag me-2"></i>Nome</th>
-          <th><i class="fas fa-layer-group me-2"></i>Categoria</th>
-          <th><i class="fas fa-car me-2"></i>Marca e Modello</th>
-          <th><i class="fas fa-gas-pump me-2"></i>Carburante</th>
-          <th><i class="fas fa-star me-2"></i>Predefinito</th>
-          <th><i class="fas fa-cogs me-2"></i>Azioni</th>
+            <th><i class="fas fa-tag me-2"></i><%= t('.name_th') %></th>
+            <th><i class="fas fa-layer-group me-2"></i><%= t('.category_th') %></th>
+            <th><i class="fas fa-car me-2"></i><%= t('.brand_model_th') %></th>
+            <th><i class="fas fa-gas-pump me-2"></i><%= t('.fuel_th') %></th>
+            <th><i class="fas fa-star me-2"></i><%= t('.default_th') %></th>
+            <th><i class="fas fa-cogs me-2"></i><%= t('.actions_th') %></th>
         </tr>
       </thead>
       <tbody>
@@ -43,15 +43,15 @@
             </td>
             <td>
               <%= link_to vehicle, class: "btn btn-sm btn-outline-primary" do %>
-                <i class="fas fa-eye me-1"></i>Visualizza
+                <i class="fas fa-eye me-1"></i><%= t('.view') %>
               <% end %>
               <%= link_to edit_vehicle_path(vehicle), class: "btn btn-sm btn-outline-secondary" do %>
-                <i class="fas fa-edit me-1"></i>Modifica
+                <i class="fas fa-edit me-1"></i><%= t('.edit') %>
               <% end %>
               <%= link_to vehicle, method: :delete, 
                           data: { confirm: 'Sei sicuro di voler eliminare questo veicolo?' }, 
                           class: "btn btn-sm btn-outline-danger" do %>
-                <i class="fas fa-trash me-1"></i>Elimina
+                <i class="fas fa-trash me-1"></i><%= t('.delete') %>
               <% end %>
             </td>
           </tr>
@@ -61,12 +61,12 @@
   </div>
   
   <% if @vehicles.empty? %>
-    <div class="alert alert-info text-center">
+      <div class="alert alert-info text-center">
       <i class="fas fa-car fa-2x mb-3"></i>
-      <h5>Nessun veicolo trovato</h5>
-      <p>Inizia aggiungendo il tuo primo veicolo per le spese auto.</p>
+      <h5><%= t('.empty_title') %></h5>
+      <p><%= t('.empty_text') %></p>
       <%= link_to new_vehicle_path, class: "btn btn-primary" do %>
-        <i class="fas fa-plus me-2"></i>Aggiungi Veicolo
+        <i class="fas fa-plus me-2"></i><%= t('.add') %>
       <% end %>
     </div>
   <% end %>

@@ -1,9 +1,8 @@
-NUOVA NOTA DA UTENTE - RIMBORSO #<%= @reimboursement.id %>
-=======================================================
+<%= t('mailers.reimboursement.admin_note_notification.title', id: @reimboursement.id) %>
 
-Un utente ha aggiunto una nuova nota al rimborso.
+<%= t('mailers.reimboursement.admin_note_notification.new_note') %>
 
-INFORMAZIONI UTENTE:
+<%= t('mailers.reimboursement.admin_note_notification.user_info') %>
 Nome: <%= @user.name %> <%= @user.surname %>
 Email: <%= @user.email %>
 <% if @user.telephone.present? %>

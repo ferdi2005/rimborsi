@@ -2,14 +2,14 @@
   <div class="card-header">
     <h5 class="mb-0">
       <i class="fas fa-fund-diagram me-2"></i>
-      <%= fund.persisted? ? "Modifica Progetto" : "Nuovo Progetto" %>
+      <%= fund.persisted? ? t('funds.form.edit_title') : t('funds.form.new_title') %>
     </h5>
   </div>
   <div class="card-body">
     <%= form_with(model: fund, local: true, class: "needs-validation", novalidate: true) do |form| %>
       <% if fund.errors.any? %>
-        <div class="alert alert-danger" role="alert">
-          <h6><i class="fas fa-exclamation-triangle me-1"></i>Errori di validazione:</h6>
+            <div class="alert alert-danger" role="alert">
+          <h6><i class="fas fa-exclamation-triangle me-1"></i><%= t('funds.form.validation_errors') %></h6>
           <ul class="mb-0">
             <% fund.errors.each do |error| %>
               <li><%= error.full_message %></li>
@@ -21,11 +21,11 @@
       <div class="row">
         <div class="col-md-6">
           <div class="mb-3">
-            <%= form.label :name, "Nome del Progetto", class: "form-label" %>
-            <%= form.text_field :name, 
-                class: "form-control #{'is-invalid' if fund.errors[:name].any?}",
-                placeholder: "Inserisci il nome del progetto",
-                required: true %>
+          <%= form.label :name, t('funds.form.name_label'), class: "form-label" %>
+          <%= form.text_field :name, 
+            class: "form-control #{'is-invalid' if fund.errors[:name].any?}",
+            placeholder: t('funds.form.name_placeholder'),
+            required: true %>
             <% if fund.errors[:name].any? %>
               <div class="invalid-feedback">
                 <%= fund.errors[:name].first %>
@@ -36,7 +36,7 @@
         
         <div class="col-md-6">
           <div class="mb-3">
-            <%= form.label :budget, "Budget (€)", class: "form-label" %>
+            <%= form.label :budget, t('funds.form.budget_label'), class: "form-label" %>
             <div class="input-group">
               <span class="input-group-text">€</span>
               <%= form.number_field :budget, 
@@ -51,7 +51,7 @@
                 </div>
               <% end %>
             </div>
-            <small class="form-text text-muted">Budget massimo per questo progetto</small>
+            <small class="form-text text-muted"><%= t('funds.form.budget_help') %></small>
           </div>
         </div>
       </div>
@@ -63,11 +63,11 @@
               <%= form.check_box :active, 
                   class: "form-check-input",
                   id: "fund_active" %>
-              <%= form.label :active, "Progetto Attivo", 
+              <%= form.label :active, t('funds.form.active_label'), 
                   class: "form-check-label",
                   for: "fund_active" %>
             </div>
-            <small class="form-text text-muted">Solo i progetti attivi possono essere selezionati nelle spese</small>
+            <small class="form-text text-muted"><%= t('funds.form.active_help') %></small>
           </div>
         </div>
       </div>
@@ -75,27 +75,27 @@
       <% if fund.persisted? %>
         <div class="row">
           <div class="col-12">
-            <div class="alert alert-info">
-              <h6><i class="fas fa-info-circle me-1"></i>Statistiche Progetto</h6>
+              <div class="alert alert-info">
+              <h6><i class="fas fa-info-circle me-1"></i><%= t('funds.form.stats_title') %></h6>
               <div class="row">
                 <div class="col-md-3">
-                  <strong>Spese Totali:</strong><br>
+                  <strong><%= t('funds.form.total_expenses') %></strong><br>
                   <span class="text-primary">€ <%= number_with_precision(fund.total_expenses, precision: 2) %></span>
                 </div>
                 <div class="col-md-3">
-                  <strong>Budget Rimanente:</strong><br>
+                  <strong><%= t('funds.form.remaining_budget') %></strong><br>
                   <span class="<%= fund.remaining_budget < 0 ? 'text-danger' : 'text-success' %>">
                     € <%= number_with_precision(fund.remaining_budget, precision: 2) %>
                   </span>
                 </div>
                 <div class="col-md-3">
-                  <strong>% Utilizzato:</strong><br>
+                  <strong><%= t('funds.form.percent_used') %></strong><br>
                   <span class="<%= fund.over_budget? ? 'text-danger' : 'text-primary' %>">
                     <%= fund.budget_percentage_used %>%
                   </span>
                 </div>
                 <div class="col-md-3">
-                  <strong>Nr. Spese:</strong><br>
+                  <strong><%= t('funds.form.expenses_count') %></strong><br>
                   <span class="text-info"><%= fund.expenses.count %></span>
                 </div>
               </div>
@@ -106,17 +106,17 @@
 
       <div class="d-flex justify-content-between">
         <%= link_to funds_path, class: "btn btn-secondary" do %>
-          <i class="fas fa-arrow-left me-1"></i>Torna ai Fondi
+          <i class="fas fa-arrow-left me-1"></i><%= t('funds.form.back') %>
         <% end %>
         
         <div>
           <% if fund.persisted? %>
             <%= link_to fund, class: "btn btn-outline-primary me-2" do %>
-              <i class="fas fa-eye me-1"></i>Visualizza
+              <i class="fas fa-eye me-1"></i><%= t('funds.form.view') %>
             <% end %>
           <% end %>
           <%= form.submit class: "btn btn-primary" do %>
-            <i class="fas fa-save me-1"></i><%= fund.persisted? ? "Aggiorna Progetto" : "Crea Progetto" %>
+            <i class="fas fa-save me-1"></i><%= fund.persisted? ? t('funds.form.update') : t('funds.form.create') %>
           <% end %>
         </div>
       </div>

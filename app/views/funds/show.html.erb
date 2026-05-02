@@ -7,10 +7,10 @@
     </h1>
     <div>
       <%= link_to edit_fund_path(@fund), class: "btn btn-primary" do %>
-        <i class="fas fa-edit me-1"></i>Modifica
+        <i class="fas fa-edit me-1"></i><%= t('funds.show.edit') %>
       <% end %>
       <%= link_to funds_path, class: "btn btn-secondary ms-2" do %>
-        <i class="fas fa-arrow-left me-1"></i>Torna ai Progetti
+        <i class="fas fa-arrow-left me-1"></i><%= t('funds.show.back') %>
       <% end %>
     </div>
   </div>
@@ -20,28 +20,28 @@
     <div class="col-md-4">
       <div class="card shadow-sm mb-4">
         <div class="card-header">
-          <h5 class="mb-0"><i class="fas fa-info-circle me-1"></i>Informazioni Progetto</h5>
+          <h5 class="mb-0"><i class="fas fa-info-circle me-1"></i><%= t('funds.show.project_info') %></h5>
         </div>
         <div class="card-body">
           <div class="mb-3">
-            <strong><i class="fas fa-tag me-1"></i>Nome:</strong><br>
+            <strong><i class="fas fa-tag me-1"></i><%= t('funds.show.name_label') %></strong><br>
             <span class="fs-5"><%= @fund.name %></span>
           </div>
           
           <div class="mb-3">
-            <strong><i class="fas fa-euro-sign me-1"></i>Budget:</strong><br>
+            <strong><i class="fas fa-euro-sign me-1"></i><%= t('funds.show.budget_label') %></strong><br>
             <span class="fs-5 text-primary">€ <%= number_with_precision(@fund.budget, precision: 2) %></span>
           </div>
           
           <div class="mb-3">
-            <strong><i class="fas fa-toggle-on me-1"></i>Stato:</strong><br>
+            <strong><i class="fas fa-toggle-on me-1"></i><%= t('funds.show.status_label') %></strong><br>
             <% if @fund.active? %>
               <span class="badge bg-success fs-6">
-                <i class="fas fa-check me-1"></i>Attivo
+                <i class="fas fa-check me-1"></i><%= t('funds.show.active') %>
               </span>
             <% else %>
               <span class="badge bg-secondary fs-6">
-                <i class="fas fa-times me-1"></i>Inattivo
+                <i class="fas fa-times me-1"></i><%= t('funds.show.inactive') %>
               </span>
             <% end %>
           </div>
@@ -53,25 +53,25 @@
     <div class="col-md-4">
       <div class="card shadow-sm mb-4">
         <div class="card-header">
-          <h5 class="mb-0"><i class="fas fa-chart-pie me-1"></i>Statistiche Budget</h5>
+          <h5 class="mb-0"><i class="fas fa-chart-pie me-1"></i><%= t('funds.show.budget_stats') %></h5>
         </div>
         <div class="card-body">
           <div class="mb-3">
-            <strong>Spese Totali:</strong><br>
+            <strong><%= t('funds.show.total_expenses') %></strong><br>
             <span class="fs-5 <%= @fund.over_budget? ? 'text-danger' : 'text-success' %>">
               € <%= number_with_precision(@fund.total_expenses, precision: 2) %>
             </span>
           </div>
           
           <div class="mb-3">
-            <strong>Budget Rimanente:</strong><br>
+            <strong><%= t('funds.show.remaining_budget') %></strong><br>
             <span class="fs-5 <%= @fund.remaining_budget < 0 ? 'text-danger' : 'text-success' %>">
               € <%= number_with_precision(@fund.remaining_budget, precision: 2) %>
             </span>
           </div>
           
           <div class="mb-3">
-            <strong>Percentuale Utilizzata:</strong><br>
+            <strong><%= t('funds.show.percent_used') %></strong><br>
             <div class="progress mb-2" style="height: 25px;">
               <div class="progress-bar <%= @fund.over_budget? ? 'bg-danger' : 'bg-success' %>" 
                    role="progressbar" 
@@ -82,10 +82,10 @@
                 <%= @fund.budget_percentage_used %>%
               </div>
             </div>
-            <% if @fund.over_budget? %>
+                <% if @fund.over_budget? %>
               <small class="text-danger">
                 <i class="fas fa-exclamation-triangle me-1"></i>
-                Budget superato!
+                <%= t('funds.show.over_budget') %>
               </small>
             <% end %>
           </div>
@@ -97,26 +97,26 @@
     <div class="col-md-4">
       <div class="card shadow-sm mb-4">
         <div class="card-header">
-          <h5 class="mb-0"><i class="fas fa-receipt me-1"></i>Riepilogo Spese</h5>
+          <h5 class="mb-0"><i class="fas fa-receipt me-1"></i><%= t('funds.show.expense_summary') %></h5>
         </div>
         <div class="card-body">
           <div class="mb-3">
-            <strong>Numero totale di spese:</strong><br>
+            <strong><%= t('funds.show.total_count') %></strong><br>
             <span class="fs-5 text-info"><%= @fund.expenses.count %></span>
           </div>
           
           <div class="mb-3">
-            <strong>Spese approvate:</strong><br>
+            <strong><%= t('funds.show.approved_count') %></strong><br>
             <span class="fs-5 text-success"><%= @fund.expenses.status_approved.count %></span>
           </div>
           
           <div class="mb-3">
-            <strong>Spese in attesa:</strong><br>
+            <strong><%= t('funds.show.pending_count') %></strong><br>
             <span class="fs-5 text-warning"><%= @fund.expenses.status_created.count %></span>
           </div>
           
           <div class="mb-3">
-            <strong>Spese negate:</strong><br>
+            <strong><%= t('funds.show.denied_count') %></strong><br>
             <span class="fs-5 text-danger"><%= @fund.expenses.status_denied.count %></span>
           </div>
         </div>
@@ -129,7 +129,7 @@
     <div class="col-12">
       <div class="card shadow-sm">
         <div class="card-header">
-          <h5 class="mb-0"><i class="fas fa-list me-1"></i>Spese del Progetto</h5>
+          <h5 class="mb-0"><i class="fas fa-list me-1"></i><%= t('funds.show.expense_list') %></h5>
         </div>
         <div class="card-body">
           <% if @fund.expenses.any? %>
@@ -137,12 +137,12 @@
               <table class="table table-hover">
                 <thead class="table-light">
                   <tr>
-                    <th>Data</th>
-                    <th>Descrizione</th>
-                    <th>Importo</th>
-                    <th>Tipo</th>
-                    <th>Stato</th>
-                    <th>Rimborso</th>
+                    <th><%= t('funds.show.date_th') %></th>
+                    <th><%= t('funds.show.description_th') %></th>
+                    <th><%= t('funds.show.amount_th') %></th>
+                    <th><%= t('funds.show.type_th') %></th>
+                    <th><%= t('funds.show.status_th') %></th>
+                    <th><%= t('funds.show.reimbursement_th') %></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -155,18 +155,18 @@
                       </td>
                       <td>
                         <% if expense.car? %>
-                          <span class="badge bg-info">Auto</span>
+                          <span class="badge bg-info"><%= t('funds.show.car_type') %></span>
                         <% else %>
-                          <span class="badge bg-secondary">Normale</span>
+                          <span class="badge bg-secondary"><%= t('funds.show.normal_type') %></span>
                         <% end %>
                       </td>
                       <td>
                         <%= status_badge(expense.status, :expense) %>
                       </td>
                       <td>
-                        <%= link_to expense.reimboursement, class: "btn btn-sm btn-outline-primary" do %>
+                          <%= link_to expense.reimboursement, class: "btn btn-sm btn-outline-primary" do %>
                           <i class="fas fa-external-link-alt me-1"></i>
-                          Rimborso #<%= expense.reimboursement.id %>
+                          <%= t('funds.show.reimbursement_th') %> #<%= expense.reimboursement.id %>
                         <% end %>
                       </td>
                     </tr>
@@ -177,8 +177,8 @@
           <% else %>
             <div class="text-center py-5">
               <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
-              <h5 class="text-muted">Nessuna spesa associata</h5>
-              <p class="text-muted">Non ci sono ancora spese associate a questo progetto</p>
+              <h5 class="text-muted"><%= t('funds.show.empty_expenses') %></h5>
+              <p class="text-muted"><%= t('funds.show.empty_expenses_text') %></p>
             </div>
           <% end %>
         </div>
