@@ -849,6 +849,7 @@ it:
         status_th: "Stato"
         actions_th: "Azioni"
         na: "N/D"
+      new:
           title: "Nuovo Pagamento"
           back_to_payments: "Torna ai Pagamenti"
           details_header: "Dettagli Pagamento"
@@ -875,7 +876,7 @@ it:
           available_count_label: "rimborsi"
           for_a_total: "per un totale di"
           selected_total: "Totale selezionato:"
-        no_available_text: "Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento."
+          no_available_text: "Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento."
       edit:
         title: "Modifica Pagamento"
         back: "Torna al Pagamento"
