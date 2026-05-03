@@ -1,10 +1,10 @@
 <div class="container-fluid">
   
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="fas fa-piggy-bank me-2"></i>Fondi</h1>
+    <h1><i class="fas fa-piggy-bank me-2"></i><%= t('funds.index.title') %></h1>
     <% if admin_user? %>
       <%= link_to new_fund_path, class: "btn btn-primary" do %>
-        <i class="fas fa-plus me-1"></i>Nuovo Fondo
+        <i class="fas fa-plus me-1"></i><%= t('funds.index.new') %>
       <% end %>
     <% end %>
   </div>
@@ -17,16 +17,16 @@
             <table class="table table-hover">
               <thead class="table-light">
                 <tr>
-                  <th><i class="fas fa-tag me-1"></i>Nome</th>
-                  <th><i class="fas fa-euro-sign me-1"></i>Budget</th>
-                  <th><i class="fas fa-chart-pie me-1"></i>Spese Totali</th>
-                  <th><i class="fas fa-percentage me-1"></i>% Utilizzato</th>
-                  <th><i class="fas fa-money-bill-wave me-1"></i>Rimanente</th>
-                  <th><i class="fas fa-toggle-on me-1"></i>Attivo</th>
+                  <th><i class="fas fa-tag me-1"></i><%= t('funds.index.name_th') %></th>
+                  <th><i class="fas fa-euro-sign me-1"></i><%= t('funds.index.budget_th') %></th>
+                  <th><i class="fas fa-chart-pie me-1"></i><%= t('funds.index.total_expenses_th') %></th>
+                  <th><i class="fas fa-percentage me-1"></i><%= t('funds.index.used_percent_th') %></th>
+                  <th><i class="fas fa-money-bill-wave me-1"></i><%= t('funds.index.remaining_th') %></th>
+                  <th><i class="fas fa-toggle-on me-1"></i><%= t('funds.index.active_th') %></th>
                   <% if admin_user? %>
-                    <th>Azioni</th>
+                    <th><%= t('funds.index.actions_th') %></th>
                   <% else %>
-                    <th>Dettagli</th>
+                    <th><%= t('funds.index.details_th') %></th>
                   <% end %>
                 </tr>
               </thead>
@@ -67,17 +67,17 @@
                   <% if admin_user? %>
                     <td>
                       <div class="btn-group" role="group">
-                        <%= link_to fund, class: "btn btn-outline-primary btn-sm", title: "Visualizza" do %>
+                        <%= link_to fund, class: "btn btn-outline-primary btn-sm", title: t('funds.index.view') do %>
                           <i class="fas fa-eye"></i>
                         <% end %>
-                        <%= link_to edit_fund_path(fund), class: "btn btn-outline-secondary btn-sm", title: "Modifica" do %>
+                        <%= link_to edit_fund_path(fund), class: "btn btn-outline-secondary btn-sm", title: t('funds.index.edit') do %>
                           <i class="fas fa-edit"></i>
                         <% end %>
                         <%= link_to fund, method: :delete, 
                                     class: "btn btn-outline-danger btn-sm", 
-                                    title: "Elimina",
+                                    title: t('funds.index.delete'),
                                     data: { 
-                                      confirm: "Sei sicuro di voler eliminare questo progetto? Tutte le spese associate verranno scollegate dal progetto." 
+                                      confirm: t('funds.index.delete_confirm') 
                                     } do %>
                           <i class="fas fa-trash"></i>
                         <% end %>
@@ -85,13 +85,13 @@
                     </td>
                   <% else %>
                     <td>
-                      <% if admin_user? %>
-                        <%= link_to fund, class: "btn btn-outline-primary btn-sm", title: "Visualizza" do %>
-                          <i class="fas fa-eye me-1"></i>Dettagli
+                        <% if admin_user? %>
+                        <%= link_to fund, class: "btn btn-outline-primary btn-sm", title: t('funds.index.view') do %>
+                          <i class="fas fa-eye me-1"></i><%= t('funds.index.details_th') %>
                         <% end %>
                       <% else %>
                         <span class="text-muted">
-                          <i class="fas fa-lock me-1"></i>Solo Admin
+                          <i class="fas fa-lock me-1"></i><%= t('funds.index.admin_only') %>
                         </span>
                       <% end %>
                     </td>
@@ -103,9 +103,9 @@
           </div>
           
           <% if @funds.empty? %>
-          <div class="text-center py-5">
+            <div class="text-center py-5">
             <i class="fas fa-fund-diagram fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">Nessun progetto trovato</h5>
+            <h5 class="text-muted"><%= t('funds.index.empty_title') %></h5>
           </div>
           <% end %>
         </div>

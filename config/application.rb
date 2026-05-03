@@ -24,5 +24,6 @@ module Rimborsi
     config.time_zone = "Europe/Rome"
     # config.eager_load_paths << Rails.root.join("extras")
     config.i18n.default_locale = :it
+    config.i18n.available_locales = [:it, :en]
   end
 end

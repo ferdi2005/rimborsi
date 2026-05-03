@@ -4,8 +4,8 @@
       <div class="card shadow">
         <div class="card-body p-4">
           <div class="text-center mb-4">
-            <h2 class="h4 text-gray-900 mb-0">Cambia la tua password</h2>
-            <p class="text-muted small mt-2">Inserisci la tua nuova password</p>
+            <h2 class="h4 text-gray-900 mb-0"><%= t('devise.passwords.edit.title') %></h2>
+            <p class="text-muted small mt-2"><%= t('devise.passwords.edit.subtitle') %></p>
           </div>
 
           <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "needs-validation", novalidate: true }) do |f| %>
@@ -13,38 +13,38 @@
             <%= f.hidden_field :reset_password_token %>
 
             <div class="mb-3">
-              <%= f.label :password, "Nuova password", class: "form-label" %>
+              <%= f.label :password, t('devise.passwords.edit.new_password_label'), class: "form-label" %>
               <% if @minimum_password_length %>
                 <small class="form-text text-muted d-block">
-                  <em>(minimo <%= @minimum_password_length %> caratteri)</em>
+                  <em>(<%= t('devise.passwords.edit.min_length', count: @minimum_password_length) %>)</em>
                 </small>
               <% end %>
               <%= f.password_field :password, 
                   autofocus: true, 
                   autocomplete: "new-password",
                   class: "form-control",
-                  placeholder: "Inserisci la nuova password",
+                  placeholder: t('devise.passwords.edit.password_placeholder'),
                   minlength: @minimum_password_length,
                   required: true %>
               <div class="invalid-feedback">
-                La password deve essere di almeno <%= @minimum_password_length || 6 %> caratteri.
+                <%= t('devise.passwords.edit.password_invalid', count: @minimum_password_length || 6) %>
               </div>
             </div>
 
             <div class="mb-3">
-              <%= f.label :password_confirmation, "Conferma nuova password", class: "form-label" %>
+              <%= f.label :password_confirmation, t('devise.passwords.edit.confirm_label'), class: "form-label" %>
               <%= f.password_field :password_confirmation, 
                   autocomplete: "new-password",
                   class: "form-control",
-                  placeholder: "Conferma la nuova password",
+                  placeholder: t('devise.passwords.edit.confirm_placeholder'),
                   required: true %>
               <div class="invalid-feedback">
-                Le password non corrispondono.
+                <%= t('devise.passwords.edit.password_mismatch') %>
               </div>
             </div>
 
             <div class="d-grid">
-              <%= f.submit "Cambia la mia password", 
+                <%= f.submit t('devise.passwords.edit.submit'), 
                   class: "btn btn-primary btn-block" %>
             </div>
           <% end %>
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (passwordField && confirmField) {
     function validatePasswordMatch() {
       if (confirmField.value && passwordField.value !== confirmField.value) {
-        confirmField.setCustomValidity('Le password non corrispondono');
+        confirmField.setCustomValidity('<%= j t('devise.passwords.edit.password_mismatch') %>');
       } else {
         confirmField.setCustomValidity('');
       }

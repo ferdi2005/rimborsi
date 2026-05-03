@@ -1,21 +1,21 @@
 <div id="<%= dom_id note %>">
   <p>
-    <strong>State:</strong>
+    <strong><%= t('notes.index.state_th') %>:</strong>
     <%= note.state_id %>
   </p>
 
   <p>
-    <strong>Reimboursment:</strong>
+    <strong><%= t('notes.index.reimbursement_th') %>:</strong>
     <%= note.reimboursement_id %>
   </p>
 
   <p>
-    <strong>User:</strong>
+    <strong><%= t('notes.index.user_th') %>:</strong>
     <%= note.user_id %>
   </p>
 
   <p>
-    <strong>Text:</strong>
+    <strong><%= t('notes.index.text_th') %>:</strong>
     <%= note.text %>
   </p>
 

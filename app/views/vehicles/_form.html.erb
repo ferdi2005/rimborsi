@@ -14,10 +14,10 @@
 
   <% if current_user.admin? %>
     <div class="col-md-6">
-      <%= form.label :user_id, "Utente", class: "form-label" %>
+      <%= form.label :user_id, t('vehicles.form.user_label'), class: "form-label" %>
       <%= form.collection_select :user_id, User.all, :id, 
                                 ->(user) { "#{user.name} #{user.surname} (#{user.email})" }, 
-                                { prompt: "Seleziona utente" }, 
+                                { prompt: t('vehicles.form.select_user') }, 
                                 { class: "form-select", required: true } %>
     </div>
   <% else %>
@@ -25,13 +25,13 @@
   <% end %>
 
   <div class="col-md-6">
-    <%= form.label :name, "Nome del veicolo", class: "form-label" %>
-    <%= form.text_field :name, class: "form-control", required: true, placeholder: "es. Auto mia, Moto..." %>
-    <small class="form-text text-muted">Nome personalizzato per identificare il veicolo</small>
+    <%= form.label :name, t('vehicles.form.name_label'), class: "form-label" %>
+    <%= form.text_field :name, class: "form-control", required: true, placeholder: t('vehicles.form.name_help') %>
+    <small class="form-text text-muted"><%= t('vehicles.form.name_help') %></small>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :vehicle_category, "Categoria", class: "form-label" %>
+    <%= form.label :vehicle_category, t('vehicles.form.category_label'), class: "form-label" %>
     <%= form.select :vehicle_category, 
                     options_for_select([
                       ['Autovettura', 'autovettura'],
@@ -41,22 +41,22 @@
                       ['Autofurgone', 'autofurgone'],
                       ['Autocaravan', 'autocaravan']
                     ], vehicle.vehicle_category), 
-                    { prompt: "Seleziona categoria" }, 
+                    { prompt: t('vehicles.form.select_category') }, 
                     { class: "form-select", required: true } %>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :brand, "Marca", class: "form-label" %>
-    <%= form.text_field :brand, class: "form-control", required: true, placeholder: "es. Fiat, BMW, Honda..." %>
+    <%= form.label :brand, t('vehicles.form.brand_label'), class: "form-label" %>
+    <%= form.text_field :brand, class: "form-control", required: true, placeholder: t('vehicles.form.brand_label') %>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :model, "Modello", class: "form-label" %>
-    <%= form.text_field :model, class: "form-control", required: true, placeholder: "es. Punto, X3, Civic..." %>
+    <%= form.label :model, t('vehicles.form.model_label'), class: "form-label" %>
+    <%= form.text_field :model, class: "form-control", required: true, placeholder: t('vehicles.form.model_label') %>
   </div>
 
   <div class="col-md-8">
-    <%= form.label :fuel_type, "Tipo di carburante", class: "form-label" %>
+    <%= form.label :fuel_type, t('vehicles.form.fuel_label'), class: "form-label" %>
     <%= form.select :fuel_type, 
                     options_for_select([
                       ['Altro', 'altro'],
@@ -70,20 +70,20 @@
                       ['Ibrido plugin-benzina', 'ibrido_plugin_benzina'],
                       ['Metano esclusivo', 'metano_esclusivo']
                     ], vehicle.fuel_type), 
-                    { prompt: "Seleziona tipo di carburante" }, 
+                    { prompt: t('vehicles.form.select_fuel') }, 
                     { class: "form-select", required: true } %>
   </div>
 
   <div class="col-12">
     <div class="form-check">
       <%= form.check_box :default, class: "form-check-input" %>
-      <%= form.label :default, "Veicolo predefinito", class: "form-check-label" %>
+      <%= form.label :default, t('vehicles.form.default_label'), class: "form-check-label" %>
     </div>
-    <small class="form-text text-muted">Se selezionato, questo diventerà il tuo veicolo predefinito per le spese auto</small>
+    <small class="form-text text-muted"><%= t('vehicles.form.default_help') %></small>
   </div>
 
   <div class="col-12">
-    <%= form.submit "Salva", class: 'btn btn-primary' %>
-    <%= link_to 'Annulla', vehicles_path, class: 'btn btn-secondary' %>
+    <%= form.submit t('vehicles.form.save'), class: 'btn btn-primary' %>
+    <%= link_to t('vehicles.form.cancel'), vehicles_path, class: 'btn btn-secondary' %>
   </div>
 <% end %>

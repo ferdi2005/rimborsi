@@ -1,28 +1,26 @@
-STATO RIMBORSO AGGIORNATO
-========================
+<%= t('mailers.reimboursement.status_changed.subject') %>
 
-Ciao <%= @user.name %>,
+<%= t('mailers.reimboursement.status_changed.greeting', name: @user.name) %>
 
-Lo stato del tuo rimborso #<%= @reimboursement.id %> è stato aggiornato.
+<%= t('mailers.reimboursement.status_changed.updated_message', id: @reimboursement.id) %>
 
-NUOVO STATO: <%= @reimboursement.status_in_italian %>
+<%= t('mailers.reimboursement.status_changed.new_status') %> <%= @reimboursement.status_in_italian %>
 
 <% if @note&.text.present? %>
-NOTA DELL'AMMINISTRATORE:
-Autore: <%= @author.name %> <%= @author.surname %>
-Data: <%= @note.created_at.strftime("%d/%m/%Y alle %H:%M") %>
+<%= t('mailers.reimboursement.status_changed.admin_note') %>
+<%= t('mailers.reimboursement.status_changed.author', name: @author.name, surname: @author.surname) %>
+<%= t('mailers.reimboursement.status_changed.date', date: @note.created_at.strftime("%d/%m/%Y alle %H:%M")) %>
 
 <%= @note.text %>
 <% end %>
 
-TOTALE RIMBORSO: € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
+<%= t('mailers.reimboursement.status_changed.total', total: number_with_precision(@reimboursement.total_amount, precision: 2)) %>
 
-WIKIMEDIA ITALIA - GESTIONE RIMBORSI
-=================
+<%= t('mailers.reimboursement.status_changed.signature') %>
 <% admin_email = ENV['EMAIL_AMMINISTRAZIONE'] || ENV["ADDRESS"] %>
-Per chiarimenti contatta: <%= admin_email %>
-Ti preghiamo di rispondere a richieste di chiarimenti e integrazioni con una nota direttamente sulla piattaforma.
+<%= t('mailers.reimboursement.status_changed.contact', email: admin_email) %>
+<%= t('mailers.reimboursement.status_changed.reply_request') %>
 
-Link utili:
-- Visualizza questo rimborso: <%= reimboursement_url(@reimboursement) %>
-- Tutti i rimborsi: <%= reimboursements_url %>
+<%= t('mailers.reimboursement.status_changed.links') %>
+- <%= t('mailers.reimboursement.status_changed.view_reimbursement') %>: <%= reimboursement_url(@reimboursement) %>
+- <%= t('mailers.reimboursement.status_changed.all_reimbursements') %>: <%= reimboursements_url %>

@@ -40,6 +40,18 @@
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <% if user_signed_in? %>
           <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-globe me-1"></i><%= current_user.locale.upcase %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+              <% I18n.available_locales.each do |locale| %>
+              <li>
+                <%= button_to locale.upcase, user_registration_path, method: :patch, params: { user: { locale: locale } }, class: 'dropdown-item btn btn-link border-0 text-start w-100', style: 'background: none; padding: 0.25rem 1rem;' %>
+              </li>
+              <% end %>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fas fa-user me-1"></i><%= current_user.name %>
             </a>

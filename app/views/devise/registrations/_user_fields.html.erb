@@ -1,31 +1,31 @@
 <div class="col-md-6">
-  <%= f.label :name, "Nome", class: "form-label" %>
+  <%= f.label :name, t('devise.registrations.user_fields.name_label'), class: "form-label" %>
   <%= f.text_field :name, class: "form-control", required: true, minlength: 2, maxlength: 50, autocomplete: "given-name" %>
 </div>
 
 <div class="col-md-6">
-  <%= f.label :surname, "Cognome", class: "form-label" %>
+  <%= f.label :surname, t('devise.registrations.user_fields.surname_label'), class: "form-label" %>
   <%= f.text_field :surname, class: "form-control", required: true, minlength: 2, maxlength: 50, autocomplete: "family-name" %>
 </div>
 
 <div class="col-md-6">
-  <%= f.label :email, "Email", class: "form-label" %>
+  <%= f.label :email, t('devise.registrations.user_fields.email_label'), class: "form-label" %>
   <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", required: true, autocomplete: :email %>
-  <small class="form-text text-muted">Inserisci un indirizzo email valido</small>
+  <small class="form-text text-muted"><%= t('devise.registrations.user_fields.email_help') %></small>
 </div>
 
 <div class="col-md-6">
-  <%= f.label :telephone, "Telefono", class: "form-label" %>
+  <%= f.label :telephone, t('devise.registrations.user_fields.telephone_label'), class: "form-label" %>
   <%= f.text_field :telephone, class: "form-control", type: "tel",
                   pattern: "[0-9]{6,13}",
-                  title: "Numero di telefono italiano senza spazi e senza prefisso (es: 3331234567)", autocomplete: "tel-national"%>
-  <small class="form-text text-muted">Numero di cellulare senza spazi e senza prefisso: 3331234567</small>
+                  title: t('devise.registrations.user_fields.telephone_title'), autocomplete: "tel-national"%>
+  <small class="form-text text-muted"><%= t('devise.registrations.user_fields.telephone_help') %></small>
 </div>
 
 <div class="col-md-6">
-  <%= f.label :fiscal_code, "Codice Fiscale", class: "form-label" %>
+  <%= f.label :fiscal_code, t('devise.registrations.user_fields.fiscal_code_label'), class: "form-label" %>
   <%= f.text_field :fiscal_code, class: "form-control", required: true, maxlength: 16,
-                  title: "Codice fiscale",
+                  title: t('devise.registrations.user_fields.fiscal_code_title'),
                   style: "text-transform: uppercase;" %>
-  <small class="form-text text-muted">Codice fiscale</small>
+  <small class="form-text text-muted"><%= t('devise.registrations.user_fields.fiscal_code_help') %></small>
 </div>

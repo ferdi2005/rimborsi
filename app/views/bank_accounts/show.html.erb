@@ -7,14 +7,14 @@
   <% end %>
 
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Dettagli conto bancario</h2>
+    <h2><%= t('bank_accounts.show.title') %></h2>
   </div>
 
   <div class="card">
     <div class="card-body">
       <% if current_user.admin? %>
         <div class="form-group mb-4">
-          <h5><strong>Proprietario:</strong></h5>
+          <h5><strong><%= t('bank_accounts.show.owner_label') %></strong></h5>
           <div class="d-flex align-items-center">
             <i class="fas fa-user me-2 text-primary"></i>
             <span class="fs-6">
@@ -27,13 +27,13 @@
       <% end %>
 
       <div class="form-group mb-3">
-        <p><strong>IBAN:</strong></p>
+      <p><strong><%= t('bank_accounts.show.iban_label') %></strong></p>
         <div class="font-monospace">
           <%= @bank_account.iban %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Intestatario:</strong></p>
+              <p><strong><%= t('bank_accounts.show.owner_label') %></strong></p>
         <div>
           <%= @bank_account.owner %>
         </div>
@@ -41,7 +41,7 @@
       
       <% if @bank_account.bank_name.present? %>
         <div class="form-group mb-3">
-          <p><strong>Nome Banca:</strong></p>
+          <p><strong><%= t('bank_accounts.show.bank_name_label') %></strong></p>
           <div>
             <%= @bank_account.bank_name %>
           </div>
@@ -50,43 +50,43 @@
       
       <% if @bank_account.bic_swift.present? %>
         <div class="form-group mb-3">
-          <p><strong>Codice BIC/SWIFT:</strong></p>
+          <p><strong><%= t('bank_accounts.show.bic_swift_label') %></strong></p>
           <div class="font-monospace">
             <%= @bank_account.bic_swift %>
           </div>
         </div>
       <% end %>
                 <div class="form-group mb-3">
-        <p><strong>Indirizzo:</strong></p>
+        <p><strong><%= t('bank_accounts.show.address_label') %></strong></p>
         <div>
           <%= @bank_account.address %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>CAP:</strong></p>
+        <p><strong><%= t('bank_accounts.show.cap_label') %></strong></p>
         <div>
           <%= @bank_account.cap %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Città:</strong></p>
+        <p><strong><%= t('bank_accounts.show.town_label') %></strong></p>
         <div>
           <%= @bank_account.town %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Codice Fiscale:</strong></p>
+        <p><strong><%= t('bank_accounts.show.fiscal_code_label') %></strong></p>
         <div class="font-monospace">
           <%= @bank_account.fiscal_code %>
         </div>
       </div>
                 <div class="form-group mb-3">
-        <p><strong>Predefinito:</strong></p>
+        <p><strong><%= t('bank_accounts.show.default_label') %></strong></p>
         <div>
           <% if @bank_account.default %>
-            <span class="badge bg-success">Sì</span>
+            <span class="badge bg-success"><%= t('bank_accounts.show.yes') %></span>
           <% else %>
-            <span class="badge bg-secondary">No</span>
+            <span class="badge bg-secondary"><%= t('bank_accounts.show.no') %></span>
           <% end %>
         </div>
       </div>
@@ -94,7 +94,7 @@
   </div>
 
   <div class="mt-4">
-    <%= link_to 'Modifica', edit_bank_account_path(@bank_account), class: "btn btn-primary" %>
-    <%= link_to 'Torna alla Lista', bank_accounts_path, class: "btn btn-secondary" %>
+    <%= link_to t('bank_accounts.show.edit'), edit_bank_account_path(@bank_account), class: "btn btn-primary" %>
+    <%= link_to t('bank_accounts.show.back'), bank_accounts_path, class: "btn btn-secondary" %>
   </div>
 </div>

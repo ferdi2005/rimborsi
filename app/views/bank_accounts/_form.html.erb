@@ -14,10 +14,10 @@
 
   <% if current_user.admin? %>
     <div class="col-md-6">
-      <%= form.label :user_id, "Utente", class: "form-label" %>
+      <%= form.label :user_id, t('bank_accounts.form.user_label'), class: "form-label" %>
       <%= form.collection_select :user_id, User.all, :id, 
                                 ->(user) { "#{user.name} #{user.surname} (#{user.email})" }, 
-                                { prompt: "Seleziona utente" }, 
+                                { prompt: t('bank_accounts.form.select_user') }, 
                                 { class: "form-select", required: true } %>
     </div>
   <% else %>
@@ -25,73 +25,73 @@
   <% end %>
 
   <div class="col-md-6">
-    <%= form.label :iban, "IBAN", class: "form-label" %>
+    <%= form.label :iban, t('bank_accounts.form.iban_label'), class: "form-label" %>
     <%= form.text_field :iban, class: "form-control", required: true,
                         pattern: "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
-                        title: "IBAN valido (es: IT60X0542811101000000123456)",
-                        placeholder: "IT60X0542811101000000123456",
+                        title: t('bank_accounts.form.iban_help'),
+                        placeholder: t('bank_accounts.form.iban_placeholder'),
                         style: "text-transform: uppercase;",
                         id: "bank_account_iban" %>
-    <small class="form-text text-muted">Inserisci l'IBAN senza spazi</small>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.iban_help') %></small>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :owner, "Intestatario", class: "form-label" %>
+    <%= form.label :owner, t('bank_accounts.form.owner_label'), class: "form-label" %>
     <%= form.text_field :owner, class: "form-control", required: true,
                         minlength: 2, maxlength: 100 %>
-    <small class="form-text text-muted">Nome completo del titolare del conto</small>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.owner_help') %></small>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :bank_name, "Nome Banca", class: "form-label" %>
+    <%= form.label :bank_name, t('bank_accounts.form.bank_name_label'), class: "form-label" %>
     <%= form.text_field :bank_name, class: "form-control",
                         minlength: 2, maxlength: 100,
-                        placeholder: "es: Banca Intesa Sanpaolo" %>
-    <small class="form-text text-muted">Nome dell'istituto bancario (opzionale)</small>
+                        placeholder: t('bank_accounts.form.bank_name_help') %>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.bank_name_help') %></small>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :bic_swift, "Codice BIC/SWIFT", class: "form-label" %>
+    <%= form.label :bic_swift, t('bank_accounts.form.bic_swift_label'), class: "form-label" %>
     <%= form.text_field :bic_swift, class: "form-control",
-                        placeholder: "BCITITMM",
+                        placeholder: t('bank_accounts.form.bic_swift_help'),
                         style: "text-transform: uppercase;" %>
-    <small class="form-text text-muted">Codice BIC/SWIFT della banca (obbligatorio per conti non italiani, opzionale per conti italiani)</small>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.bic_swift_help') %></small>
   </div>
 
   <div class="col-md-8">
-    <%= form.label :address, "Indirizzo dell'intestatario", class: "form-label" %>
+    <%= form.label :address, t('bank_accounts.form.address_label'), class: "form-label" %>
     <%= form.text_field :address, class: "form-control" %>
-    <small class="form-text text-muted">Residenza dell'intestatario (opzionale)</small>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.address_help') %></small>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :cap, "CAP", class: "form-label" %>
-    <%= form.text_field :cap, class: "form-control", pattern: "[0-9]{5}", title: "CAP a 5 cifre" %>
-    <small class="form-text text-muted">(opzionale)</small>
+    <%= form.label :cap, t('bank_accounts.form.cap_label'), class: "form-label" %>
+    <%= form.text_field :cap, class: "form-control", pattern: "[0-9]{5}", title: t('bank_accounts.form.cap_help') %>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.cap_help') %></small>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :town, "Città", class: "form-label" %>
+    <%= form.label :town, t('bank_accounts.form.town_label'), class: "form-label" %>
     <%= form.text_field :town, class: "form-control" %>
-    <small class="form-text text-muted">(opzionale)</small>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.town_help') %></small>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :fiscal_code, "Codice Fiscale", class: "form-label" %>
-    <%= form.text_field :fiscal_code, class: "form-control", title: "Codice fiscale" %>
-    <small class="form-text text-muted">(opzionale)</small>
+    <%= form.label :fiscal_code, t('bank_accounts.form.fiscal_code_label'), class: "form-label" %>
+    <%= form.text_field :fiscal_code, class: "form-control", title: t('bank_accounts.form.fiscal_code_help') %>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.fiscal_code_help') %></small>
   </div>
 
   <div class="col-12">
     <div class="form-check">
       <%= form.check_box :default, class: "form-check-input" %>
-      <%= form.label :default, "Conto predefinito", class: "form-check-label" %>
+      <%= form.label :default, t('bank_accounts.form.default_label'), class: "form-check-label" %>
     </div>
-    <small class="form-text text-muted">Se selezionato, questo diventerà il tuo conto predefinito (rimuoverà il flag da tutti gli altri conti bancari)</small>
+    <small class="form-text text-muted"><%= t('bank_accounts.form.default_help') %></small>
   </div>
 
   <div class="col-12">
-    <%= form.submit "Salva", class: 'btn btn-primary' %>
-    <%= link_to 'Annulla', bank_accounts_path, class: 'btn btn-secondary' %>
+    <%= form.submit t('bank_accounts.form.save'), class: 'btn btn-primary' %>
+    <%= link_to t('bank_accounts.form.cancel'), bank_accounts_path, class: 'btn btn-secondary' %>
   </div>
 <% end %>
