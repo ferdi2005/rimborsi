@@ -1,4 +1,10 @@
 it:
+  errors:
+    messages:
+      not_saved:
+        one: "Si è verificato 1 errore che ha impedito il salvataggio:"
+        other: "Si sono verificati %{count} errori che hanno impedito il salvataggio:"
+
   activerecord:
     models:
       expense: "Spesa"
@@ -217,6 +223,7 @@ it:
       amount: "Importo"
       currency: "€"
       actions: "Azioni"
+      distance: "km"
       
     messages:
       confirm_delete: "Sei sicuro di voler eliminare questo elemento?"
@@ -354,6 +361,7 @@ it:
       initial_note_label: "Aggiungi una nota al rimborso"
       initial_note_placeholder: "Inserisci qui eventuali informazioni aggiuntive sul rimborso..."
       initial_note_help: "Questa nota sarà visibile alla segreteria e potrà aiutarli nella valutazione del rimborso."
+      cancel: "Annulla"
       submit: "Salva e invia rimborso"
       submit_hint: "Potrai modificare il rimborso anche dopo l'invio fino a quando non passerà in approvazione dalla segreteria."
       amount_placeholder: "Inserisci importo"
@@ -480,9 +488,6 @@ it:
       edit_expense: "Modifica Spesa"
       save_changes: "Salva Modifiche"
       car_expense_title: "Spesa Auto - Dettagli Calcolo"
-      vehicle_label: "Veicolo:"
-      route_label: "Percorso:"
-      distance_label: "Distanza:"
       costs_per_km: "Costi per Km"
       quota_capitale: "Quota capitale:"
       carburante: "Carburante:"
@@ -499,7 +504,6 @@ it:
       amount_details: "Dettagli Importo"
       expense_amount: "Importo spesa:"
       invoice_converted: "Fattura convertita in PDF"
-      download_pdf: "Scarica PDF"
       original_xml: "File XML Originale"
       pdf_auto_generated: "PDF generato automaticamente dalla fattura elettronica"
       view_fullscreen: "Visualizza a Schermo Intero"
@@ -534,7 +538,12 @@ it:
       town_th: "Città"
       fiscal_code_th: "Codice Fiscale"
       default_th: "Predefinito"
+      actions_th: "Azioni"
       is_default: "Predefinito"
+      not_default: "Non predefinito"
+      view: "Visualizza"
+      edit: "Modifica"
+      delete: "Elimina"
       delete_confirm: "Sei sicuro di voler eliminare questo conto bancario?"
       empty_title: "Nessun conto bancario trovato"
       empty_text: "Inizia aggiungendo il tuo primo conto bancario."
@@ -551,9 +560,13 @@ it:
       town_label: "Città:"
       fiscal_code_label: "Codice Fiscale:"
       default_label: "Predefinito:"
+      "yes": "Sì"
+      "no": "No"
+      edit: "Modifica"
       back: "Torna alla Lista"
     new:
       title: "Nuovo conto bancario"
+      back: "Indietro"
     edit:
       title: "Modifica conto bancario"
     form:
@@ -561,6 +574,7 @@ it:
       select_user: "Seleziona utente"
       iban_label: "IBAN"
       iban_help: "Inserisci l'IBAN senza spazi"
+      iban_placeholder: "IT00X0000000000000000000000"
       owner_label: "Intestatario"
       owner_help: "Nome completo del titolare del conto"
       bank_name_label: "Nome Banca"
@@ -577,6 +591,8 @@ it:
       fiscal_code_help: "(opzionale)"
       default_label: "Conto predefinito"
       default_help: "Se selezionato, questo diventerà il tuo conto predefinito (rimuoverà il flag da tutti gli altri conti bancari)"
+      save: "Salva"
+      cancel: "Annulla"
 
   vehicles:
     index:
@@ -588,7 +604,11 @@ it:
       brand_model_th: "Marca e Modello"
       fuel_th: "Carburante"
       default_th: "Predefinito"
+      actions_th: "Azioni"
       is_default: "Predefinito"
+      view: "Visualizza"
+      edit: "Modifica"
+      delete: "Elimina"
       delete_confirm: "Sei sicuro di voler eliminare questo veicolo?"
       empty_title: "Nessun veicolo trovato"
       empty_text: "Inizia aggiungendo il tuo primo veicolo per le spese auto."
@@ -602,6 +622,8 @@ it:
       model_label: "Modello:"
       fuel_label: "Tipo di carburante:"
       default_label: "Predefinito:"
+      "yes": "Sì"
+      "no": "No"
       back: "Torna alla Lista"
     new:
       title: "Nuovo Veicolo"
@@ -620,6 +642,8 @@ it:
       select_fuel: "Seleziona tipo di carburante"
       default_label: "Veicolo predefinito"
       default_help: "Se selezionato, questo diventerà il tuo veicolo predefinito per le spese auto"
+      save: "Salva"
+      cancel: "Annulla"
 
   funds:
     index:
@@ -634,8 +658,13 @@ it:
       actions_th: "Azioni"
       details_th: "Dettagli"
       admin_only: "Solo Admin"
+      view: "Visualizza"
+      edit: "Modifica"
+      delete: "Elimina"
+      delete_confirm: "Sei sicuro di voler eliminare questo fondo?"
       empty_title: "Nessun progetto trovato"
     show:
+      edit: "Modifica"
       back: "Torna ai Progetti"
       project_info: "Informazioni Progetto"
       name_label: "Nome:"
@@ -685,13 +714,15 @@ it:
       create: "Crea Progetto"
 
   roles:
+    role:
+      label: "Etichetta"
     index:
       title: "Ruoli"
-      label_th: "Label"
-      show: "Show"
-      edit: "Edit"
-      destroy: "Destroy"
-      destroy_confirm: "Are you sure?"
+      label_th: "Etichetta"
+      show: "Mostra"
+      edit: "Modifica"
+      destroy: "Elimina"
+      destroy_confirm: "Sei sicuro?"
       new: "Nuovo Ruolo"
     new:
       title: "Nuovo Ruolo"
@@ -700,6 +731,9 @@ it:
       title: "Modifica Ruolo"
       show: "Mostra"
       back: "Indietro"
+
+  reimboursement:
+    status: "Stato"
 
   notes:
     index:
@@ -729,6 +763,7 @@ it:
         reimbursement_singular: "rimborso"
         reimbursement_plural: "rimborsi"
         new: "Nuovo Pagamento"
+        edit: "Modifica"
         total_label: "Totale:"
         reimbursements_label: "Rimborsi:"
         payment_date_label: "Data pagamento:"
@@ -743,16 +778,6 @@ it:
         back: "Torna ai Pagamenti"
         edit: "Modifica"
         retry: "Riprova Processamento"
-    users:
-      edit:
-        title: "Modifica Utente: %{name} %{surname}"
-        fiscal_code_label: "Codice Fiscale"
-        fiscal_code_title: "Codice fiscale"
-        role_label: "Ruolo"
-        select_role_prompt: "Seleziona un ruolo"
-        account_active_label: "Account Attivo"
-        account_active_help: "Deseleziona per disattivare l'accesso dell'utente"
-        update_user: "Aggiorna Utente"
         retry_confirm: "Sei sicuro di voler ritentare il processamento?"
         details_header: "Dettagli Pagamento"
         id_label: "ID:"
@@ -762,7 +787,7 @@ it:
         payment_date_label: "Data pagamento:"
         reimbursements_count_label: "Rimborsi inclusi:"
         error_header: "Errore durante il processamento"
-        error_text: "Il cariamento di questo pagamento su NextCloud ha riscontrato degli errori. Utilizza il pulsante \"Riprova Processamento\" per ritentare l'operazione."
+        error_text: "Il caricamento di questo pagamento su NextCloud ha riscontrato degli errori. Utilizza il pulsante \"Riprova Processamento\" per ritentare l'operazione."
         included_header: "Rimborsi Inclusi"
         id_th: "ID"
         user_th: "Utente"
@@ -772,32 +797,33 @@ it:
         actions_th: "Azioni"
         na: "N/D"
       new:
-          title: "Nuovo Pagamento"
-          back_to_payments: "Torna ai Pagamenti"
-          details_header: "Dettagli Pagamento"
-          errors_prevented: "%{count} errori hanno impedito il salvataggio:"
-          status_label: "Stato"
-          status_created: "Creato"
-          status_help: "I nuovi pagamenti vengono sempre creati con stato \"Creato\""
-          reimbursements_label: "Rimborsi da Includere"
-          reimbursement_number: "Rimborso #%{id}"
-          selection_help: "Seleziona i rimborsi da includere in questo pagamento. Solo i rimborsi approvati con un conto bancario sono disponibili."
-          none_available_title: "Nessun rimborso disponibile"
-          none_available_text: "Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento."
-          create_btn: "Crea Pagamento"
-          info_header: "Informazioni"
-          how_it_works_title: "Come funziona:"
-          how_it_works:
-            step1: "1. Seleziona i rimborsi approvati da includere"
-            step2: "2. Il totale verrà calcolato automaticamente"
-            step3: "3. Il pagamento viene creato con stato \"Creato\""
-            step4: "4. Segna il pagamento come \"Pagato\" per il caricamento dei dati in Nextcloud"
-            step5: "5. Scarica il flusso e caricalo in banca per i pagamenti"
-          available_title: "Disponibili:"
-          available_count_label: "rimborsi"
-          for_a_total: "per un totale di"
-          selected_total: "Totale selezionato:"
-          no_available_text: "Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento."
+        title: "Nuovo Pagamento"
+        back_to_payments: "Torna ai Pagamenti"
+        cancel: "Annulla"
+        details_header: "Dettagli Pagamento"
+        errors_prevented: "%{count} errori hanno impedito il salvataggio:"
+        status_label: "Stato"
+        status_created: "Creato"
+        status_help: "I nuovi pagamenti vengono sempre creati con stato \"Creato\""
+        reimbursements_label: "Rimborsi da Includere"
+        reimbursement_number: "Rimborso #%{id}"
+        selection_help: "Seleziona i rimborsi da includere in questo pagamento. Solo i rimborsi approvati con un conto bancario sono disponibili."
+        none_available_title: "Nessun rimborso disponibile"
+        none_available_text: "Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento."
+        create_btn: "Crea Pagamento"
+        info_header: "Informazioni"
+        how_it_works_title: "Come funziona:"
+        how_it_works:
+          step1: "1. Seleziona i rimborsi approvati da includere"
+          step2: "2. Il totale verrà calcolato automaticamente"
+          step3: "3. Il pagamento viene creato con stato \"Creato\""
+          step4: "4. Segna il pagamento come \"Pagato\" per il caricamento dei dati in Nextcloud"
+          step5: "5. Scarica il flusso e caricalo in banca per i pagamenti"
+        available_title: "Disponibili:"
+        available_count_label: "rimborsi"
+        for_a_total: "per un totale di"
+        selected_total: "Totale selezionato:"
+        no_available_text: "Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento."
       edit:
         title: "Modifica Pagamento"
         back: "Torna al Pagamento"
@@ -822,6 +848,10 @@ it:
         role_th: "Ruolo"
         status_th: "Stato"
         reimbursements_th: "Rimborsi"
+        actions_th: "Azioni"
+        view: "Visualizza"
+        edit: "Modifica"
+        delete: "Elimina"
         active: "Attivo"
         inactive: "Disattivo"
         deactivate: "Disattiva"
@@ -832,6 +862,11 @@ it:
         has_reimbursements: "Ha dei rimborsi associati"
       show:
         title: "Dettagli Utente"
+        "yes": "Sì"
+        "no": "No"
+        status:
+          active: "Attivo"
+          deactivated: "Disattivato"
         active: "Attivo"
         deactivated: "Disattivato"
         email_label: "Email:"
@@ -855,13 +890,14 @@ it:
         has_reimbursements: "L'utente ha dei rimborsi associati"
         back: "Torna alla lista"
       edit:
-        title: "Modifica Utente"
+        title: "Modifica Utente: %{name} %{surname}"
         fiscal_code_label: "Codice Fiscale"
+        fiscal_code_title: "Codice fiscale"
         role_label: "Ruolo"
-        select_role: "Seleziona un ruolo"
-        active_label: "Account Attivo"
-        active_help: "Deseleziona per disattivare l'accesso dell'utente"
-        update_btn: "Aggiorna Utente"
+        select_role_prompt: "Seleziona un ruolo"
+        account_active_label: "Account Attivo"
+        account_active_help: "Deseleziona per disattivare l'accesso dell'utente"
+        update_user: "Aggiorna Utente"
 
   mailers:
     reimboursement:
@@ -926,6 +962,13 @@ it:
 
   devise:
     passwords:
+      new:
+        title: "Recupera la tua password"
+        subtitle: "Inserisci l'indirizzo email associato al tuo account: ti invieremo le istruzioni per reimpostare la password."
+        email_label: "Email"
+        email_placeholder: "Inserisci la tua email"
+        invalid_email: "Inserisci un indirizzo email valido."
+        submit: "Invia istruzioni di recupero"
       edit:
         title: "Cambia la tua password"
         subtitle: "Inserisci la tua nuova password"
