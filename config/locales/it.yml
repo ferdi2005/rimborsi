@@ -182,13 +182,14 @@ it:
       edit: "Modifica"
       update: "Aggiorna"
       destroy: "Elimina"
+      delete: "Elimina"
       show: "Mostra"
+      view: "Visualizza"
       back: "Indietro"
       cancel: "Annulla"
       save: "Salva"
       submit: "Invia"
       confirm: "Conferma"
-      delete: "Elimina"
       add: "Aggiungi"
       remove: "Rimuovi"
       search: "Cerca"
@@ -203,6 +204,8 @@ it:
       optional: "opzionale"
       yes: "Sì"
       no: "No"
+      true: "Sì"
+      false: "No"
       total: "Totale"
       subtotal: "Subtotale"
       date: "Data"
@@ -213,6 +216,7 @@ it:
       type: "Tipo"
       amount: "Importo"
       currency: "€"
+      actions: "Azioni"
       
     messages:
       confirm_delete: "Sei sicuro di voler eliminare questo elemento?"
@@ -350,7 +354,6 @@ it:
       initial_note_label: "Aggiungi una nota al rimborso"
       initial_note_placeholder: "Inserisci qui eventuali informazioni aggiuntive sul rimborso..."
       initial_note_help: "Questa nota sarà visibile alla segreteria e potrà aiutarli nella valutazione del rimborso."
-      cancel: "Annulla"
       submit: "Salva e invia rimborso"
       submit_hint: "Potrai modificare il rimborso anche dopo l'invio fino a quando non passerà in approvazione dalla segreteria."
       amount_placeholder: "Inserisci importo"
@@ -517,7 +520,6 @@ it:
       set_waiting: "In Attesa"
       set_denied: "Rifiutato"
       deny_default_hint: "Di default il rimborso viene messo \"In Attesa\""
-      cancel: "Annulla"
       deny_submit: "Rifiuta Giustificativo"
 
   bank_accounts:
@@ -532,12 +534,7 @@ it:
       town_th: "Città"
       fiscal_code_th: "Codice Fiscale"
       default_th: "Predefinito"
-      actions_th: "Azioni"
       is_default: "Predefinito"
-      not_default: "No"
-      view: "Visualizza"
-      edit: "Modifica"
-      delete: "Elimina"
       delete_confirm: "Sei sicuro di voler eliminare questo conto bancario?"
       empty_title: "Nessun conto bancario trovato"
       empty_text: "Inizia aggiungendo il tuo primo conto bancario."
@@ -554,13 +551,9 @@ it:
       town_label: "Città:"
       fiscal_code_label: "Codice Fiscale:"
       default_label: "Predefinito:"
-      yes: "Sì"
-      no: "No"
-      edit: "Modifica"
       back: "Torna alla Lista"
     new:
       title: "Nuovo conto bancario"
-      back: "Indietro"
     edit:
       title: "Modifica conto bancario"
     form:
@@ -584,8 +577,6 @@ it:
       fiscal_code_help: "(opzionale)"
       default_label: "Conto predefinito"
       default_help: "Se selezionato, questo diventerà il tuo conto predefinito (rimuoverà il flag da tutti gli altri conti bancari)"
-      save: "Salva"
-      cancel: "Annulla"
 
   vehicles:
     index:
@@ -597,12 +588,7 @@ it:
       brand_model_th: "Marca e Modello"
       fuel_th: "Carburante"
       default_th: "Predefinito"
-      actions_th: "Azioni"
       is_default: "Predefinito"
-      not_default: "No"
-      view: "Visualizza"
-      edit: "Modifica"
-      delete: "Elimina"
       delete_confirm: "Sei sicuro di voler eliminare questo veicolo?"
       empty_title: "Nessun veicolo trovato"
       empty_text: "Inizia aggiungendo il tuo primo veicolo per le spese auto."
@@ -616,9 +602,6 @@ it:
       model_label: "Modello:"
       fuel_label: "Tipo di carburante:"
       default_label: "Predefinito:"
-      yes: "Sì"
-      no: "No"
-      edit: "Modifica"
       back: "Torna alla Lista"
     new:
       title: "Nuovo Veicolo"
@@ -637,8 +620,6 @@ it:
       select_fuel: "Seleziona tipo di carburante"
       default_label: "Veicolo predefinito"
       default_help: "Se selezionato, questo diventerà il tuo veicolo predefinito per le spese auto"
-      save: "Salva"
-      cancel: "Annulla"
 
   funds:
     index:
@@ -655,7 +636,6 @@ it:
       admin_only: "Solo Admin"
       empty_title: "Nessun progetto trovato"
     show:
-      edit: "Modifica"
       back: "Torna ai Progetti"
       project_info: "Informazioni Progetto"
       name_label: "Nome:"
@@ -754,7 +734,6 @@ it:
         payment_date_label: "Data pagamento:"
         created_label: "Creato:"
         details: "Dettagli"
-        edit: "Modifica"
         retry: "Riprova"
         retry_confirm: "Sei sicuro di voler ritentare il processamento?"
         empty_title: "Nessun pagamento trovato"
@@ -806,7 +785,6 @@ it:
           none_available_title: "Nessun rimborso disponibile"
           none_available_text: "Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento."
           create_btn: "Crea Pagamento"
-          cancel: "Annulla"
           info_header: "Informazioni"
           how_it_works_title: "Come funziona:"
           how_it_works:
@@ -833,7 +811,6 @@ it:
         no_available_title: "Nessun rimborso disponibile"
         no_available_text: "Non ci sono altri rimborsi approvati con conti bancari disponibili da aggiungere."
         update_btn: "Aggiorna Pagamento"
-        cancel: "Annulla"
     users:
       index:
         title: "Gestione Utenti"
@@ -845,15 +822,11 @@ it:
         role_th: "Ruolo"
         status_th: "Stato"
         reimbursements_th: "Rimborsi"
-        actions_th: "Azioni"
         active: "Attivo"
         inactive: "Disattivo"
-        view: "Visualizza"
-        edit: "Modifica"
         deactivate: "Disattiva"
         deactivate_confirm: "Sei sicuro di voler disattivare questo utente?"
         activate: "Attiva"
-        delete: "Elimina"
         delete_confirm: "Sei sicuro? Questa azione non può essere annullata."
         not_deletable: "Non eliminabile"
         has_reimbursements: "Ha dei rimborsi associati"
@@ -869,8 +842,6 @@ it:
         registered_label: "Registrato il:"
         account_status_label: "Stato account:"
         no_role: "Nessun ruolo assegnato"
-        yes: "Sì"
-        no: "No"
         stats_title: "Statistiche Rimborsi"
         total_reimbursements: "Totale rimborsi:"
         total_amount: "Totale importo richiesto:"
@@ -891,7 +862,6 @@ it:
         active_label: "Account Attivo"
         active_help: "Deseleziona per disattivare l'accesso dell'utente"
         update_btn: "Aggiorna Utente"
-        cancel: "Annulla"
 
   mailers:
     reimboursement:
