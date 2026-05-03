@@ -59,10 +59,10 @@
       <p><%= t('mailers.reimboursement.note_added.new_note_message', id: @reimboursement.id) %></p>
       
       <div class="note">
-        <p><strong><%= t('mailers.reimboursement.note_added.author') %>:</strong> <%= @author.name %> <%= @author.surname %></p>
-        <p><strong><%= t('mailers.reimboursement.note_added.date') %>:</strong> <%= @note.created_at.strftime("%d/%m/%Y #{I18n.t('common.at_time')} %H:%M") %></p>
+        <p><strong><%= t('mailers.reimboursement.note_added.author_label') %>:</strong> <%= @author.name %> <%= @author.surname %></p>
+        <p><strong><%= t('mailers.reimboursement.note_added.date_label') %>:</strong> <%= @note.created_at.strftime("%d/%m/%Y #{I18n.t('common.at_time')} %H:%M") %></p>
         <% if @note.status_change.present? %>
-          <p><strong><%= t('mailers.reimboursement.note_added.status_change') %>:</strong> <%= Reimboursement.status_translations[@note.status_change] %></p>
+          <p><strong><%= t('mailers.reimboursement.note_added.status_change_label') %>:</strong> <%= Reimboursement.status_translations[@note.status_change] %></p>
         <% end %>
         <p><strong><%= t('mailers.reimboursement.note_added.content') %>:</strong></p>
         <p><%= simple_format(@note.text) %></p>

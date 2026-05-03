@@ -305,7 +305,7 @@
                                 <% if expense.distance %>
                                   <strong><%= t('reimboursements.show.distance_label') %></strong> <%= expense.distance %> <%= t('common.labels.distance') if I18n.exists?('common.labels.distance') %>
                                   <% if expense.return_trip? %>
-                                    (<%= t('rimborsi.expense_fields.return_trip') %>)
+                                    (<%= t('reimboursements.expense_fields.return_trip') %>)
                                   <% end %><br>
                                 <% end %>
                                 <% if expense.calculation_date %>
