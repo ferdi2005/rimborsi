@@ -6,17 +6,12 @@ class Note < ApplicationRecord
   validates :text, presence: true
 
   # Callbacks
-  after_create :send_notification_email
-  after_update :send_status_change_notification, if: :saved_change_to_status_change?
+  after_create :send_notification_email, if: :status_change?
 
   # Scope per ordinare le note più recenti per prime
   scope :recent, -> { order(created_at: :desc) }
 
   private
-
-  def send_status_change_notification
-    ReimboursementMailer.status_changed(self).deliver_later
-  end
 
   def send_notification_email
     ReimboursementMailer.note_added(self).deliver_later

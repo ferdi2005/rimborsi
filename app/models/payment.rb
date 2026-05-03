@@ -165,7 +165,7 @@ class Payment < ApplicationRecord
 
             # Informazioni di rimessa
             cdt.RmtInf do |rmt|
-              rmt.Ustrd "Rimborso spese n. #{reimbursement.id}"
+              rmt.Ustrd "Rimborso #{reimbursement.id}: #{reimbursement.project}"
             end
           end
         end

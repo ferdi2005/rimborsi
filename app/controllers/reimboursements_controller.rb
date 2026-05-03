@@ -105,11 +105,6 @@ class ReimboursementsController < ApplicationController
           )
         end
 
-        # Se lo status è cambiato, invia notifica email
-        if old_status != @reimboursement.status
-          ReimboursementMailer.status_changed(@reimboursement).deliver_later
-        end
-
         format.html { redirect_to @reimboursement, notice: "Rimborso aggiornato con successo." }
         format.json { render :show, status: :ok, location: @reimboursement }
       else
