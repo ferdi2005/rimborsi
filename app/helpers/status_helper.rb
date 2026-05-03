@@ -38,6 +38,11 @@ module StatusHelper
 
   def reimboursement_status_config
     {
+      "draft" => {
+        text: "Bozza",
+        class: "status-draft",
+        icon: "pencil-alt"
+      },
       "created" => {
         text: "In attesa di elaborazione",
         class: "status-pending",

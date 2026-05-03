@@ -64,10 +64,11 @@
                     <i class="fas fa-clipboard-check me-2"></i>Stato iniziale
                   </h6>
                   <p class="mb-2">
-                  <%= status_badge("created", :reimboursement) %>
+                  <%= status_badge(reimboursement.status_draft? ? "draft" : "created", :reimboursement) %>
                   </p>
                   <small class="text-muted">
-                    Il rimborso verrà sottoposto a revisione e riceverai notifiche via email per ogni aggiornamento
+                    Salva come bozza per riprendere il lavoro più tardi (nessuna validazione, nessuna email).
+                    Quando invii il rimborso, verrà sottoposto a revisione e riceverai notifiche via email per ogni aggiornamento.
                   </small>
                 </div>
               </div>
@@ -173,9 +174,17 @@
   <!-- Bottoni di azione -->
   <div class="d-flex justify-content-between">
     <%= link_to 'Annulla', reimboursements_path, class: 'btn btn-secondary' %>
-    <%= form.submit "Salva e invia rimborso", class: 'btn btn-success' %>
+    <% unless current_user.admin? %>
+      <div class="btn-group">
+        <%= form.submit "Salva bozza", name: "save_as_draft", class: 'btn btn-outline-secondary' %>
+        <%= form.submit "Salva e invia rimborso", class: 'btn btn-success' %>
+      </div>
+    <% else %>
+      <%= form.submit "Salva", class: 'btn btn-success' %>
+    <% end %>
   </div>
   <div class="form-text text-end">
+    Le bozze non vengono validate (puoi salvare senza spese o conto bancario) e non sono visibili alla segreteria.
     Potrai modificare il rimborso anche dopo l'invio fino a quando non passerà in approvazione dalla segreteria.
   </div>
 

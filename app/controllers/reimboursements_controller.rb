@@ -3,8 +3,10 @@ class ReimboursementsController < ApplicationController
 
   # GET /reimboursements or /reimboursements.json
   def index
-    # Definisci gli stati di default
+    # Definisci gli stati di default. Gli utenti normali vedono anche le proprie bozze;
+    # gli admin no, perché le bozze non sono ancora state inviate per la revisione.
     default_statuses = [ "created", "in_process", "waiting" ]
+    default_statuses = [ "draft" ] + default_statuses unless current_user.admin?
 
     # Ottieni i parametri di filtro
     @filter_statuses = params[:statuses].present? ? params[:statuses].reject(&:blank?) : default_statuses
@@ -59,6 +61,7 @@ class ReimboursementsController < ApplicationController
     else
       # Gli utenti normali possono creare solo rimborsi per se stessi
       @reimboursement = current_user.reimboursements.build(reimboursement_params.except(:user_id, :initial_note))
+      apply_user_status_choice(@reimboursement)
     end
 
     respond_to do |format|
@@ -95,7 +98,10 @@ class ReimboursementsController < ApplicationController
     old_status = @reimboursement.status
 
     respond_to do |format|
-      if @reimboursement.update(reimboursement_params.except(:initial_note))
+      @reimboursement.assign_attributes(reimboursement_params.except(:initial_note))
+      apply_user_status_choice(@reimboursement) unless current_user.admin?
+
+      if @reimboursement.save
         # Crea una nuova nota se è presente il campo initial_note
         if params[:reimboursement][:initial_note].present?
           @reimboursement.notes.create!(
@@ -105,8 +111,10 @@ class ReimboursementsController < ApplicationController
           )
         end
 
-        # Se lo status è cambiato, invia notifica email
-        if old_status != @reimboursement.status
+        # Se lo status è cambiato, invia notifica email — ma non per le transizioni
+        # da/verso "draft", che sono iniziate dall'utente (salva bozza / invia).
+        if old_status != @reimboursement.status &&
+           old_status != "draft" && @reimboursement.status != "draft"
           ReimboursementMailer.status_changed(@reimboursement).deliver_later
         end
 
@@ -122,8 +130,8 @@ class ReimboursementsController < ApplicationController
 
   # DELETE /reimboursements/1 or /reimboursements/1.json
   def destroy
-    unless @reimboursement.status_created?
-      redirect_to reimboursements_path, alert: "Non puoi eliminare un rimborso che non è in attesa di elaborazione. Solo i rimborsi in stato 'Creato' possono essere eliminati."
+    unless @reimboursement.status_created? || @reimboursement.status_draft?
+      redirect_to reimboursements_path, alert: "Non puoi eliminare un rimborso che non è in attesa di elaborazione. Solo le bozze e i rimborsi in stato 'Creato' possono essere eliminati."
       return
     end
 
@@ -244,6 +252,14 @@ class ReimboursementsController < ApplicationController
   end
 
   private
+    # Per gli utenti normali: il form ha due bottoni (salva bozza / salva e invia).
+    # Lo status viene impostato qui solo quando ha senso permettere all'utente di sceglierlo:
+    # nuovi record o bozze esistenti. Per rimborsi già inviati, lo status non cambia.
+    def apply_user_status_choice(reimboursement)
+      return unless reimboursement.new_record? || reimboursement.status_draft?
+      reimboursement.status = params[:save_as_draft].present? ? :draft : :created
+    end
+
     def set_reimboursement
       if current_user.admin?
         @reimboursement = Reimboursement.find(params[:id])
