@@ -1,11 +1,7 @@
 class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
-  before_action :set_locale
-  before_action :authenticate_user!
-
-  # Set I18n locale from user preference
-  before_action :set_locale
+  before_action :authenticate_user!, :set_locale
 
   # Configure additional parameters for Devise
   before_action :configure_permitted_parameters, if: :devise_controller?
