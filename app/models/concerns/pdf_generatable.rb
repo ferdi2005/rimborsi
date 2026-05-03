@@ -295,6 +295,32 @@ module PdfGeneratable
   end
 
   def create_pdf_header(composer)
+    # Intestazione Wikimedia Italia
+    logo_path = Rails.root.join("app", "assets", "images", "logo.png")
+    text_items = []
+
+    if File.exist?(logo_path)
+      img = composer.document.images.add(logo_path.to_s)
+      img_width = 50
+      img_height = (img.info.height.to_f / img.info.width.to_f) * img_width
+
+      logo_box = HexaPDF::Layout::InlineBox.create(width: img_width, height: img_height, valign: :top) do |canvas, box|
+        canvas.image(img, at: [ 0, 0 ], width: box.content_width)
+      end
+      text_items << logo_box
+      text_items << "  "
+    end
+
+    text_items.concat([
+      { text: "Wikimedia Italia - Associazione per la diffusione della conoscenza libera APS-ETS\n", font: [ "Helvetica", { variant: :bold } ], font_size: 10 },
+      { text: "Via Bergognone, 34 20144 Milano (MI)\n", font_size: 9 },
+      { text: "Tel. 02 97677170\n", font_size: 9 },
+      { text: "P. Iva 05599740965 Cod. Fisc. 94039910156\n", font_size: 9 },
+      { text: "Codice SDI: KRRH6B9 - https://wikimedia.it - segreteria@wikimedia.it - wikimediaitalia@pec.it", font_size: 9 }
+    ])
+
+    composer.formatted_text(text_items, margin: [ 0, 0, 20, 0 ])
+
     composer.text("Rimborso ##{id}", font_size: 20,
                   font: "Helvetica bold",
                   margin: [ 0, 0, 20 ])
