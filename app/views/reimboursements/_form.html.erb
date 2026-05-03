@@ -105,6 +105,35 @@
     </div>
   </div>
 
+  <!-- Ruolo (prima delle spese) -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0"><%= t("rimborsi.forms.reimboursement.role.title") %></h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= form.label :role, t("rimborsi.forms.reimboursement.role.label"), class: "form-label" %>
+          <%= form.select :role,
+                options_for_select(
+                  Reimboursement.role_translations.map { |key, value| [value, key] },
+                  reimboursement.role
+                ),
+                { prompt: t("rimborsi.forms.reimboursement.role.prompt") },
+                { class: "form-select", id: "reimboursement_role" } %>
+        </div>
+
+        <% if reimboursement.role.in?(%w[event_co_organizer other]) %>
+        <div class="col-md-6 mb-3 role-other-field">
+          <%= form.label :role_other, t("rimborsi.forms.reimboursement.role.other_label"), class: "form-label" %>
+          <%= form.text_field :role_other, class: "form-control", placeholder: t("rimborsi.forms.reimboursement.role.other_placeholder") %>
+          <div class="form-text"><%= t("rimborsi.forms.reimboursement.role.other_help") %></div>
+        </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
   <!-- Spese -->
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -194,6 +223,28 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Inizializza il conto bancario
   initializeBankAccount();
+
+  // Inizializza campo Ruolo e gestione campo 'Altro'
+  function initializeRoleField() {
+    const roleSelect = document.getElementById('reimboursement_role');
+    const roleOther = document.querySelector('.role-other-field');
+    if (!roleSelect) return;
+
+    function toggleRoleOther() {
+      const val = roleSelect.value;
+      if (val === 'other' || val === 'event_co_organizer') {
+        if (roleOther) roleOther.style.display = 'block';
+      } else {
+        if (roleOther) roleOther.style.display = 'none';
+      }
+    }
+
+    roleSelect.addEventListener('change', toggleRoleOther);
+    // Run once on init
+    toggleRoleOther();
+  }
+
+  initializeRoleField();
 
   // Gestione calcolo automatico importo auto
   document.addEventListener('input', function(e) {

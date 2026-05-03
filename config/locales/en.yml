@@ -29,3 +29,43 @@
 
 en:
   hello: "Hello world"
+
+  activerecord:
+    attributes:
+      reimboursement:
+        role: "Role"
+        role_other: "Other (short)"
+    errors:
+      models:
+        reimboursement:
+          attributes:
+            role_other:
+              blank_for_selected_role: "must be filled for the selected role"
+
+  enums:
+    reimboursement:
+      status:
+        created: "Waiting for processing"
+        in_process: "In progress"
+        approved: "Approved"
+        paid: "Paid"
+        waiting: "Waiting for user"
+      role:
+        volunteer: "Volunteer"
+        employee_collaborator: "Employee/Collaborator"
+        speaker_presenter: "Speaker/Presenter"
+        scholarship_holder: "Scholarship holder"
+        event_participant: "Event participant"
+        event_co_organizer: "Event co-organizer (specify association name, location and tax code in the other field)"
+        other: "Other"
+
+  rimborsi:
+    forms:
+      reimboursement:
+        role:
+          title: "Role"
+          label: "Role"
+          prompt: "Select role"
+          other_label: "Other (short)"
+          other_placeholder: "Specify here: association name / location / tax code or other short text"
+          other_help: "If you choose \"Event co-organizer\" enter association name, location and tax code here; for \"Other\" use a short text."

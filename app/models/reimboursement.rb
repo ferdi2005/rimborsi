@@ -16,9 +16,21 @@ class Reimboursement < ApplicationRecord
     waiting: 4
   }, prefix: true
 
+  # Enumerativo per il ruolo del richiedente
+  enum :role, {
+    volunteer: "volontario",
+    employee_collaborator: "dipendente",
+    speaker_presenter: "relatore",
+    scholarship_holder: "borsista",
+    event_participant: "partecipatore",
+    event_co_organizer: "co_organizzatore",
+    other: "altro"
+  }, prefix: true
+
   # Validazioni
   validate :must_have_payment_method
   validate :must_have_expenses
+  validate :role_other_required_for_specific_roles
 
   # Nested attributes per le spese
   accepts_nested_attributes_for :expenses, reject_if: :all_blank, allow_destroy: true
@@ -33,17 +45,23 @@ class Reimboursement < ApplicationRecord
 
   # Metodi per la traduzione degli status
   def self.status_translations
-    {
-      "created" => "In attesa di elaborazione",
-      "in_process" => "In elaborazione",
-      "approved" => "Approvato",
-      "paid" => "Pagato",
-      "waiting" => "In attesa dell'utente"
-    }
+    statuses.keys.index_with do |key|
+      I18n.t("enums.reimboursement.status.#{key}", default: key.humanize)
+    end
+  end
+
+  def self.role_translations
+    roles.keys.index_with do |key|
+      I18n.t("enums.reimboursement.role.#{key}", default: key.humanize)
+    end
   end
 
   def status_in_italian
     self.class.status_translations[status] || status.humanize
+  end
+
+  def role_in_italian
+    self.class.role_translations[role] || role.humanize
   end
 
   # Metodo per verificare se il rimborso può essere approvato
@@ -100,6 +118,14 @@ class Reimboursement < ApplicationRecord
   def must_have_expenses
     if expenses.empty? || expenses.all? { |expense| expense.marked_for_destruction? }
       errors.add(:base, "Deve avere almeno una spesa")
+    end
+  end
+
+  def role_other_required_for_specific_roles
+    return unless role_event_co_organizer? || role_other?
+
+    if role_other.blank?
+      errors.add(:role_other, :blank_for_selected_role)
     end
   end
 end

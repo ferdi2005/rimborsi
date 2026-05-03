@@ -300,7 +300,7 @@ module PdfGeneratable
                   margin: [ 0, 0, 20 ])
 
     # Informazioni utente
-    composer.text("Richiedente: #{user.name} #{user.surname}", font_size: 14)
+    composer.text("Richiedente: #{user.name} #{user.surname} (#{role_in_italian})", font_size: 14)
     composer.text("Email: #{user.email}", font_size: 12)
     composer.text("Data creazione: #{created_at.strftime('%d/%m/%Y')}", font_size: 12)
     composer.text("Totale: € #{number_with_precision(total_amount, precision: 2)}",

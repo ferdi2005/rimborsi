@@ -40,6 +40,8 @@ it:
         
       reimboursement:
         status: "Stato"
+        role: "Ruolo"
+        role_other: "Altro (breve)"
         user: "Utente"
         user_id: "Utente"
         bank_account: "conto bancario"
@@ -159,6 +161,8 @@ it:
               blank: "è obbligatorio"
             status:
               blank: "è obbligatorio"
+            role_other:
+              blank_for_selected_role: "deve essere compilato per il ruolo selezionato"
         
         user:
           attributes:
@@ -218,11 +222,19 @@ it:
     
     reimboursement:
       status:
-        created: "Creato"
-        pending: "In attesa"
+        created: "In attesa di elaborazione"
+        in_process: "In elaborazione"
         approved: "Approvato"
         paid: "Pagato"
-        denied: "Negato"
+        waiting: "In attesa dell'utente"
+      role:
+        volunteer: "Volontario"
+        employee_collaborator: "Dipendente/Collaboratore"
+        speaker_presenter: "Relatore/Presentatore"
+        scholarship_holder: "Borsista"
+        event_participant: "Partecipatore evento"
+        event_co_organizer: "Co-organizzatore evento (indicare Nome associazione, sede e codice fiscale, saranno inseriti nel campo altro utilizzato)"
+        other: "Altro"
 
   # Traduzioni generali dell'interfaccia
   common:
@@ -304,3 +316,10 @@ it:
         payment_method: "Metodo di Pagamento"
         expenses: "Spese"
         summary: "Riepilogo"
+        role:
+          title: "Ruolo"
+          label: "Ruolo"
+          prompt: "Seleziona ruolo"
+          other_label: "Altro"
+          other_placeholder: "Specificare qui: nome associazione / sede / codice fiscale o altro breve testo"
+          other_help: "Se scegli \"Co-organizzatore evento\" inserire qui nome associazione, sede e codice fiscale; altrimenti indica il tuo ruolo"
