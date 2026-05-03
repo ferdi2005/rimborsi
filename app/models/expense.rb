@@ -22,7 +22,6 @@ class Expense < ApplicationRecord
   validates :requested_amount, presence: true, numericality: { greater_than: 0 }
   validates :purpose, presence: true
   validates :date, presence: true
-  validates :project, presence: true, length: { maximum: 255 }
   validates :fund, presence: true
 
   # Validation: attachment is required only if not car expense
@@ -30,7 +29,7 @@ class Expense < ApplicationRecord
 
   # Validazione del formato dell'allegato
   validate :validate_attachment_format, if: -> { attachment.attached? }
-  
+
   # Validazione che il requested_amount non superi l'amount
   validate :validate_requested_amount_not_exceeding_amount
 
@@ -48,13 +47,13 @@ class Expense < ApplicationRecord
 
   # Callback per calcolare automaticamente l'importo per le spese auto
   before_save :calculate_auto_amount, if: :car?
-  
+
   # Callback per impostare requested_amount uguale ad amount se non specificato
   before_validation :set_default_requested_amount
 
   # Callback per aggiornare lo stato del rimborso quando una spesa viene approvata
   after_update :update_reimboursement_status, if: :saved_change_to_status?
-  
+
   # Callback per controllare file duplicati dopo la creazione
   after_create :check_for_duplicate_attachments
 
@@ -95,7 +94,7 @@ class Expense < ApplicationRecord
     calculated_amount = (cost_per_km * total_distance) / 2
 
     self.amount = calculated_amount.round(2)
-    
+
     # Se requested_amount non è stato ancora impostato o è uguale al vecchio amount, aggiornalo
     if requested_amount.blank? || requested_amount == amount_was
       self.requested_amount = self.amount
@@ -112,7 +111,7 @@ class Expense < ApplicationRecord
   # Validazione che il requested_amount non superi l'amount
   def validate_requested_amount_not_exceeding_amount
     return unless amount.present? && requested_amount.present?
-    
+
     if requested_amount > amount
       errors.add(:requested_amount, "(€#{requested_amount}) non può essere maggiore dell'importo della spesa (€#{amount})")
     end
@@ -125,21 +124,21 @@ class Expense < ApplicationRecord
     # Tipi MIME consentiti
     allowed_content_types = [
       # Immagini
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-      'image/gif',
-      'image/bmp',
-      'image/tiff',
-      'image/webp',
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/tiff",
+      "image/webp",
       # PDF
-      'application/pdf',
+      "application/pdf",
       # XML
-      'application/xml',
-      'text/xml',
+      "application/xml",
+      "text/xml",
       # XML.P7M (firma digitale)
-      'application/pkcs7-mime',
-      'application/x-pkcs7-mime'
+      "application/pkcs7-mime",
+      "application/x-pkcs7-mime"
     ]
 
     # Estensioni consentite
@@ -168,9 +167,9 @@ class Expense < ApplicationRecord
     end
 
     # Controllo specifico per file .p7m
-    if file_extension == '.p7m'
+    if file_extension == ".p7m"
       # Verifica che il nome file contenga .xml.p7m
-      unless filename.include?('.xml.p7m')
+      unless filename.include?(".xml.p7m")
         errors.add(:attachment, "i file P7M devono avere estensione .xml.p7m")
       end
     end
@@ -191,28 +190,28 @@ class Expense < ApplicationRecord
   def check_for_duplicate_attachments
     return unless attachment.attached?
     return unless attachment.blob.present?
-    
+
     current_checksum = attachment.blob.checksum
-    
+
     # Trova altre spese con lo stesso checksum, escludendo la spesa corrente
     duplicate_expenses = Expense.joins(attachment_attachment: :blob)
                                 .where.not(id: id)
                                 .where(active_storage_blobs: { checksum: current_checksum })
                                 .includes(:reimboursement)
-    
+
     return if duplicate_expenses.empty?
-    
+
     # Crea il messaggio con la lista dei file duplicati
     file_list = duplicate_expenses.map do |exp|
       "- #{exp.attachment.filename} (Rimborso ##{exp.reimboursement_id})"
     end.join("\n")
-    
+
     note_text = "Attenzione! Sono presenti dei file duplicati:\n\n#{file_list}"
-    
+
     # Crea una nota per il rimborso corrente
     # Usa il primo utente admin disponibile come autore della nota di sistema
     admin_user = User.find_by(admin: true)
-    
+
     if admin_user && reimboursement
       reimboursement.notes.create!(
         user: admin_user,

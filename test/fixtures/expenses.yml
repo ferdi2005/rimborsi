@@ -19,7 +19,6 @@ one:
   carburante: 9.99
   pneumatici: 9.99
   manutenzione: 9.99
-  project: one
 
 two:
   reimboursment: two
@@ -40,4 +39,3 @@ two:
   carburante: 9.99
   pneumatici: 9.99
   manutenzione: 9.99
-  project: two

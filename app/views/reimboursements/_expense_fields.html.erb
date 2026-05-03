@@ -69,21 +69,15 @@
   </div>
 
   <!-- Fondo e Progetto -->
-  <div class="row mt-3">
-    <div class="col-md-6">
+  <div class="row mb-3">
+    <div class="col-md-12">
       <%= f.label :fund_id, class: "form-label" do %>
         Fondo <span class="text-danger">*</span>
       <% end %>
-      <%= f.select :fund_id, 
+      <%= f.select :fund_id,
           options_from_collection_for_select(Fund.active.order(:name), :id, :name, f.object.fund_id),
           { prompt: "Seleziona fondo" },
           { class: "form-select" } %>
-    </div>
-    <div class="col-md-6">
-      <%= f.label :project, class: "form-label" do %>
-        Progetto <span class="text-danger">*</span>
-      <% end %>
-      <%= f.text_field :project, class: "form-control", placeholder: "Nome del progetto (es. Microgrant Wiki Loves Puglia 2025)..." %>
     </div>
   </div>
 

@@ -4,8 +4,10 @@ one:
   state: one
   user: one
   bank_account: one
+  project: "Wiki Loves Monuments"
 
 two:
   state: two
   user: two
   bank_account: two
+  project: "Wiki Loves Puglia"

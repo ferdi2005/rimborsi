@@ -7,6 +7,8 @@ class Reimboursement < ApplicationRecord
   has_many :expenses, dependent: :destroy
   has_many :notes, dependent: :destroy
 
+  validates :project, presence: true, length: { maximum: 255 }
+
   # Enumerativo per gli status
   enum :status, {
     created: 0,

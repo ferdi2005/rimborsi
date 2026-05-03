@@ -105,13 +105,17 @@
     </div>
   </div>
 
-  <!-- Ruolo (prima delle spese) -->
+  <!-- Ruolo -->
   <div class="card mb-4">
     <div class="card-header">
       <h5 class="mb-0"><%= t("rimborsi.forms.reimboursement.role.title") %></h5>
     </div>
     <div class="card-body">
       <div class="row">
+        <div class="col-md-12 mb-3">
+          <%= form.label :project, "Progetto", class: "form-label" %>
+          <%= form.text_field :project, class: "form-control", placeholder: "Nome del progetto (es. Microgrant Wiki Loves Puglia 2025)..." %>
+        </div>
         <div class="col-md-6 mb-3">
           <%= form.label :role, t("rimborsi.forms.reimboursement.role.label"), class: "form-label" %>
           <%= form.select :role,

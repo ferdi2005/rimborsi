@@ -77,7 +77,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
     t.integer "vehicle_id"
-    t.string "project"
     t.decimal "requested_amount", precision: 8, scale: 2
     t.index ["vehicle_id"], name: "index_expenses_on_vehicle_id"
   end
@@ -115,6 +114,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
+    t.string "project"
     t.bigint "payment_id"
     t.string "role"
     t.string "role_other"

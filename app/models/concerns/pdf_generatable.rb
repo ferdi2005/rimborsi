@@ -303,6 +303,8 @@ module PdfGeneratable
     composer.text("Richiedente: #{user.name} #{user.surname} (#{role_in_italian})", font_size: 14)
     composer.text("Email: #{user.email}", font_size: 12)
     composer.text("Data creazione: #{created_at.strftime('%d/%m/%Y')}", font_size: 12)
+    composer.text("Progeto: #{project}", font_size: 14)
+
     composer.text("Totale: € #{number_with_precision(total_amount, precision: 2)}",
                   font_size: 14,
                   font: "Helvetica bold",
@@ -343,7 +345,6 @@ module PdfGeneratable
       end
 
       composer.text("Fondo: #{expense.fund.name}", font_size: 11)
-      composer.text("Progetto: #{expense.project}", font_size: 11)
 
       # Se è una spesa auto, mostra i dettagli specifici
       if expense.car?
