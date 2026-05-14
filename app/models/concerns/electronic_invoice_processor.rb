@@ -11,9 +11,20 @@ module ElectronicInvoiceProcessor
 
   # Metodo per verificare se l'attachment è una fattura elettronica
   def electronic_invoice?
-    return false unless attachment.attached?
+    return false unless attachments.attached?
 
-    ElectronicInvoiceHelper.electronic_invoice?(attachment.content_type)
+    attachments.any? do |attachment|
+      ElectronicInvoiceHelper.electronic_invoice?(attachment.content_type)
+    end
+  end
+
+  # Trova il primo attachment che è una fattura elettronica
+  def electronic_invoice_attachment
+    return nil unless attachments.attached?
+
+    attachments.find do |attachment|
+      ElectronicInvoiceHelper.electronic_invoice?(attachment.content_type)
+    end
   end
 
   # Metodo per ottenere il PDF generato (se disponibile)
@@ -28,7 +39,7 @@ module ElectronicInvoiceProcessor
 
   # Determina se il PDF deve essere generato o rigenerato
   def should_generate_pdf?
-    return false unless electronic_invoice? && attachment.attached?
+    return false unless electronic_invoice? && attachments.attached?
     return false if @generating_pdf # Evita loop durante la generazione
 
     # Genera il PDF se:
@@ -39,12 +50,12 @@ module ElectronicInvoiceProcessor
 
   # Verifica se l'attachment principale (fattura) è stato modificato
   def main_attachment_changed?
-    return false unless attachment.attached?
+    return false unless attachments.attached?
 
     # Controlla solo se è cambiato l'attachment della fattura elettronica
     # Non considera i cambiamenti del PDF allegato
-    saved_change_to_attribute?(:attachment) ||
-    (previous_changes.key?("attachment") && electronic_invoice?)
+    saved_change_to_attribute?(:attachments) ||
+    (previous_changes.key?("attachments") && electronic_invoice?)
   end
 
   # Rigenera il PDF della fattura elettronica (utile per aggiornamenti manuali)
@@ -65,14 +76,17 @@ module ElectronicInvoiceProcessor
 
   # Estrae i dati della fattura elettronica
   def extract_invoice_data
-    return {} unless electronic_invoice? && attachment.attached?
+    return {} unless electronic_invoice? && attachments.attached?
+
+    invoice_attachment = electronic_invoice_attachment
+    return {} unless invoice_attachment
 
     begin
       # Leggi il contenuto del file
-      file_content = attachment.download
+      file_content = invoice_attachment.download
 
       # Se è un file P7M, decrittalo prima
-      xml_content = if ElectronicInvoiceHelper.is_p7m_file?(attachment.content_type)
+      xml_content = if ElectronicInvoiceHelper.is_p7m_file?(invoice_attachment.content_type)
         ElectronicInvoiceHelper.decrypt_p7m(file_content)
       else
         file_content
@@ -122,6 +136,9 @@ module ElectronicInvoiceProcessor
     return unless electronic_invoice?
     return if @generating_pdf # Evita loop di generazione
 
+    invoice_attachment = electronic_invoice_attachment
+    return unless invoice_attachment
+
     begin
       # Imposta il flag per evitare loop
       @generating_pdf = true
@@ -133,13 +150,13 @@ module ElectronicInvoiceProcessor
       end
 
       # Leggi il contenuto del file
-      file_content = attachment.download
+      file_content = invoice_attachment.download
 
       # Genera il PDF utilizzando l'helper
-      pdf_content = ElectronicInvoiceHelper.convert_to_pdf(file_content, attachment.content_type)
+      pdf_content = ElectronicInvoiceHelper.convert_to_pdf(file_content, invoice_attachment.content_type)
 
       # Crea il filename per il PDF
-      original_filename = attachment.filename.to_s
+      original_filename = invoice_attachment.filename.to_s
       pdf_filename = ElectronicInvoiceHelper.generate_pdf_filename(original_filename)
 
       # Crea un file temporaneo per il PDF

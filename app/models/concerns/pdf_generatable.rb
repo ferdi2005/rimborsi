@@ -43,7 +43,7 @@ module PdfGeneratable
   private
 
   def has_attachments?
-    expenses.any? { |expense| expense.attachment.attached? || expense.pdf_attachment.attached? }
+    expenses.any? { |expense| expense.attachments.any? || expense.pdf_attachment.attached? }
   end
 
   def validate_file_before_processing!(file, allow_images: false)
@@ -219,64 +219,63 @@ module PdfGeneratable
         end
       end
 
-      # Handle receipt attachments
-      next unless expense.attachment.attached?
+      # Handle receipt attachments - process each attachment
+      expense.attachments.each do |attachment|
+        begin
+          # Validazione del file prima del processamento
+          validate_file_before_processing!(attachment, allow_images: true)
 
-      receipt = expense.attachment
-      begin
-        # Validazione del file prima del processamento
-        validate_file_before_processing!(receipt, allow_images: true)
+          if attachment.content_type == "application/pdf"
+            # For PDF receipts, try to open with HexaPDF (handles most encrypted PDFs automatically)
+            temp_receipt = Tempfile.new([ "receipt", ".pdf" ])
+            temp_receipt.binmode
+            receipt_data = attachment.download
+            temp_receipt.write(receipt_data)
+            temp_receipt.close
 
-        if receipt.content_type == "application/pdf"
-          # For PDF receipts, try to open with HexaPDF (handles most encrypted PDFs automatically)
-          temp_receipt = Tempfile.new([ "receipt", ".pdf" ])
-          temp_receipt.binmode
-          receipt_data = receipt.download
-          temp_receipt.write(receipt_data)
-          temp_receipt.close
-
-          begin
-            # Processa con timeout e validazione struttura
-            safe_process_file_with_timeout(temp_receipt) do |file|
-              receipt_doc = validate_pdf_structure!(file.path)
-              receipt_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+            begin
+              # Processa con timeout e validazione struttura
+              safe_process_file_with_timeout(temp_receipt) do |file|
+                receipt_doc = validate_pdf_structure!(file.path)
+                receipt_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+              end
+            rescue HexaPDF::EncryptionError => e
+              Rails.logger.error "PDF ricevuta #{attachment.filename} è protetto da password: #{e.message}"
+              raise StandardError, "PDF #{attachment.filename} è protetto da password e non può essere elaborato"
             end
-          rescue HexaPDF::EncryptionError => e
-            Rails.logger.error "PDF ricevuta #{receipt.filename} è protetto da password: #{e.message}"
-            raise StandardError, "PDF #{receipt.filename} è protetto da password e non può essere elaborato"
+
+            temp_receipt.unlink
+          else
+            # For image receipts, convert to PDF first using HexaPDF
+            temp_image = Tempfile.new([ "receipt", attachment.filename.extension ])
+            temp_image.binmode
+            receipt_data = attachment.download
+            temp_image.write(receipt_data)
+            temp_image.close
+
+            # Processa con timeout
+            safe_process_file_with_timeout(temp_image) do |file|
+              # Create a temporary PDF with the image using HexaPDF
+              image_composer = HexaPDF::Composer.new
+              image_composer.image(file.path)
+
+              temp_image_pdf = Tempfile.new([ "receipt_pdf", ".pdf" ])
+              temp_image_pdf.close
+              image_composer.write(temp_image_pdf.path)
+
+              image_doc = HexaPDF::Document.open(temp_image_pdf.path)
+              image_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+
+              File.unlink(temp_image_pdf.path)
+            end
+
+            temp_image.unlink
           end
-
-          temp_receipt.unlink
-        else
-          # For image receipts, convert to PDF first using HexaPDF
-          temp_image = Tempfile.new([ "receipt", receipt.filename.extension ])
-          temp_image.binmode
-          receipt_data = receipt.download
-          temp_image.write(receipt_data)
-          temp_image.close
-
-          # Processa con timeout
-          safe_process_file_with_timeout(temp_image) do |file|
-            # Create a temporary PDF with the image using HexaPDF
-            image_composer = HexaPDF::Composer.new
-            image_composer.image(file.path)
-
-            temp_image_pdf = Tempfile.new([ "receipt_pdf", ".pdf" ])
-            temp_image_pdf.close
-            image_composer.write(temp_image_pdf.path)
-
-            image_doc = HexaPDF::Document.open(temp_image_pdf.path)
-            image_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
-
-            File.unlink(temp_image_pdf.path)
-          end
-
-          temp_image.unlink
+        rescue Timeout::Error => e
+          Rails.logger.error "Timeout elaborazione ricevuta expense #{expense.id}, attachment #{attachment.filename}: #{e.message}"
+        rescue StandardError => e
+          Rails.logger.error "Errore ricevuta expense #{expense.id}, attachment #{attachment.filename}: #{e.message}"
         end
-      rescue Timeout::Error => e
-        Rails.logger.error "Timeout elaborazione ricevuta #{expense.id}: #{e.message}"
-      rescue StandardError => e
-        Rails.logger.error "Errore ricevuta #{expense.id}: #{e.message}"
       end
     end
 
@@ -402,8 +401,8 @@ module PdfGeneratable
     # Gestione allegati per spese normali - solo riferimenti, i PDF saranno allegati alla fine
     if expense.pdf_attachment.attached?
       composer.formatted_text([ { text: "Fattura elettronica allegata", font_size: 10 } ], fill_color: "008800")
-    elsif expense.attachment.attached?
-      composer.formatted_text([ { text: "Ricevuta allegata", font_size: 10 } ], fill_color: "008800")
+    elsif expense.attachments.any?
+      composer.formatted_text([ { text: "#{expense.attachments.count} allegati", font_size: 10 } ], fill_color: "008800")
     end
   end
 

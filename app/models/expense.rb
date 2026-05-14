@@ -3,11 +3,13 @@ class Expense < ApplicationRecord
   belongs_to :vehicle, optional: true
   belongs_to :fund, optional: true
 
-  has_one_attached :attachment
+  has_many_attached :attachments
   has_one_attached :pdf_attachment
 
   # Include il concern per la gestione delle fatture elettroniche
   include ElectronicInvoiceProcessor
+
+  MAX_ATTACHMENTS = 10
 
   # Enumerativo per gli status
   enum :status, {
@@ -25,11 +27,13 @@ class Expense < ApplicationRecord
   validates :project, presence: true, length: { maximum: 255 }
   validates :fund, presence: true
 
-  # Validation: attachment is required only if not car expense
-  validates :attachment, presence: true, unless: :car?
+  # Validation: attachments are required only if not car expense
+  validates :attachments, presence: true, unless: :car?
 
-  # Validazione del formato dell'allegato
-  validate :validate_attachment_format, if: -> { attachment.attached? }
+  # Validazione del formato degli allegati
+  validate :validate_attachment_format, if: -> { attachments.attached? }
+  validate :validate_attachments_count, if: -> { attachments.attached? }
+  validate :validate_single_electronic_invoice, if: -> { attachments.attached? }
   
   # Validazione che il requested_amount non superi l'amount
   validate :validate_requested_amount_not_exceeding_amount
@@ -118,9 +122,9 @@ class Expense < ApplicationRecord
     end
   end
 
-  # Validazione del formato dell'allegato
+  # Validazione del formato degli allegati
   def validate_attachment_format
-    return unless attachment.attached?
+    return unless attachments.attached?
 
     # Tipi MIME consentiti
     allowed_content_types = [
@@ -145,35 +149,63 @@ class Expense < ApplicationRecord
     # Estensioni consentite
     allowed_extensions = %w[.jpg .jpeg .png .gif .bmp .tiff .webp .pdf .xml .p7m]
 
-    content_type = attachment.content_type
-    filename = attachment.filename.to_s.downcase
-    file_extension = File.extname(filename)
+    attachments.each do |attachment|
+      content_type = attachment.content_type
+      filename = attachment.filename.to_s.downcase
+      file_extension = File.extname(filename)
 
-    # Controllo del content type
-    unless allowed_content_types.include?(content_type)
-      errors.add(:attachment, "deve essere un'immagine, un PDF o un file XML. Formato ricevuto: #{content_type}")
-      return
-    end
+      # Controllo del content type
+      unless allowed_content_types.include?(content_type)
+        errors.add(:attachments, "deve essere un'immagine, un PDF o un file XML. Formato ricevuto: #{content_type}")
+        next
+      end
 
-    # Controllo dell'estensione del file
-    unless allowed_extensions.include?(file_extension)
-      errors.add(:attachment, "deve avere un'estensione valida: #{allowed_extensions.join(', ')}")
-      return
-    end
+      # Controllo dell'estensione del file
+      unless allowed_extensions.include?(file_extension)
+        errors.add(:attachments, "deve avere un'estensione valida: #{allowed_extensions.join(', ')}")
+        next
+      end
 
-    # Controllo dimensione file (massimo 20MB)
-    max_size = 20.megabytes
-    if attachment.byte_size > max_size
-      errors.add(:attachment, "non può essere più grande di #{max_size / 1.megabyte}MB")
-    end
+      # Controllo dimensione file (massimo 20MB)
+      max_size = 20.megabytes
+      if attachment.byte_size > max_size
+        errors.add(:attachments, "non può essere più grande di #{max_size / 1.megabyte}MB")
+      end
 
-    # Controllo specifico per file .p7m
-    if file_extension == '.p7m'
-      # Verifica che il nome file contenga .xml.p7m
-      unless filename.include?('.xml.p7m')
-        errors.add(:attachment, "i file P7M devono avere estensione .xml.p7m")
+      # Controllo specifico per file .p7m
+      if file_extension == '.p7m'
+        # Verifica che il nome file contenga .xml.p7m
+        unless filename.include?('.xml.p7m')
+          errors.add(:attachments, "i file P7M devono avere estensione .xml.p7m")
+        end
       end
     end
+  end
+
+  def validate_attachments_count
+    return unless attachments.attached?
+
+    if attachments.count > MAX_ATTACHMENTS
+      errors.add(:attachments, "non può contenere più di #{MAX_ATTACHMENTS} file")
+    end
+  end
+
+  def validate_single_electronic_invoice
+    return unless attachments.attached?
+
+    electronic_invoices = attachments.select do |attachment|
+      ElectronicInvoiceHelper.electronic_invoice?(attachment.content_type)
+    end
+
+    if electronic_invoices.count > 1
+      errors.add(:attachments, "può contenere una sola fattura elettronica (XML/P7M)")
+    end
+  end
+
+  def p7m_attachment?(attachment)
+    filename = attachment.filename.to_s.downcase
+    filename.include?(".xml.p7m") ||
+      ElectronicInvoiceHelper.electronic_invoice?(attachment.content_type)
   end
 
   # Aggiorna lo stato del rimborso quando una spesa viene approvata
@@ -189,37 +221,24 @@ class Expense < ApplicationRecord
 
   # Controlla se esistono file duplicati e crea una nota
   def check_for_duplicate_attachments
-    return unless attachment.attached?
-    return unless attachment.blob.present?
+    return unless attachments.attached?
+    return unless reimboursement
     
-    current_checksum = attachment.blob.checksum
-    
-    # Trova altre spese con lo stesso checksum, escludendo la spesa corrente
-    duplicate_expenses = Expense.joins(attachment_attachment: :blob)
-                                .where.not(id: id)
-                                .where(active_storage_blobs: { checksum: current_checksum })
-                                .includes(:reimboursement)
-    
-    return if duplicate_expenses.empty?
-    
-    # Crea il messaggio con la lista dei file duplicati
-    file_list = duplicate_expenses.map do |exp|
-      "- #{exp.attachment.filename} (Rimborso ##{exp.reimboursement_id})"
-    end.join("\n")
-    
-    note_text = "Attenzione! Sono presenti dei file duplicati:\n\n#{file_list}"
-    
-    # Crea una nota per il rimborso corrente
-    # Usa il primo utente admin disponibile come autore della nota di sistema
-    admin_user = User.find_by(admin: true)
-    
-    if admin_user && reimboursement
-      reimboursement.notes.create!(
-        user: admin_user,
-        text: note_text
-      )
+    attachments.each do |attachment|
+      next unless attachment.blob.present?
+      
+      current_checksum = attachment.blob.checksum
+      
+      # Trova altre spese con lo stesso checksum nello stesso rimborso
+      duplicate = reimboursement.expenses.where.not(id: id).find do |other_expense|
+        other_expense.attachments.any? do |other_attachment|
+          other_attachment.blob.present? && other_attachment.blob.checksum == current_checksum
+        end
+      end
+      
+      if duplicate
+        errors.add(:attachments, "Il file '#{attachment.filename}' è già stato allegato ad un'altra spesa di questo rimborso")
+      end
     end
-  rescue => e
-    Rails.logger.error("Errore nel controllo duplicati: #{e.message}")
   end
 end

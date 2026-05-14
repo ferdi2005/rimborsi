@@ -330,19 +330,31 @@
                                                   title: "Scarica PDF della fattura" do %>
                                         <i class="fas fa-download me-1"></i>PDF
                                       <% end %>
-                                      <%= link_to expense.attachment, target: "_blank", 
-                                                  class: "btn btn-sm btn-outline-secondary",
-                                                  title: "Visualizza file XML originale" do %>
-                                        <i class="fas fa-file-code me-1"></i>XML
+                                      <% electronic_invoice = expense.attachments.find { |a| ElectronicInvoiceHelper.electronic_invoice?(a.content_type) } %>
+                                      <% if electronic_invoice %>
+                                        <%= link_to electronic_invoice, target: "_blank", 
+                                                    class: "btn btn-sm btn-outline-secondary",
+                                                    title: "Visualizza file XML originale" do %>
+                                          <i class="fas fa-file-code me-1"></i>XML
+                                        <% end %>
                                       <% end %>
                                     </div>
                                   </div>
-                                <% elsif expense.attachment.attached? %>
-                                  <!-- Allegato normale -->
+                                <% elsif expense.attachments.any? %>
+                                  <!-- Allegati normali -->
                                   <div class="mt-2">
-                                    <%= link_to expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" do %>
-                                      <i class="<%= file_icon(expense) %> me-1"></i>Visualizza
-                                    <% end %>
+                                    <div class="d-flex flex-wrap gap-1">
+                                      <% expense.attachments.each_with_index do |attachment, index| %>
+                                        <%= link_to attachment, target: "_blank", class: "btn btn-sm btn-outline-primary", title: attachment.filename do %>
+                                          <i class="<%= attachment.content_type.start_with?('image/') ? 'fas fa-image' : 'fas fa-file-pdf' %> me-1"></i>
+                                          <% if expense.attachments.count > 1 %>
+                                            Allegato <%= index + 1 %>
+                                          <% else %>
+                                            Visualizza
+                                          <% end %>
+                                        <% end %>
+                                      <% end %>
+                                    </div>
                                   </div>
                                 <% else %>
                                   <span class="text-muted">Nessun allegato</span>

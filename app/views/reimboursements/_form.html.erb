@@ -595,5 +595,100 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
+  // Validazione allegati multipli
+  document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('attachment-input')) {
+      validateAttachments(e.target);
+    }
+  });
+
+  function validateAttachments(input) {
+    const files = input.files;
+    const maxFiles = parseInt(input.dataset.maxFiles) || 10;
+    const maxP7m = parseInt(input.dataset.maxP7m) || 1;
+    const existingCount = parseInt(input.dataset.existingCount) || 0;
+    const existingP7m = parseInt(input.dataset.existingP7m) || 0;
+    
+    const totalFiles = existingCount + files.length;
+    
+    // Verifica numero massimo di file
+    if (totalFiles > maxFiles) {
+      showToast(`Puoi caricare al massimo ${maxFiles} file per spesa. File esistenti: ${existingCount}`, 'danger');
+      input.value = '';
+      return false;
+    }
+    
+    // Conta quante fatture elettroniche ci sono nei nuovi file
+    let p7mCount = existingP7m;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileName = file.name.toLowerCase();
+      const fileType = file.type.toLowerCase();
+      
+      // Verifica se è una fattura elettronica
+      if (fileName.endsWith('.xml.p7m') || 
+          fileName.endsWith('.xml') || 
+          fileType.includes('pkcs7') || 
+          fileType.includes('application/xml') ||
+          fileType.includes('text/xml')) {
+        p7mCount++;
+      }
+    }
+    
+    // Verifica numero massimo di fatture elettroniche
+    if (p7mCount > maxP7m) {
+      showToast('Puoi caricare solo una fattura elettronica (XML/P7M) per spesa', 'warning');
+      input.value = '';
+      return false;
+    }
+    
+    return true;
+  }
+
+  // Funzione per mostrare toast Bootstrap
+  function showToast(message, type = 'info') {
+    // Crea il container dei toast se non esiste
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+      toastContainer.style.zIndex = '9999';
+      document.body.appendChild(toastContainer);
+    }
+    
+    // Mappa i tipi ai colori Bootstrap
+    const bgClass = {
+      'success': 'bg-success',
+      'danger': 'bg-danger',
+      'warning': 'bg-warning',
+      'info': 'bg-info'
+    }[type] || 'bg-info';
+    
+    // Crea il toast
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+      <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            ${message}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    // Inizializza e mostra il toast
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+    toast.show();
+    
+    // Rimuovi il toast dal DOM dopo che è stato nascosto
+    toastElement.addEventListener('hidden.bs.toast', function() {
+      toastElement.remove();
+    });
+  }
+
 });
 </script>

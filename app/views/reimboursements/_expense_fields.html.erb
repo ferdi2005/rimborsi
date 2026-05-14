@@ -106,61 +106,65 @@
   <!-- Campo allegato per spese non auto -->
   <div class="row mt-4 attachment-field" style="<%= 'display: none;' if f.object.car? %>">
     <div class="col-md-12">
-      <%= f.label :attachment, class: "form-label" do %>
-        Allegato <span class="text-danger">*</span>
+      <%= f.label :attachments, class: "form-label" do %>
+        Allegati <span class="text-danger">*</span> <small class="text-muted">(max 10 file, solo 1 fattura elettronica P7M/XML)</small>
       <% end %>
       
-      <% if f.object.attachment.attached? && f.object.attachment.persisted? %>
-        <!-- Allegato esistente -->
-        <div class="alert alert-info mb-3">
-          <div class="d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-              <i class="<%= file_icon(f.object) %> me-2"></i>
-              <div>
-                <strong>File attuale:</strong> <%= f.object.attachment.filename %>
-                <br>
-                <small class="text-muted">
-                  <%= number_to_human_size(f.object.attachment.byte_size) %> • 
-                  <span class="badge <%= file_badge_class(f.object) %>">
-                    <%= file_type_text(f.object) %>
-                  </span>
-                </small>
+      <% if f.object.attachments.attached? && f.object.attachments.any? %>
+        <!-- Allegati esistenti -->
+        <div class="existing-attachments mb-3">
+          <div class="row g-2">
+            <% f.object.attachments.each do |attachment| %>
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-body p-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center flex-grow-1 min-width-0">
+                        <i class="<%= attachment.content_type.start_with?('image/') ? 'fas fa-image' : 'fas fa-file-pdf' %> me-2"></i>
+                        <div class="flex-grow-1 min-width-0">
+                          <div class="text-truncate" title="<%= attachment.filename %>">
+                            <strong><%= attachment.filename %></strong>
+                          </div>
+                          <small class="text-muted">
+                            <%= number_to_human_size(attachment.byte_size) %>
+                            <% if ElectronicInvoiceHelper.electronic_invoice?(attachment.content_type) %>
+                              • <span class="badge bg-success">Fattura elettronica</span>
+                            <% end %>
+                          </small>
+                        </div>
+                      </div>
+                      <div class="btn-group btn-group-sm ms-2 flex-shrink-0">
+                        <%= link_to attachment, target: "_blank", 
+                                    class: "btn btn-outline-primary btn-sm",
+                                    title: "Visualizza" do %>
+                          <i class="fas fa-eye"></i>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="btn-group btn-group-sm">
-              <%= link_to f.object.attachment, target: "_blank", 
-                          class: "btn btn-outline-primary btn-sm",
-                          title: "Visualizza file" do %>
-                <i class="fas fa-eye"></i>
-              <% end %>
-              <button type="button" class="btn btn-outline-warning btn-sm" 
-                      onclick="toggleFileReplacement(this)"
-                      title="Sostituisci file">
-                <i class="fas fa-edit"></i>
-              </button>
-            </div>
+            <% end %>
           </div>
         </div>
-        
-        <!-- Campo nascosto per sostituire il file -->
-        <div class="file-replacement-field" style="display: none;">
-          <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
-          <small class="form-text text-muted">
-            <i class="fas fa-exclamation-triangle text-warning me-1"></i>
-            Carica un nuovo file per sostituire quello esistente
-          </small>
-          <div class="mt-2">
-            <button type="button" class="btn btn-sm btn-secondary" 
-                    onclick="cancelFileReplacement(this)">
-              <i class="fas fa-times"></i> Annulla
-            </button>
-          </div>
-        </div>
-      <% else %>
-        <!-- Nessun allegato esistente -->
-        <%= f.file_field :attachment, class: "form-control", accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime"%>
-        <small class="form-text text-muted">Carica ricevuta o fattura (immagine o PDF) o fattura elettronica (.xml, .xml.p7m)</small>
       <% end %>
+      
+      <!-- Campo per nuovi allegati -->
+      <div class="new-attachments">
+        <%= f.file_field :attachments, 
+            multiple: true,
+            class: "form-control attachment-input", 
+            accept: "image/*,.pdf,.xml,.xml.p7m,application/xml,text/xml,application/pkcs7-mime,application/x-pkcs7-mime",
+            data: { 
+              max_files: 10,
+              max_p7m: 1,
+              existing_count: f.object.attachments.count,
+              existing_p7m: f.object.attachments.any? { |a| ElectronicInvoiceHelper.electronic_invoice?(a.content_type) } ? 1 : 0
+            } %>
+        <small class="form-text text-muted">
+          Carica ricevute o fatture (immagini o PDF) o fattura elettronica (.xml, .xml.p7m)
+        </small>
+      </div>
     </div>
   </div>
 

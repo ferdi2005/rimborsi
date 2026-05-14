@@ -75,19 +75,24 @@ class ProcessPaymentJob < ApplicationJob
     # Carica solo i file XML delle fatture elettroniche
     uploaded_invoices = 0
     reimboursement.expenses.each do |expense|
-      if expense.electronic_invoice? && expense.attachment.attached?
+      # Trova la fattura elettronica tra gli attachments
+      electronic_invoice_attachment = expense.attachments.find do |attachment|
+        ElectronicInvoiceHelper.electronic_invoice?(attachment.content_type)
+      end
+
+      if electronic_invoice_attachment
         begin
           # Scarica il file XML della fattura elettronica
-          attachment_content = expense.attachment.download
+          attachment_content = electronic_invoice_attachment.download
 
           # Determina il tipo di contenuto
-          content_type = expense.attachment.content_type || "application/xml"
+          content_type = electronic_invoice_attachment.content_type || "application/xml"
 
           # Costruisci il nome del file per la fattura elettronica
           fattura_elettronica_name = "rimborso#{reimboursement.id}_#{reimboursement.user.surname}#{reimboursement.user.name}_#{Date.current.strftime("%Y%m%d")}_fattura#{expense.id}".gsub(" ", "")
 
           # Mantieni l'estensione originale del file
-          original_extension = File.extname(expense.attachment.filename.to_s)
+          original_extension = File.extname(electronic_invoice_attachment.filename.to_s)
           invoice_filename = "#{fattura_elettronica_name}#{original_extension}"
           invoice_path = "#{base_path}/#{invoice_filename}"
 

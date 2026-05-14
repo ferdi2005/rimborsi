@@ -162,7 +162,7 @@
                 
                 <div class="card">
                   <div class="card-body text-center">
-                    <% if @current_expense.attachment.attached? %>
+                    <% if @current_expense.attachments.any? %>
                       <% if @current_expense.electronic_invoice? && @current_expense.has_invoice_pdf? %>
                         <!-- Mostra PDF della fattura elettronica generato -->
                         <div class="mb-3">
@@ -182,8 +182,11 @@
                             <div>
                               <%= link_to "Scarica PDF", download_invoice_pdf_expense_path(@current_expense), 
                                           class: "btn btn-sm btn-primary" %>
-                              <%= link_to "File XML Originale", @current_expense.attachment, target: "_blank", 
-                                          class: "btn btn-sm btn-outline-secondary ms-2" %>
+                              <% electronic_invoice = @current_expense.attachments.find { |a| ElectronicInvoiceHelper.electronic_invoice?(a.content_type) } %>
+                              <% if electronic_invoice %>
+                                <%= link_to "File XML Originale", electronic_invoice, target: "_blank", 
+                                            class: "btn btn-sm btn-outline-secondary ms-2" %>
+                              <% end %>
                             </div>
                             <small class="text-muted align-self-center">
                               <i class="fas fa-info-circle"></i>
@@ -191,33 +194,107 @@
                             </small>
                           </div>
                         </div>
-                      <% elsif @current_expense.attachment.content_type.start_with?('image/') %>
-                        <!-- Mostra immagine -->
-                        <%= image_tag @current_expense.attachment, class: "img-fluid rounded", style: "max-height: 500px;" %>
-                        <div class="mt-3">
-                          <%= link_to "Visualizza a Schermo Intero", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
-                        </div>
-                      <% elsif @current_expense.attachment.content_type == 'application/pdf' %>
-                        <!-- Mostra PDF -->
-                        <div class="border rounded">
-                          <iframe src="<%= url_for(@current_expense.attachment) %>" 
-                                  width="100%" 
-                                  height="600" 
-                                  style="border: none;" 
-                                  class="rounded">
-                            Il tuo browser non supporta la visualizzazione di PDF.
-                          </iframe>
-                          <div class="p-2 bg-light border-top">
-                            <%= link_to "Apri in Nuova Scheda", @current_expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" %>
-                            <%= link_to "Scarica PDF", @current_expense.attachment, download: true, class: "btn btn-sm btn-outline-secondary ms-2" %>
+                        
+                        <!-- Altri allegati, se presenti -->
+                        <% other_attachments = @current_expense.attachments.reject { |a| ElectronicInvoiceHelper.electronic_invoice?(a.content_type) } %>
+                        <% if other_attachments.any? %>
+                          <div class="mt-3">
+                            <h6>Altri allegati (<%= other_attachments.count %>)</h6>
+                            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                              <% other_attachments.each_with_index do |attachment, index| %>
+                                <%= link_to attachment, target: "_blank", class: "btn btn-sm btn-outline-primary", title: attachment.filename do %>
+                                  <i class="<%= attachment.content_type.start_with?('image/') ? 'fas fa-image' : 'fas fa-file-pdf' %> me-1"></i>
+                                  Allegato <%= index + 1 %>
+                                <% end %>
+                              <% end %>
+                            </div>
                           </div>
-                        </div>
+                        <% end %>
+                      <% elsif @current_expense.attachments.count == 1 %>
+                        <!-- Un solo allegato non P7M -->
+                        <% attachment = @current_expense.attachments.first %>
+                        <% if attachment.content_type.start_with?('image/') %>
+                          <!-- Mostra immagine -->
+                          <%= image_tag attachment, class: "img-fluid rounded", style: "max-height: 500px;" %>
+                          <div class="mt-3">
+                            <%= link_to "Visualizza a Schermo Intero", attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                          </div>
+                        <% elsif attachment.content_type == 'application/pdf' %>
+                          <!-- Mostra PDF -->
+                          <div class="border rounded">
+                            <iframe src="<%= url_for(attachment) %>" 
+                                    width="100%" 
+                                    height="600" 
+                                    style="border: none;" 
+                                    class="rounded">
+                              Il tuo browser non supporta la visualizzazione di PDF.
+                            </iframe>
+                            <div class="p-2 bg-light border-top">
+                              <%= link_to "Apri in Nuova Scheda", attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+                              <%= link_to "Scarica PDF", attachment, download: true, class: "btn btn-sm btn-outline-secondary ms-2" %>
+                            </div>
+                          </div>
+                        <% else %>
+                          <!-- Altro tipo di file -->
+                          <div class="border rounded p-4 bg-light">
+                            <i class="fas fa-file fa-5x text-secondary mb-3"></i>
+                            <p>Allegato: <%= attachment.filename %></p>
+                            <%= link_to "Scarica File", attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                          </div>
+                        <% end %>
                       <% else %>
-                        <!-- Altro tipo di file -->
-                        <div class="border rounded p-4 bg-light">
-                          <i class="fas fa-file fa-5x text-secondary mb-3"></i>
-                          <p>Allegato: <%= @current_expense.attachment.filename %></p>
-                          <%= link_to "Scarica File", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                        <!-- Multipli allegati - usa tabs -->
+                        <ul class="nav nav-tabs mb-3" id="attachmentTabs" role="tablist">
+                          <% @current_expense.attachments.each_with_index do |attachment, index| %>
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link <%= 'active' if index == 0 %>" 
+                                      id="attachment-tab-<%= index %>" 
+                                      data-bs-toggle="tab" 
+                                      data-bs-target="#attachment-pane-<%= index %>" 
+                                      type="button" 
+                                      role="tab" 
+                                      aria-controls="attachment-pane-<%= index %>" 
+                                      aria-selected="<%= index == 0 %>">
+                                <i class="<%= attachment.content_type.start_with?('image/') ? 'fas fa-image' : 'fas fa-file-pdf' %> me-1"></i>
+                                Allegato <%= index + 1 %>
+                              </button>
+                            </li>
+                          <% end %>
+                        </ul>
+                        <div class="tab-content" id="attachmentTabContent">
+                          <% @current_expense.attachments.each_with_index do |attachment, index| %>
+                            <div class="tab-pane fade <%= 'show active' if index == 0 %>" 
+                                 id="attachment-pane-<%= index %>" 
+                                 role="tabpanel" 
+                                 aria-labelledby="attachment-tab-<%= index %>">
+                              <% if attachment.content_type.start_with?('image/') %>
+                                <%= image_tag attachment, class: "img-fluid rounded", style: "max-height: 500px;" %>
+                                <div class="mt-3">
+                                  <%= link_to "Visualizza a Schermo Intero", attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                                </div>
+                              <% elsif attachment.content_type == 'application/pdf' %>
+                                <div class="border rounded">
+                                  <iframe src="<%= url_for(attachment) %>" 
+                                          width="100%" 
+                                          height="600" 
+                                          style="border: none;" 
+                                          class="rounded">
+                                    Il tuo browser non supporta la visualizzazione di PDF.
+                                  </iframe>
+                                  <div class="p-2 bg-light border-top">
+                                    <%= link_to "Apri in Nuova Scheda", attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+                                    <%= link_to "Scarica", attachment, download: true, class: "btn btn-sm btn-outline-secondary ms-2" %>
+                                  </div>
+                                </div>
+                              <% else %>
+                                <div class="border rounded p-4 bg-light">
+                                  <i class="fas fa-file fa-5x text-secondary mb-3"></i>
+                                  <p>Allegato: <%= attachment.filename %></p>
+                                  <%= link_to "Scarica File", attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                                </div>
+                              <% end %>
+                            </div>
+                          <% end %>
                         </div>
                       <% end %>
                     <% else %>
