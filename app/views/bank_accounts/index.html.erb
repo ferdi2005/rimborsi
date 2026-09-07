@@ -20,7 +20,7 @@
           <th><i class="fas fa-city me-2"></i><%= t('bank_accounts.index.town_th') %></th>
           <th><i class="fas fa-id-badge me-2"></i><%= t('bank_accounts.index.fiscal_code_th') %></th>
           <th><i class="fas fa-star me-2"></i><%= t('bank_accounts.index.default_th') %></th>
-          <th><i class="fas fa-cogs me-2"></i><%= t('bank_accounts.index.actions_th') %></th>
+          <th><i class="fas fa-cogs me-2"></i><%= t('common.labels.actions') %></th>
         </tr>
       </thead>
       <tbody>
@@ -47,15 +47,15 @@
             </td>
             <td>
               <%= link_to bank_account, class: "btn btn-sm btn-outline-primary" do %>
-                <i class="fas fa-eye me-1"></i><%= t('bank_accounts.index.view') %>
+                <i class="fas fa-eye me-1"></i><%= t('common.actions.view') %>
               <% end %>
               <%= link_to edit_bank_account_path(bank_account), class: "btn btn-sm btn-outline-secondary" do %>
-                <i class="fas fa-edit me-1"></i><%= t('bank_accounts.index.edit') %>
+                <i class="fas fa-edit me-1"></i><%= t('common.actions.edit') %>
               <% end %>
               <%= link_to bank_account, method: :delete, 
                           data: { confirm: t('bank_accounts.index.delete_confirm') }, 
                           class: "btn btn-sm btn-outline-danger" do %>
-                <i class="fas fa-trash me-1"></i><%= t('bank_accounts.index.delete') %>
+                <i class="fas fa-trash me-1"></i><%= t('common.actions.delete') %>
               <% end %>
             </td>
           </tr>

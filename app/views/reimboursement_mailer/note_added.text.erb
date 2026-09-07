@@ -14,7 +14,7 @@
 <%= t('mailers.reimboursement.note_added.content') %>
 <%= @note.text %>
 
-<%= t('mailers.reimboursement.note_added.current_status', status: @reimboursement.status_in_italian) %>
+<%= t('mailers.reimboursement.note_added.current_status', status: @reimboursement.status_name) %>
 <%= t('mailers.reimboursement.note_added.total', total: number_with_precision(@reimboursement.total_amount, precision: 2)) %>
 
 <%= t('mailers.reimboursement.note_added.signature') %>

@@ -66,14 +66,12 @@ class Expense < ApplicationRecord
 
   # Metodi per la traduzione degli status
   def self.status_translations
-    {
-      "created" => "In attesa di approvazione",
-      "approved" => "Approvata",
-      "denied" => "Negata"
-    }
+    statuses.keys.each_with_object({}) do |st, h|
+      h[st] = I18n.t("enums.expense.status.#{st}", default: st.humanize)
+    end
   end
 
-  def status_in_italian
+  def status_name
     self.class.status_translations[status] || status.humanize
   end
 

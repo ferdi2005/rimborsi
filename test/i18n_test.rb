@@ -46,6 +46,8 @@ class I18nTest < ActiveSupport::TestCase
     if missing.any? { |_, ks| ks.any? }
       msg = missing.map { |loc, ks| "#{loc} missing #{ks.size}: #{ks.sort.first(10).join(', ')}" }
       flunk msg.join("\n")
+    else
+      assert true
     end
   end
 

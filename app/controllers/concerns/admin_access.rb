@@ -16,14 +16,14 @@ module AdminAccess
   # Metodo per assicurarsi che l'utente sia admin (per before_action)
   def ensure_admin
     unless admin_user?
-      redirect_to root_path, alert: "Accesso negato. Solo gli amministratori possono accedere a questa sezione."
+      redirect_to root_path, alert: t("controllers.application.access_denied")
     end
   end
 
   # Metodo per assicurarsi che l'utente sia admin o il proprietario di una risorsa
   def ensure_admin_or_owner(resource_user_id)
     unless admin_user? || current_user.id == resource_user_id
-      redirect_to root_path, alert: "Accesso negato. Non hai i permessi per accedere a questa risorsa."
+      redirect_to root_path, alert: t("controllers.application.access_denied_short")
     end
   end
 

@@ -7,7 +7,7 @@ class ExpensesController < ApplicationController
 
     respond_to do |format|
       if @expense.save
-        format.html { redirect_to @expense, notice: "Expense was successfully created." }
+        format.html { redirect_to @expense, notice: t("controllers.expenses.create_success") }
         format.json { render :show, status: :created, location: @expense }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -20,7 +20,7 @@ class ExpensesController < ApplicationController
   def update
     respond_to do |format|
       if @expense.update(expense_params)
-        format.html { redirect_to @expense, notice: "Expense was successfully updated." }
+        format.html { redirect_to @expense, notice: t("controllers.expenses.update_success") }
         format.json { render :show, status: :ok, location: @expense }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -34,7 +34,7 @@ class ExpensesController < ApplicationController
     @expense.destroy!
 
     respond_to do |format|
-      format.html { redirect_to expenses_path, status: :see_other, notice: "Expense was successfully destroyed." }
+      format.html { redirect_to expenses_path, status: :see_other, notice: t("controllers.expenses.delete_success") }
       format.json { head :no_content }
     end
   end
@@ -47,7 +47,7 @@ class ExpensesController < ApplicationController
                 type: "application/pdf",
                 disposition: "attachment"
     else
-      redirect_back(fallback_location: @expense, alert: "PDF della fattura non disponibile.")
+      redirect_back(fallback_location: @expense, alert: t("controllers.expenses.invoice_pdf_not_available"))
     end
   end
 

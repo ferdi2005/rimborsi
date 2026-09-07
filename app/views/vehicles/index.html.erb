@@ -18,7 +18,7 @@
             <th><i class="fas fa-car me-2"></i><%= t('.brand_model_th') %></th>
             <th><i class="fas fa-gas-pump me-2"></i><%= t('.fuel_th') %></th>
             <th><i class="fas fa-star me-2"></i><%= t('.default_th') %></th>
-            <th><i class="fas fa-cogs me-2"></i><%= t('.actions_th') %></th>
+            <th><i class="fas fa-cogs me-2"></i><%= t('common.labels.actions') %></th>
         </tr>
       </thead>
       <tbody>
@@ -43,15 +43,15 @@
             </td>
             <td>
               <%= link_to vehicle, class: "btn btn-sm btn-outline-primary" do %>
-                <i class="fas fa-eye me-1"></i><%= t('.view') %>
+                <i class="fas fa-eye me-1"></i><%= t('common.actions.view') %>
               <% end %>
               <%= link_to edit_vehicle_path(vehicle), class: "btn btn-sm btn-outline-secondary" do %>
-                <i class="fas fa-edit me-1"></i><%= t('.edit') %>
+                <i class="fas fa-edit me-1"></i><%= t('common.actions.edit') %>
               <% end %>
               <%= link_to vehicle, method: :delete, 
                           data: { confirm: 'Sei sicuro di voler eliminare questo veicolo?' }, 
                           class: "btn btn-sm btn-outline-danger" do %>
-                <i class="fas fa-trash me-1"></i><%= t('.delete') %>
+                <i class="fas fa-trash me-1"></i><%= t('common.actions.delete') %>
               <% end %>
             </td>
           </tr>

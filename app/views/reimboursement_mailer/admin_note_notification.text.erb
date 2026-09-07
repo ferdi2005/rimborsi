@@ -16,7 +16,7 @@ Contenuto:
 <%= @note.text %>
 
 DETTAGLI RIMBORSO:
-Stato attuale: <%= @reimboursement.status_in_italian %>
+<%= t('mailers.reimboursement.admin_note_notification.current_status') %>: <%= @reimboursement.status_name %>
 Totale: € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
 Metodo di pagamento: <%= @reimboursement.payment_method_type %>
 Numero di spese: <%= @reimboursement.expenses.count %>

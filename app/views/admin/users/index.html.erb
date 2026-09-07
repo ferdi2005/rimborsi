@@ -13,7 +13,7 @@
           <th><%= t('admin.users.index.role_th') %></th>
           <th><%= t('admin.users.index.status_th') %></th>
           <th><%= t('admin.users.index.reimbursements_th') %></th>
-          <th><%= t('admin.users.index.actions_th') %></th>
+          <th><%= t('common.labels.actions') %></th>
         </tr>
       </thead>
       <tbody>
@@ -44,8 +44,8 @@
             </td>
             <td>
               <div class="btn-group" role="group">
-                <%= link_to t('admin.users.index.view'), admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
-                <%= link_to t('admin.users.index.edit'), edit_admin_user_path(user), class: 'btn btn-sm btn-outline-warning' %>
+                <%= link_to t('common.actions.view'), admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
+                <%= link_to t('common.actions.edit'), edit_admin_user_path(user), class: 'btn btn-sm btn-outline-warning' %>
                 
                 <% unless user == current_user %>
                   <% if user.active? %>
@@ -58,7 +58,7 @@
                   <% end %>
                   
                   <% if user.can_be_deleted? %>
-                    <%= link_to t('admin.users.index.delete'), admin_user_path(user), method: :delete,
+                    <%= link_to t('common.actions.delete'), admin_user_path(user), method: :delete,
                                 data: { confirm: t('admin.users.index.delete_confirm') },
                                 class: 'btn btn-sm btn-outline-danger' %>
                   <% else %>

@@ -83,7 +83,7 @@
       
       <div class="user-info">
         <h6><%= t('mailers.reimboursement.admin_note_notification.reimbursement_info') %></h6>
-        <p><strong><%= t('mailers.reimboursement.admin_note_notification.current_status') %>:</strong> <%= @reimboursement.status_in_italian %></p>
+        <p><strong><%= t('mailers.reimboursement.admin_note_notification.current_status') %>:</strong> <%= @reimboursement.status_name %></p>
         <p><strong><%= t('mailers.reimboursement.admin_note_notification.total') %>:</strong> € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></p>
         <p><strong><%= t('mailers.reimboursement.admin_note_notification.payment_method') %>:</strong> <%= @reimboursement.payment_method_type %></p>
         <p><strong><%= t('mailers.reimboursement.admin_note_notification.expenses_count') %>:</strong> <%= @reimboursement.expenses.count %></p>

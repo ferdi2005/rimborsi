@@ -22,8 +22,7 @@ class User < ApplicationRecord
 
   # Validazione telefono (opzionale ma se presente deve essere valido, senza spazi e senza prefisso)
   validates :telephone, format: {
-    with: /\A[0-9]{6,13}\z/,
-    message: "deve essere un numero di telefono valido senza spazi e senza prefisso +39"
+    with: /\A[0-9]{6,13}\z/
   }, allow_blank: true
 
   # Validazione codice fiscale italiano (obbligatorio e deve essere valido)
@@ -32,12 +31,11 @@ class User < ApplicationRecord
 
   # Validazione email più rigorosa
   validates :email, format: {
-    with: /\A[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\z/,
-    message: "deve essere un indirizzo email valido"
+    with: /\A[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\z/
   }
 
-  # Validazione locale
-  validates :locale, inclusion: { in: %w(it en), message: "deve essere 'it' o 'en'" }
+  # Validazione locale dinamica basata sulle lingue disponibili
+  validate :validate_locale
 
   # Metodi per gestire il conto predefinito
   def default_account
@@ -84,6 +82,20 @@ class User < ApplicationRecord
 
   def set_default_locale
     self.locale ||= I18n.default_locale.to_s
+  end
+
+  def validate_locale
+    return if locale.blank?
+
+    supported = I18n.available_locales.map(&:to_s)
+    unless supported.include?(locale.to_s)
+      connector = I18n.locale == :it ? " o " : " or "
+      formatted_locales = supported.map { |l| "'#{l}'" }.to_sentence(
+        two_words_connector: connector,
+        last_word_connector: connector
+      )
+      errors.add(:locale, :inclusion, locales: formatted_locales)
+    end
   end
 
   def check_associated_reimboursements

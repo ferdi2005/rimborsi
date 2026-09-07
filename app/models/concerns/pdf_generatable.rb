@@ -352,7 +352,7 @@ module PdfGeneratable
         create_regular_expense_details(composer, expense)
       end
 
-      composer.text("Stato: #{expense.status_in_italian}", font_size: 10,
+      composer.text("#{I18n.t('activerecord.attributes.expense.status')}: #{expense.status_name}", font_size: 10,
                     font: "Helvetica bold",
                     margin: [ 0, 0, 10 ])
 

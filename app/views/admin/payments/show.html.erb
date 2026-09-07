@@ -1,22 +1,22 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1><i class="fas fa-file-invoice me-2"></i>Pagamento #<%= @payment.id %></h1>
+    <h1><i class="fas fa-file-invoice me-2"></i><%= t('admin.payments.index.payment') %> #<%= @payment.id %></h1>
     <div>
       <%= link_to admin_payments_path, class: "btn btn-secondary me-2" do %>
-        <i class="fas fa-arrow-left me-2"></i>Torna ai Pagamenti
+        <i class="fas fa-arrow-left me-2"></i><%= t('common.actions.back') %>
       <% end %>
       
       <% if @payment.can_be_modified? %>
         <%= link_to edit_admin_payment_path(@payment), class: "btn btn-outline-primary" do %>
-          <i class="fas fa-edit me-2"></i>Modifica
+          <i class="fas fa-edit me-2"></i><%= t('common.actions.edit') %>
         <% end %>
       <% end %>
 
       <% if @payment.can_be_retried? %>
         <%= link_to retry_admin_payment_path(@payment), method: :patch, 
             class: "btn btn-warning ms-2", 
-            data: { confirm: "Sei sicuro di voler ritentare il processamento?" } do %>
-          <i class="fas fa-redo me-2"></i>Riprova Processamento
+            data: { confirm: t('admin.payments.show.retry_confirm') } do %>
+          <i class="fas fa-redo me-2"></i><%= t('admin.payments.show.retry') %>
         <% end %>
       <% end %>
     </div>
@@ -26,42 +26,31 @@
     <div class="col-md-8">
       <div class="card">
         <div class="card-header">
-          <h5><i class="fas fa-info-circle me-2"></i>Dettagli Pagamento</h5>
+          <h5><i class="fas fa-info-circle me-2"></i><%= t('admin.payments.show.details_header') %></h5>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-6">
-              <p><strong>ID:</strong> #<%= @payment.id %></p>
-              <p><strong>Stato:</strong> 
-                <% 
-                  status_config = case @payment.status
-                                 when 'created' then { class: 'warning', icon: 'fas fa-edit' }
-                                 when 'paid' then { class: 'success', icon: 'fas fa-check-circle' }
-                                 when 'error' then { class: 'danger', icon: 'fas fa-exclamation-triangle' }
-                                 else { class: 'secondary', icon: 'fas fa-question' }
-                                 end
-                %>
-                <span class="badge bg-<%= status_config[:class] %>">
-                  <i class="<%= status_config[:icon] %> me-1"></i><%= @payment.status_in_italian %>
-                </span>
+              <p><strong><%= t('admin.payments.show.id_label') %></strong> #<%= @payment.id %></p>
+              <p><strong><%= t('admin.payments.show.status_label') %></strong> 
+                <%= payment_status_badge(@payment.status) %>
               </p>
-              <p><strong>Totale:</strong> <span class="h5 text-primary">€ <%= number_with_precision(@payment.total, precision: 2) %></span></p>
+              <p><strong><%= t('admin.payments.show.total_label') %></strong> <span class="h5 text-primary">€ <%= number_with_precision(@payment.total, precision: 2) %></span></p>
             </div>
             <div class="col-md-6">
-              <p><strong>Data creazione:</strong> <%= @payment.created_at.strftime('%d/%m/%Y alle %H:%M') %></p>
+              <p><strong><%= t('admin.payments.show.created_label') %></strong> <%= @payment.created_at.strftime("%d/%m/%Y #{t('common.at_time')} %H:%M") %></p>
               <% if @payment.payment_date %>
-                <p><strong>Data pagamento:</strong> <%= @payment.payment_date.strftime('%d/%m/%Y') %></p>
+                <p><strong><%= t('admin.payments.show.payment_date_label') %></strong> <%= @payment.payment_date.strftime('%d/%m/%Y') %></p>
               <% end %>
-              <p><strong>Rimborsi inclusi:</strong> <%= @payment.reimboursements.count %></p>
+              <p><strong><%= t('admin.payments.show.reimbursements_count_label') %></strong> <%= @payment.reimboursements.count %></p>
             </div>
           </div>
                     
           <% if @payment.status_error? %>
             <div class="alert alert-danger">
               <i class="fas fa-exclamation-triangle me-2"></i>
-              <strong>Errore durante il processamento</strong><br>
-              Il cariamento di questo pagamento su NextCloud ha riscontrato degli errori. 
-              Utilizza il pulsante "Riprova Processamento" per ritentare l'operazione.
+              <strong><%= t('admin.payments.show.error_header') %></strong><br>
+              <%= t('admin.payments.show.error_text') %>
             </div>
           <% end %>
         </div>
@@ -69,7 +58,7 @@
 
       <div class="card mt-4">
         <div class="card-header">
-          <h5><i class="fas fa-list me-2"></i>Rimborsi Inclusi</h5>
+          <h5><i class="fas fa-list me-2"></i><%= t('admin.payments.show.included_header') %></h5>
         </div>
         <div class="card-body">
           <% if @payment.reimboursements.any? %>
@@ -77,12 +66,12 @@
               <table class="table table-striped">
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Utente</th>
-                    <th>Totale</th>
-                    <th>IBAN</th>
-                    <th>Stato</th>
-                    <th>Azioni</th>
+                    <th><%= t('admin.payments.show.id_th') %></th>
+                    <th><%= t('admin.payments.show.user_th') %></th>
+                    <th><%= t('admin.payments.show.total_th') %></th>
+                    <th><%= t('admin.payments.show.iban_th') %></th>
+                    <th><%= t('admin.payments.show.status_th') %></th>
+                    <th><%= t('common.labels.actions') %></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,25 +88,15 @@
                           <%= reimboursement.bank_account.iban %>
                           <br><small class="text-muted"><%= reimboursement.bank_account.owner %></small>
                         <% else %>
-                          <span class="text-muted">N/D</span>
+                          <span class="text-muted"><%= t('admin.payments.show.na') %></span>
                         <% end %>
                       </td>
                       <td>
-                        <% 
-                          status_config = case reimboursement.status
-                                         when 'created' then { class: 'secondary', icon: 'fas fa-edit' }
-                                         when 'approved' then { class: 'success', icon: 'fas fa-check' }
-                                         when 'paid' then { class: 'primary', icon: 'fas fa-money-bill-wave' }
-                                         else { class: 'secondary', icon: 'fas fa-question' }
-                                         end
-                        %>
-                        <span class="badge bg-<%= status_config[:class] %>">
-                          <i class="<%= status_config[:icon] %> me-1"></i><%= reimboursement.status_in_italian %>
-                        </span>
+                        <%= reimboursement_status_badge(reimboursement.status) %>
                       </td>
                       <td>
                         <%= link_to reimboursement_path(reimboursement), class: "btn btn-sm btn-outline-primary" do %>
-                          <i class="fas fa-eye me-1"></i>Dettagli
+                          <i class="fas fa-eye me-1"></i><%= t('admin.payments.show.details') %>
                         <% end %>
                       </td>
                     </tr>
@@ -126,7 +105,7 @@
               </table>
             </div>
           <% else %>
-            <p class="text-muted">Nessun rimborso associato a questo pagamento.</p>
+            <p class="text-muted"><%= t('admin.payments.show.none_associated') %></p>
           <% end %>
         </div>
       </div>
@@ -135,37 +114,37 @@
     <div class="col-md-4">
       <div class="card">
         <div class="card-header">
-          <h5><i class="fas fa-cogs me-2"></i>Azioni</h5>
+          <h5><i class="fas fa-cogs me-2"></i><%= t('common.labels.actions') %></h5>
         </div>
         <div class="card-body">
           <% if @payment.status_created? %>
             <%= button_to mark_as_paid_admin_payment_path(@payment), method: :patch, 
                         class: "btn btn-success w-100 mb-2",
-                        data: { confirm: "Sei sicuro di voler marcare questo pagamento come pagato? Questa azione avvierà il processo di generazione PDF e caricamento." } do %>
-              <i class="fas fa-check-circle me-2"></i>Marca come Pagato
+                        data: { confirm: t('admin.payments.show.mark_as_paid_confirm') } do %>
+              <i class="fas fa-check-circle me-2"></i><%= t('admin.payments.show.mark_as_paid') %>
             <% end %>
           <% elsif @payment.status_paid? %>
             <%= button_to revert_to_created_admin_payment_path(@payment), method: :patch,
                         class: "btn btn-warning w-100 mb-2",
-                        data: { confirm: "Sei sicuro di voler riportare questo pagamento a 'creato'? I rimborsi torneranno allo stato 'approvato'." } do %>
-              <i class="fas fa-undo me-2"></i>Riporta a Creato
+                        data: { confirm: t('admin.payments.show.revert_confirm') } do %>
+              <i class="fas fa-undo me-2"></i><%= t('admin.payments.show.revert_to_created') %>
             <% end %>
           <% end %>
 
           <%= link_to export_flow_admin_payment_path(@payment), class: "btn btn-info w-100 mb-2" do %>
-            <i class="fas fa-download me-2"></i>Esporta Flusso XML
+            <i class="fas fa-download me-2"></i><%= t('admin.payments.show.export_flow') %>
           <% end %>
 
           <% if @payment.can_be_modified? %>
             <%= link_to edit_admin_payment_path(@payment), class: "btn btn-outline-primary w-100 mb-2" do %>
-              <i class="fas fa-edit me-2"></i>Modifica Pagamento
+              <i class="fas fa-edit me-2"></i><%= t('admin.payments.show.edit_payment') %>
             <% end %>
           <% end %>
 
-          <%= link_to admin_payment_path(@payment), method: :delete,
+          <%= button_to admin_payment_path(@payment), method: :delete,
                       class: "btn btn-outline-danger w-100",
-                      data: { confirm: "Sei sicuro di voler eliminare questo pagamento? Questa azione non può essere annullata." } do %>
-            <i class="fas fa-trash me-2"></i>Elimina Pagamento
+                      data: { confirm: t('admin.payments.show.delete_confirm') } do %>
+            <i class="fas fa-trash me-2"></i><%= t('admin.payments.show.delete_payment') %>
           <% end %>
         </div>
       </div>
@@ -173,14 +152,14 @@
       <% if @available_reimboursements.any? && @payment.can_be_modified? %>
         <div class="card mt-3">
           <div class="card-header">
-            <h6><i class="fas fa-plus-circle me-2"></i>Rimborsi Disponibili</h6>
+            <h6><i class="fas fa-plus-circle me-2"></i><%= t('admin.payments.show.available_title') %></h6>
           </div>
           <div class="card-body">
             <p class="small text-muted">
-              Ci sono <%= @available_reimboursements.count %> rimborsi approvati disponibili per l'inclusione in pagamenti.
+              <%= t('admin.payments.show.available_count', count: @available_reimboursements.count) %>
             </p>
             <%= link_to edit_admin_payment_path(@payment), class: "btn btn-sm btn-outline-primary" do %>
-              <i class="fas fa-edit me-1"></i>Modifica per Aggiungere
+              <i class="fas fa-edit me-1"></i><%= t('admin.payments.show.edit_to_add') %>
             <% end %>
           </div>
         </div>

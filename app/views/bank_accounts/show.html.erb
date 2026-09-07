@@ -84,9 +84,9 @@
         <p><strong><%= t('bank_accounts.show.default_label') %></strong></p>
         <div>
           <% if @bank_account.default %>
-            <span class="badge bg-success"><%= t('bank_accounts.show.yes') %></span>
+            <span class="badge bg-success"><%= t('common.labels.yes') %></span>
           <% else %>
-            <span class="badge bg-secondary"><%= t('bank_accounts.show.no') %></span>
+            <span class="badge bg-secondary"><%= t('common.labels.no') %></span>
           <% end %>
         </div>
       </div>
@@ -94,7 +94,7 @@
   </div>
 
   <div class="mt-4">
-    <%= link_to t('bank_accounts.show.edit'), edit_bank_account_path(@bank_account), class: "btn btn-primary" %>
-    <%= link_to t('bank_accounts.show.back'), bank_accounts_path, class: "btn btn-secondary" %>
+    <%= link_to t('common.actions.edit'), edit_bank_account_path(@bank_account), class: "btn btn-primary" %>
+    <%= link_to t('common.actions.back'), bank_accounts_path, class: "btn btn-secondary" %>
   </div>
 </div>

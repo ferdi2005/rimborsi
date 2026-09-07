@@ -21,12 +21,12 @@
             <% if current_user.admin? %>
               <div class="btn-group">
                 <% if @reimboursement.expenses.any? %>
-                  <%= link_to 'Apri Approvazione Giustificativi', approve_expenses_reimboursement_path(@reimboursement), class: "btn btn-sm btn-warning" %>
+                  <%= link_to t('reimboursements.show.open_approve_expenses'), approve_expenses_reimboursement_path(@reimboursement), class: "btn btn-sm btn-warning" %>
                 <% end %>
                 <% if @reimboursement.can_be_approved? %>
-                  <%= button_to 'Approva Rimborso', approve_reimboursement_reimboursement_path(@reimboursement), 
+                  <%= button_to t('reimboursements.show.approve_reimbursement'), approve_reimboursement_reimboursement_path(@reimboursement), 
                               method: :patch, 
-                              data: { confirm: 'Sei sicuro di voler approvare questo rimborso?' },
+                              data: { confirm: t('reimboursements.show.approve_confirm') },
                               class: "btn btn-sm btn-success" %>
                 <% end %>
               </div>
@@ -341,7 +341,7 @@
                                   <!-- Allegato normale -->
                                   <div class="mt-2">
                                     <%= link_to expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" do %>
-                                      <i class="<%= file_icon(expense) %> me-1"></i><%= t('.expenses.view') %>
+                                      <i class="<%= file_icon(expense) %> me-1"></i><%= t('common.actions.view') %>
                                     <% end %>
                                   </div>
                                 <% else %>

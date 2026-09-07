@@ -1,29 +1,23 @@
 <div class="container-fluid">
   <p id="notice"><%= notice %></p>
-            <div class="form-group mb-3">
-        <p><strong>State:</strong></p>
-        <div>
-          <%= @note.state_id %>
-        </div>
-      </div>
-                <div class="form-group mb-3">
-        <p><strong>Reimboursment:</strong></p>
-        <div>
-          <%= @note.reimboursement_id %>
-        </div>
-      </div>
-                <div class="form-group mb-3">
-        <p><strong>User:</strong></p>
-        <div>
-          <%= @note.user_id %>
-        </div>
-      </div>
-                <div class="form-group mb-3">
-        <p><strong>Text:</strong></p>
-        <div>
-          <%= @note.text %>
-        </div>
-      </div>
-        <%= link_to 'Edit', edit_note_path(@note), class: "btn btn-primary" %>
-  <%= link_to 'Back', notes_path, class: "btn btn-secondary" %>
+  <div class="form-group mb-3">
+    <p><strong><%= t('activerecord.attributes.note.reimboursement') %>:</strong></p>
+    <div>
+      <%= @note.reimboursement_id %>
+    </div>
+  </div>
+  <div class="form-group mb-3">
+    <p><strong><%= t('activerecord.attributes.note.user') %>:</strong></p>
+    <div>
+      <%= @note.user&.name %>
+    </div>
+  </div>
+  <div class="form-group mb-3">
+    <p><strong><%= t('activerecord.attributes.note.text') %>:</strong></p>
+    <div>
+      <%= @note.text %>
+    </div>
+  </div>
+  <%= link_to t('common.actions.edit'), edit_note_path(@note), class: "btn btn-primary" %>
+  <%= link_to t('common.actions.back'), notes_path, class: "btn btn-secondary" %>
 </div>

@@ -33,16 +33,12 @@ class Reimboursement < ApplicationRecord
 
   # Metodi per la traduzione degli status
   def self.status_translations
-    {
-      "created" => "In attesa di elaborazione",
-      "in_process" => "In elaborazione",
-      "approved" => "Approvato",
-      "paid" => "Pagato",
-      "waiting" => "In attesa dell'utente"
-    }
+    statuses.keys.each_with_object({}) do |st, h|
+      h[st] = I18n.t("enums.reimboursement.status.#{st}", default: st.humanize)
+    end
   end
 
-  def status_in_italian
+  def status_name
     self.class.status_translations[status] || status.humanize
   end
 

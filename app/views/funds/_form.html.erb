@@ -106,13 +106,13 @@
 
       <div class="d-flex justify-content-between">
         <%= link_to funds_path, class: "btn btn-secondary" do %>
-          <i class="fas fa-arrow-left me-1"></i><%= t('funds.form.back') %>
+          <i class="fas fa-arrow-left me-1"></i><%= t('common.actions.back') %>
         <% end %>
         
         <div>
           <% if fund.persisted? %>
             <%= link_to fund, class: "btn btn-outline-primary me-2" do %>
-              <i class="fas fa-eye me-1"></i><%= t('funds.form.view') %>
+              <i class="fas fa-eye me-1"></i><%= t('common.actions.view') %>
             <% end %>
           <% end %>
           <%= form.submit class: "btn btn-primary" do %>

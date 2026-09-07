@@ -55,6 +55,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.datetime "updated_at", null: false
     t.string "bank_name"
     t.string "bic_swift"
+    t.index ["user_id"], name: "index_bank_accounts_on_user_id"
   end
 
   create_table "expenses", force: :cascade do |t|
@@ -79,6 +80,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.integer "vehicle_id"
     t.string "project"
     t.decimal "requested_amount", precision: 8, scale: 2
+    t.index ["fund_id"], name: "index_expenses_on_fund_id"
+    t.index ["reimboursement_id"], name: "index_expenses_on_reimboursement_id"
     t.index ["vehicle_id"], name: "index_expenses_on_vehicle_id"
   end
 
@@ -97,6 +100,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "status_change"
+    t.index ["reimboursement_id"], name: "index_notes_on_reimboursement_id"
+    t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -116,7 +121,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
     t.bigint "payment_id"
+    t.string "role"
+    t.string "role_other"
+    t.index ["bank_account_id"], name: "index_reimboursements_on_bank_account_id"
     t.index ["payment_id"], name: "index_reimboursements_on_payment_id"
+    t.index ["user_id"], name: "index_reimboursements_on_user_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -153,6 +162,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.string "locale", default: "it"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["role_id"], name: "index_users_on_role_id"
   end
 
   create_table "vehicles", force: :cascade do |t|
@@ -165,6 +175,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_vehicles_on_user_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

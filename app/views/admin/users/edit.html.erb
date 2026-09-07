@@ -4,7 +4,7 @@
   <%= form_with(model: [:admin, @user], local: true, class: "row g-3") do |form| %>
     <% if @user.errors.any? %>
       <div class="alert alert-danger">
-        <h4><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h4>
+        <h4><%= t('errors.messages.not_saved', count: @user.errors.count) %></h4>
         <ul>
           <% @user.errors.full_messages.each do |message| %>
             <li><%= message %></li>

@@ -4,7 +4,7 @@
 
 <%= t('mailers.reimboursement.status_changed.updated_message', id: @reimboursement.id) %>
 
-<%= t('mailers.reimboursement.status_changed.new_status') %> <%= @reimboursement.status_in_italian %>
+<%= t('mailers.reimboursement.status_changed.new_status') %> <%= @reimboursement.status_name %>
 
 <% if @note&.text.present? %>
 <%= t('mailers.reimboursement.status_changed.admin_note') %>

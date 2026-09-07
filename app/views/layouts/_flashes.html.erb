@@ -25,7 +25,7 @@
 <% if type == :success || type == :notice %>
   <% 
     # Controllo se il messaggio riguarda la creazione di un rimborso
-    is_reimbursement_creation = msg.to_s.include?("Rimborso creato con successo") || msg.to_s.include?("🎉")
+    is_reimbursement_creation = msg.to_s.include?(t('controllers.reimboursements.create.success')) || msg.to_s.include?("🎉")
   %>
   <div class="alert <%= is_reimbursement_creation ? 'alert-success border-start border-success border-5' : 'alert-success' %> alert-dismissible fade show m-1" role="alert">
     <% if is_reimbursement_creation %>
@@ -35,13 +35,13 @@
         </div>
         <div class="flex-grow-1">
           <h5 class="alert-heading mb-2">
-            <i class="fas fa-trophy me-2"></i>Rimborso Creato!
+            <i class="fas fa-trophy me-2"></i><%= t('layouts.flashes.reimbursement_created_title') %>
           </h5>
           <p class="mb-2 fw-bold"><%= msg %></p>
           <hr class="my-2">
           <p class="mb-0 small">
             <i class="fas fa-route me-1"></i>
-            <strong>Prossimi passi:</strong> Il tuo rimborso è ora nello stato "Creato" e sarà presto revisionato da un amministratore.
+            <strong><%= t('layouts.flashes.next_steps') %>:</strong> <%= t('layouts.flashes.next_steps_text') %>
           </p>
         </div>
       </div>

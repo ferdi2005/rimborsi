@@ -2,7 +2,7 @@
   <% if vehicle.errors.any? %>
     <div class="col-12">
       <div class="alert alert-danger">
-        <h6><%= pluralize(vehicle.errors.count, "errore", "errori") %> ha impedito il salvataggio:</h6>
+        <h6><%= t('errors.messages.not_saved', count: vehicle.errors.count) %></h6>
         <ul class="mb-0">
           <% vehicle.errors.each do |error| %>
             <li><%= error.full_message %></li>
@@ -83,7 +83,7 @@
   </div>
 
   <div class="col-12">
-    <%= form.submit t('vehicles.form.save'), class: 'btn btn-primary' %>
-    <%= link_to t('vehicles.form.cancel'), vehicles_path, class: 'btn btn-secondary' %>
+    <%= form.submit t('common.actions.save'), class: 'btn btn-primary' %>
+    <%= link_to t('common.actions.cancel'), vehicles_path, class: 'btn btn-secondary' %>
   </div>
 <% end %>

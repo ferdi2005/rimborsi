@@ -73,7 +73,7 @@
           <% if @available_reimboursements.any? %>
             <%= form.submit t('admin.payments.new.create_btn'), class: "btn btn-primary" %>
           <% end %>
-          <%= link_to t('admin.payments.new.cancel'), admin_payments_path, class: "btn btn-secondary" %>
+          <%= link_to t('common.actions.cancel'), admin_payments_path, class: "btn btn-secondary" %>
         </div>
       <% end %>
     </div>

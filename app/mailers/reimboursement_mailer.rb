@@ -10,7 +10,7 @@ class ReimboursementMailer < ApplicationMailer
     I18n.with_locale(@user.locale.to_sym) do
       mail(
         to: @user.email,
-        subject: "Nuova nota aggiunta al Rimborso ##{@reimboursement.id}"
+        subject: t("mailers.reimboursement.note_added.subject", id: @reimboursement.id)
       )
     end
   end
@@ -24,7 +24,7 @@ class ReimboursementMailer < ApplicationMailer
     I18n.with_locale(@user.locale.to_sym) do
       mail(
         to: @user.email,
-        subject: "Stato rimborso ##{@reimboursement.id} aggiornato a: #{@reimboursement.status_in_italian}"
+        subject: t("mailers.reimboursement.status_changed.subject_with_status", id: @reimboursement.id, status: @reimboursement.status_name, default: t("mailers.reimboursement.status_changed.subject", id: @reimboursement.id))
       )
     end
   end
@@ -37,10 +37,10 @@ class ReimboursementMailer < ApplicationMailer
 
     admin_email = ENV["EMAIL_AMMINISTRAZIONE"] || ENV["MAIL_USERNAME"]
 
-    I18n.with_locale(@user.locale.to_sym) do
+    I18n.with_locale(I18n.default_locale) do
       mail(
         to: admin_email,
-        subject: "Nuova nota da utente - Rimborso ##{@reimboursement.id}"
+        subject: t("mailers.reimboursement.admin_note_notification.subject", id: @reimboursement.id, default: "Nuova nota da utente - Rimborso ##{@reimboursement.id}")
       )
     end
   end

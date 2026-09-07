@@ -21,7 +21,7 @@
                              end
             %>
             <span class="badge bg-<%= status_config[:class] %>">
-              <i class="<%= status_config[:icon] %> me-1"></i><%= payment.status_in_italian %>
+              <i class="<%= status_config[:icon] %> me-1"></i><%= payment.status_name %>
             </span>
           </div>
           <div class="card-body">
@@ -55,7 +55,7 @@
               
               <% if payment.can_be_modified? %>
                 <%= link_to edit_admin_payment_path(payment), class: "btn btn-outline-secondary btn-sm" do %>
-                  <i class="fas fa-edit me-1"></i><%= t('admin.payments.index.edit') %>
+                  <i class="fas fa-edit me-1"></i><%= t('common.actions.edit') %>
                 <% end %>
               <% end %>
 

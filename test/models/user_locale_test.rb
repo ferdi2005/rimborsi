@@ -29,14 +29,30 @@ class UserLocaleTest < ActiveSupport::TestCase
     assert_equal "en", user.locale
   end
 
-  test "rejects locales other than it/en" do
-    user = build_user(locale: "fr")
+  test "rejects unsupported locales" do
+    user = build_user(locale: "unsupported")
     refute user.valid?
-    assert_includes user.errors[:locale], "deve essere 'it' o 'en'"
+    expected_message = I18n.t(
+      "activerecord.errors.models.user.attributes.locale.inclusion",
+      locales: I18n.available_locales.map { |l| "'#{l}'" }.to_sentence(two_words_connector: " o ", last_word_connector: " o ")
+    )
+    assert_includes user.errors[:locale], expected_message
   end
 
-  test "accepts both supported locales" do
-    %w[it en].each do |loc|
+  test "rejects unsupported locales with english message when locale is en" do
+    I18n.with_locale(:en) do
+      user = build_user(locale: "unsupported")
+      refute user.valid?
+      expected_message = I18n.t(
+        "activerecord.errors.models.user.attributes.locale.inclusion",
+        locales: I18n.available_locales.map { |l| "'#{l}'" }.to_sentence(two_words_connector: " or ", last_word_connector: " or ")
+      )
+      assert_includes user.errors[:locale], expected_message
+    end
+  end
+
+  test "accepts all supported locales" do
+    I18n.available_locales.map(&:to_s).each do |loc|
       assert build_user(locale: loc).valid?, "expected #{loc} to be valid"
     end
   end
