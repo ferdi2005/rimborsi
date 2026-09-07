@@ -9,7 +9,30 @@ class ApplicationController < ActionController::Base
   protected
 
   def set_locale
-    I18n.locale = current_user&.locale&.to_sym || I18n.default_locale
+    I18n.locale = current_user_locale || browser_locale || :en
+  end
+
+  private
+
+  def current_user_locale
+    return nil unless current_user&.locale.present?
+
+    loc = current_user.locale.to_sym
+    I18n.available_locales.include?(loc) ? loc : nil
+  end
+
+  def browser_locale
+    header = request&.headers&.[]("Accept-Language") || request&.env&.[]("HTTP_ACCEPT_LANGUAGE")
+    return nil if header.blank?
+
+    header.to_s.split(",").map do |part|
+      lang, q = part.split(";q=")
+      quality = q ? q.to_f : 1.0
+      tag = lang.strip.split("-").first.downcase.to_sym
+      [tag, quality]
+    end.sort_by { |_, q| -q }.map(&:first).find do |loc|
+      I18n.available_locales.include?(loc)
+    end
   end
 
   def configure_permitted_parameters
