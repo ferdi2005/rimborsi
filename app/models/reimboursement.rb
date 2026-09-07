@@ -43,25 +43,25 @@ class Reimboursement < ApplicationRecord
   # Callbacks
   after_update :send_status_change_notification, if: :saved_change_to_status?
 
-  # Metodi per la traduzione degli status
+  # Metodi per la traduzione degli status e ruoli
   def self.status_translations
-    statuses.keys.index_with do |key|
-      I18n.t("enums.reimboursement.status.#{key}", default: key.humanize)
+    statuses.keys.each_with_object({}) do |st, h|
+      h[st] = I18n.t("enums.reimboursement.status.#{st}", default: st.humanize)
     end
   end
 
   def self.role_translations
-    roles.keys.index_with do |key|
-      I18n.t("enums.reimboursement.role.#{key}", default: key.humanize)
+    roles.keys.each_with_object({}) do |r, h|
+      h[r] = I18n.t("enums.reimboursement.role.#{r}", default: r.humanize)
     end
   end
 
-  def status_in_italian
+  def status_name
     self.class.status_translations[status] || status.humanize
   end
 
-  def role_in_italian
-    self.class.role_translations[role] || role.humanize
+  def role_name
+    self.class.role_translations[role] || role.to_s.humanize
   end
 
   # Metodo per verificare se il rimborso può essere approvato

@@ -14,10 +14,10 @@ class NotesController < ApplicationController
 
     respond_to do |format|
       if @note.save
-        format.html { redirect_to @reimboursement, notice: "Nota aggiunta con successo." }
-        format.json { render json: { status: "success", message: "Nota aggiunta con successo." } }
+        format.html { redirect_to @reimboursement, notice: t("controllers.notes.create_success") }
+        format.json { render json: { status: "success", message: t("controllers.notes.create_success") } }
       else
-        format.html { redirect_to @reimboursement, alert: "Errore nel salvare la nota." }
+        format.html { redirect_to @reimboursement, alert: t("controllers.notes.create_error") }
         format.json { render json: { status: "error", errors: @note.errors.full_messages } }
       end
     end
@@ -27,8 +27,8 @@ class NotesController < ApplicationController
     redirect_to @reimboursement and return unless current_user.admin?
     @note.destroy
     respond_to do |format|
-      format.html { redirect_to @reimboursement, notice: "Nota eliminata con successo." }
-      format.json { render json: { status: "success", message: "Nota eliminata con successo." } }
+      format.html { redirect_to @reimboursement, notice: t("controllers.notes.delete_success") }
+      format.json { render json: { status: "success", message: t("controllers.notes.delete_success") } }
     end
   end
 
@@ -50,7 +50,7 @@ class NotesController < ApplicationController
     return if current_user.admin?
     return if @reimboursement.user_id == current_user.id
 
-    redirect_to reimboursements_path, alert: "Non hai i permessi per accedere a questo rimborso."
+    redirect_to reimboursements_path, alert: t("controllers.notes.unauthorized")
   end
 
   def note_params

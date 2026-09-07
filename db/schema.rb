@@ -118,6 +118,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.bigint "payment_id"
     t.string "role"
     t.string "role_other"
+    t.index ["bank_account_id"], name: "index_reimboursements_on_bank_account_id"
     t.index ["payment_id"], name: "index_reimboursements_on_payment_id"
   end
 

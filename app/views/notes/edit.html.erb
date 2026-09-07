@@ -1,6 +1,6 @@
 <div class="container-fluid">
-  <h1>Editing Note</h1>
+  <h1><%= t('notes.edit.title') %></h1>
   <%= render 'form', note: @note %>
-  <%= link_to 'Show', @note, class: "btn btn-success" %>
-  <%= link_to 'Back', notes_path, class: "btn btn-secondary" %>
+  <%= link_to t('common.actions.show'), @note, class: "btn btn-success" %>
+  <%= link_to t('common.actions.back'), notes_path, class: "btn btn-secondary" %>
 </div>

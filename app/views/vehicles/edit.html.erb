@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <h1>Modifica Veicolo: <%= @vehicle.name %></h1>
+  <h1><%= t('.title', name: @vehicle.name) %></h1>
   
   <%= render 'form', vehicle: @vehicle %>
 </div>

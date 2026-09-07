@@ -1,39 +1,63 @@
 class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  # Require user authentication for all actions
-  before_action :authenticate_user!
+  before_action :authenticate_user!, :set_locale
 
   # Configure additional parameters for Devise
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected
 
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [ :name, :surname, :telephone, :fiscal_code ])
+  def set_locale
+    I18n.locale = current_user_locale || browser_locale || :en
+  end
 
-    if current_user&.admin?
-      devise_parameter_sanitizer.permit(:account_update, keys: [ :name, :surname, :telephone, :fiscal_code, :role_id ])
-    else
-      devise_parameter_sanitizer.permit(:account_update, keys: [ :name, :surname, :telephone, :fiscal_code ])
+  private
+
+  def current_user_locale
+    return nil unless current_user&.locale.present?
+
+    loc = current_user.locale.to_sym
+    I18n.available_locales.include?(loc) ? loc : nil
+  end
+
+  def browser_locale
+    header = request&.headers&.[]("Accept-Language") || request&.env&.[]("HTTP_ACCEPT_LANGUAGE")
+    return nil if header.blank?
+
+    header.to_s.split(",").map do |part|
+      lang, q = part.split(";q=")
+      quality = q ? q.to_f : 1.0
+      tag = lang.strip.split("-").first.downcase.to_sym
+      [tag, quality]
+    end.sort_by { |_, q| -q }.map(&:first).find do |loc|
+      I18n.available_locales.include?(loc)
     end
   end
 
-  # Helper methods for admin access control
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :name, :surname, :telephone, :fiscal_code, :locale ])
+
+    if current_user&.admin?
+      devise_parameter_sanitizer.permit(:account_update, keys: [ :name, :surname, :telephone, :fiscal_code, :role_id, :locale ])
+    else
+      devise_parameter_sanitizer.permit(:account_update, keys: [ :name, :surname, :telephone, :fiscal_code, :locale ])
+    end
+  end
+
   def ensure_admin
     unless current_user&.admin?
-      redirect_back(fallback_location: root_path, alert: "Accesso negato. Solo gli amministratori possono accedere a questa sezione.")
+      redirect_back(fallback_location: root_path, alert: t("controllers.application.access_denied"))
     end
   end
 
   def admin_required
-    redirect_to root_path, alert: "Accesso negato." unless current_user&.admin?
+    redirect_to root_path, alert: t("controllers.application.access_denied_short") unless current_user&.admin?
   end
 
-  def ensure_admin_or_redirect_to(path, message = "Solo gli amministratori possono accedere a questa funzionalità.")
+  def ensure_admin_or_redirect_to(path, message = nil)
     unless current_user&.admin?
-      redirect_to path, alert: message
+      redirect_to path, alert: message || t("controllers.application.admin_only")
     end
   end
 end

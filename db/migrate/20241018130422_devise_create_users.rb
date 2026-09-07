@@ -47,6 +47,6 @@ class DeviseCreateUsers < ActiveRecord::Migration[7.2]
     # add_index :users, :confirmation_token,   unique: true
     # add_index :users, :unlock_token,         unique: true
 
-    add_foreign_key :users, :roles
+    # add_foreign_key :users, :roles
   end
 end

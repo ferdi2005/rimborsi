@@ -3,7 +3,7 @@
     <div class="col-md-8">
       <div class="card">
         <div class="card-header">
-          <h2 class="mb-0">Modifica Profilo</h2>
+          <h2 class="mb-0"><%= t('devise.registrations.edit.title', resource: t('layouts.navbar.profile')) %></h2>
         </div>
         <div class="card-body">
           <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "row g-3" }) do |f| %>
@@ -13,13 +13,13 @@
 
             <% if current_user.admin? %>
               <div class="col-md-6">
-                <%= f.label :role_id, "Ruolo", class: "form-label" %>
-                <%= f.collection_select :role_id, Role.all, :id, :label, { prompt: "Seleziona un ruolo" }, { class: "form-select" } %>
+                <%= f.label :role_id, t('devise.registrations.edit.role_label'), class: "form-label" %>
+                <%= f.collection_select :role_id, Role.all, :id, :label, { prompt: t('devise.registrations.edit.select_role_prompt') }, { class: "form-select" } %>
               </div>
             <% else %>
               <div class="col-md-6">
-                <%= f.label :role_id, "Ruolo", class: "form-label" %>
-                <p class="form-control-plaintext"><%= current_user.role&.label || "Nessun ruolo assegnato" %></p>
+                <%= f.label :role_id, t('devise.registrations.edit.role_label'), class: "form-label" %>
+                <p class="form-control-plaintext"><%= current_user.role&.label || t('devise.registrations.edit.no_role_assigned') %></p>
               </div>
             <% end %>
 
@@ -32,35 +32,35 @@
             <% end %>
 
             <div class="col-md-6">
-              <%= f.label :password, "Password", class: "form-label" %>
-              <small class="form-text text-muted">(lascia vuoto se non vuoi cambiarla)</small>
+              <%= f.label :password, t('devise.registrations.edit.password_label'), class: "form-label" %>
+              <small class="form-text text-muted"><%= t('devise.registrations.edit.leave_blank_if_you_don_t_want_to_change_it') %></small>
               <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
               <% if @minimum_password_length %>
-                <small class="form-text text-muted"><%= @minimum_password_length %> caratteri minimo</small>
+                <small class="form-text text-muted"><%= t('devise.registrations.edit.password_min_length', count: @minimum_password_length) %></small>
               <% end %>
             </div>
 
             <div class="col-md-6">
-              <%= f.label :password_confirmation, "Conferma Password", class: "form-label" %>
+              <%= f.label :password_confirmation, t('devise.registrations.edit.password_confirmation_label'), class: "form-label" %>
               <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
             </div>
 
             <div class="col-12">
-              <%= f.label :current_password, "Password Attuale", class: "form-label" %>
-              <small class="form-text text-muted">(richiesta per confermare le modifiche)</small>
+              <%= f.label :current_password, t('devise.registrations.edit.current_password_label'), class: "form-label" %>
+              <small class="form-text text-muted"><%= t('devise.registrations.edit.current_password_help') %></small>
               <%= f.password_field :current_password, autocomplete: "current-password", class: "form-control", required: true %>
             </div>
 
             <div class="col-12">
-              <%= f.submit "Aggiorna", class: "btn btn-primary" %>
-              <%= link_to "Indietro", :back, class: "btn btn-secondary" %>
+              <%= f.submit t('common.actions.update'), class: "btn btn-primary" %>
+              <%= link_to t('common.actions.back'), :back, class: "btn btn-secondary" %>
             </div>
           <% end %>
         </div>
         <div class="card-footer text-center">
           <p class="text-muted mb-0">
             <i class="fas fa-info-circle"></i> 
-            Per assistenza o problemi con l'account, contatta l'amministrazione.
+            <%= t('devise.registrations.edit.footer_contact') %>
           </p>
         </div>
       </div>

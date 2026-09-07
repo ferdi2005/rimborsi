@@ -45,7 +45,7 @@ class ReimboursementsController < ApplicationController
   # GET /reimboursements/1/edit
   def edit
     unless @reimboursement.can_be_edited_by?(current_user)
-      redirect_to @reimboursement, alert: "Non puoi modificare questo rimborso. I rimborsi possono essere modificati solo se sono in stato 'Creato' o 'In Attesa', oppure se sei un amministratore."
+      redirect_to @reimboursement, alert: t("controllers.reimboursements.cannot_modify")
       nil
     end
     @funds = Fund.active.order(:name)
@@ -72,7 +72,7 @@ class ReimboursementsController < ApplicationController
           )
         end
 
-        format.html { redirect_to @reimboursement, notice: "🎉 Rimborso creato con successo! Riceverai aggiornamenti via email per ogni cambio di stato." }
+        format.html { redirect_to @reimboursement, notice: t("controllers.reimboursements.create.success") }
         format.json { render :show, status: :created, location: @reimboursement }
       else
         @funds = Fund.active.order(:name)
@@ -86,7 +86,7 @@ class ReimboursementsController < ApplicationController
   def update
     unless @reimboursement.can_be_edited_by?(current_user)
       respond_to do |format|
-        format.html { redirect_to @reimboursement, alert: "Non puoi modificare questo rimborso. I rimborsi possono essere modificati solo se sono in stato 'Creato' o 'In Attesa', oppure se sei un amministratore." }
+        format.html { redirect_to @reimboursement, alert: t("controllers.reimboursements.cannot_modify") }
         format.json { render json: { error: "Non autorizzato" }, status: :forbidden }
       end
       return
@@ -105,7 +105,12 @@ class ReimboursementsController < ApplicationController
           )
         end
 
-        format.html { redirect_to @reimboursement, notice: "Rimborso aggiornato con successo." }
+        # Se lo status è cambiato, invia notifica email
+        if old_status != @reimboursement.status
+          ReimboursementMailer.status_changed(@reimboursement).deliver_later
+        end
+
+        format.html { redirect_to @reimboursement, notice: t("controllers.reimboursements.update_success") }
         format.json { render :show, status: :ok, location: @reimboursement }
       else
         @funds = Fund.active.order(:name)
@@ -118,14 +123,14 @@ class ReimboursementsController < ApplicationController
   # DELETE /reimboursements/1 or /reimboursements/1.json
   def destroy
     unless @reimboursement.status_created?
-      redirect_to reimboursements_path, alert: "Non puoi eliminare un rimborso che non è in attesa di elaborazione. Solo i rimborsi in stato 'Creato' possono essere eliminati."
+      redirect_to reimboursements_path, alert: t("controllers.reimboursements.cannot_delete")
       return
     end
 
     @reimboursement.destroy!
 
     respond_to do |format|
-      format.html { redirect_to reimboursements_path, status: :see_other, notice: "Rimborso eliminato con successo." }
+      format.html { redirect_to reimboursements_path, status: :see_other, notice: t("controllers.reimboursements.delete_success") }
       format.json { head :no_content }
     end
   end
@@ -141,7 +146,7 @@ class ReimboursementsController < ApplicationController
     @expenses = @reimboursement.expenses.order(:date)
 
     if @current_expense_index >= @expenses.count
-      redirect_to reimboursement_path(@reimboursement), notice: "Tutti i giustificativi sono stati revisionati."
+      redirect_to reimboursement_path(@reimboursement), notice: t("controllers.reimboursements.all_expenses_reviewed")
       return
     end
 
@@ -164,7 +169,7 @@ class ReimboursementsController < ApplicationController
     expense.update!(status: "approved")
 
     redirect_to approve_expenses_reimboursement_path(@reimboursement, expense_index: params[:next_index]),
-                notice: "Giustificativo approvato."
+                notice: t("controllers.reimboursements.expense_approved")
   end
 
   # PATCH /reimboursements/1/deny_expense
@@ -198,7 +203,7 @@ class ReimboursementsController < ApplicationController
     end
 
     redirect_to approve_expenses_reimboursement_path(@reimboursement, expense_index: params[:next_index]),
-                notice: "Giustificativo rifiutato."
+                notice: t("controllers.reimboursements.expense_denied")
   end
 
   # PATCH /reimboursements/1/approve_reimboursement
@@ -211,14 +216,14 @@ class ReimboursementsController < ApplicationController
 
       # Crea una nota automatica
       @reimboursement.notes.create!(
-        text: "Rimborso approvato.",
+        text: t("controllers.reimboursements.auto_note_approved"),
         user: current_user,
         status_change: "approved"
       )
 
-      redirect_to reimboursement_path(@reimboursement), notice: "Rimborso approvato con successo!"
+      redirect_to reimboursement_path(@reimboursement), notice: t("controllers.reimboursements.reimbursement_approved")
     else
-      redirect_to reimboursement_path(@reimboursement), alert: "Non è possibile approvare il rimborso: ci sono ancora giustificativi in attesa di approvazione."
+      redirect_to reimboursement_path(@reimboursement), alert: t("controllers.reimboursements.pending_expenses_exist")
     end
   end
 
@@ -234,7 +239,7 @@ class ReimboursementsController < ApplicationController
                 content_length: pdf_content.bytesize
     rescue => e
       Rails.logger.error "Error generating PDF for reimboursement #{@reimboursement.id}: #{e.message}"
-      redirect_to @reimboursement, alert: "Errore nella generazione del PDF. Riprova più tardi."
+      redirect_to @reimboursement, alert: t("controllers.reimboursements.pdf_error")
     end
   end
 

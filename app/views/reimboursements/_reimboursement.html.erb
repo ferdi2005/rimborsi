@@ -1,16 +1,16 @@
 <div id="<%= dom_id reimboursement %>">
   <p>
-    <strong>State:</strong>
+    <strong><%= t('activerecord.attributes.reimboursement.status') %>:</strong>
     <%= reimboursement.state_id %>
   </p>
 
   <p>
-    <strong>User:</strong>
+    <strong><%= t('activerecord.attributes.reimboursement.user') %>:</strong>
     <%= reimboursement.user_id %>
   </p>
 
   <p>
-    <strong>Bank account:</strong>
+    <strong><%= t('activerecord.attributes.reimboursement.bank_account') %>:</strong>
     <%= reimboursement.bank_account_id %>
   </p>
 

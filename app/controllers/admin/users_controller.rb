@@ -14,7 +14,7 @@ class Admin::UsersController < ApplicationController
 
   def update
     if @user.update(user_params)
-      redirect_to admin_user_path(@user), notice: "Utente aggiornato con successo."
+      redirect_to admin_user_path(@user), notice: t("controllers.admin.users.update_success")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -23,24 +23,24 @@ class Admin::UsersController < ApplicationController
   def destroy
     if @user.can_be_deleted?
       @user.destroy
-      redirect_to admin_users_path, notice: "Utente eliminato con successo."
+      redirect_to admin_users_path, notice: t("controllers.admin.users.delete_success")
     else
-      redirect_to admin_user_path(@user), alert: "Impossibile eliminare l'utente: ha dei rimborsi associati."
+      redirect_to admin_user_path(@user), alert: t("controllers.admin.users.delete_error")
     end
   end
 
   def deactivate
     @user.deactivate!
-    redirect_to admin_user_path(@user), notice: "Utente disattivato con successo."
+    redirect_to admin_user_path(@user), notice: t("controllers.admin.users.deactivate_success")
   rescue => e
-    redirect_to admin_user_path(@user), alert: "Errore nella disattivazione: #{e.message}"
+    redirect_to admin_user_path(@user), alert: t("controllers.admin.users.deactivate_error", message: e.message)
   end
 
   def activate
     @user.activate!
-    redirect_to admin_user_path(@user), notice: "Utente attivato con successo."
+    redirect_to admin_user_path(@user), notice: t("controllers.admin.users.activate_success")
   rescue => e
-    redirect_to admin_user_path(@user), alert: "Errore nell'attivazione: #{e.message}"
+    redirect_to admin_user_path(@user), alert: t("controllers.admin.users.activate_error", message: e.message)
   end
 
   private

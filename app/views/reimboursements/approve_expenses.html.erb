@@ -4,16 +4,16 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <div>
-            <h3 class="mb-0">Approvazione Giustificativi - Rimborso #<%= @reimboursement.id %></h3>
+            <h3 class="mb-0"><%= t('reimboursements.approve_expenses.title') %> - <%= t('reimboursements.index.reimbursement_number', id: @reimboursement.id) %></h3>
             <small class="text-muted">
-              Totale richiesto: <strong class="text-primary">€ <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></strong>
+              <%= t('reimboursements.approve_expenses.total_requested') %> <strong class="text-primary">€ <%= number_with_precision(@reimboursement.total_amount, precision: 2) %></strong>
             </small>
           </div>
           <div>
             <span class="badge bg-info">
-              Giustificativo <%= @current_expense_index + 1 %> di <%= @total_expenses %>
+              <%= t('reimboursements.approve_expenses.expense_counter', current: @current_expense_index + 1, total: @total_expenses) %>
             </span>
-            <%= link_to 'Torna al Rimborso', reimboursement_path(@reimboursement), class: "btn btn-sm btn-outline-secondary ms-2" %>
+            <%= link_to t('reimboursements.approve_expenses.back_to_reimbursement'), reimboursement_path(@reimboursement), class: "btn btn-sm btn-outline-secondary ms-2" %>
           </div>
         </div>
         
@@ -21,14 +21,14 @@
           <div class="row">
             <!-- Form di modifica spesa -->
             <div class="col-md-6">
-              <h5><i class="fas fa-edit me-2"></i>Modifica Spesa</h5>
+              <h5><i class="fas fa-edit me-2"></i><%= t('reimboursements.approve_expenses.edit_expense') %></h5>
               
               <%= form_with model: @reimboursement, local: true, html: { class: "expense-edit-form" } do |form| %>
                 <%= form.fields_for :expenses, [@current_expense] do |expense_form| %>
                   <%= render 'expense_fields', f: expense_form %>
                 <% end %>
                 <div class="mt-3">
-                  <%= form.submit "Salva Modifiche", class: "btn btn-primary" %>
+                  <%= form.submit t('reimboursements.approve_expenses.save_changes'), class: "btn btn-primary" %>
                 </div>
               <% end %>
             </div>
@@ -36,87 +36,87 @@
             <!-- Allegato (destra) -->
             <div class="col-md-6">
               <% if @current_expense.car? %>
-                <h5>Spesa Auto - Dettagli Calcolo</h5>
+                <h5><%= t('reimboursements.approve_expenses.car_expense_title') %></h5>
                 
                 <div class="card">
                   <div class="card-body">
                     <% if @current_expense.vehicle %>
                       <div class="row mb-2">
-                        <div class="col-sm-4"><strong>Veicolo:</strong></div>
+                        <div class="col-sm-4"><strong><%= t('reimboursements.show.vehicle_label') %></strong></div>
                         <div class="col-sm-8"><%= @current_expense.vehicle.display_name %></div>
                       </div>
                     <% end %>
                     
                     <% if @current_expense.departure && @current_expense.arrival %>
                       <div class="row mb-2">
-                        <div class="col-sm-4"><strong>Percorso:</strong></div>
+                        <div class="col-sm-4"><strong><%= t('reimboursements.show.route_label') %></strong></div>
                         <div class="col-sm-8"><%= @current_expense.departure %> → <%= @current_expense.arrival %></div>
                       </div>
                     <% end %>
                     
                     <% if @current_expense.distance %>
                       <div class="row mb-2">
-                        <div class="col-sm-4"><strong>Distanza:</strong></div>
+                        <div class="col-sm-4"><strong><%= t('reimboursements.show.distance_label') %></strong></div>
                         <div class="col-sm-8">
-                          <%= @current_expense.distance %> km
+                          <%= @current_expense.distance %> <%= t('common.labels.distance') %>
                           <% if @current_expense.return_trip? %>
-                            <span class="badge bg-info ms-1">A/R</span>
+                            <span class="badge bg-info ms-1"><%= t('reimboursements.expense_fields.return_trip') %></span>
                           <% end %>
                         </div>
                       </div>
                     <% end %>
                     
                     <hr>
-                    <h6 class="text-primary">Costi per Km</h6>
+                    <h6 class="text-primary"><%= t('reimboursements.approve_expenses.costs_per_km') %></h6>
                     
                     <% if @current_expense.quota_capitale %>
                       <div class="row mb-1">
-                        <div class="col-sm-6">Quota capitale:</div>
+                        <div class="col-sm-6"><%= t('reimboursements.approve_expenses.quota_capitale') %></div>
                         <div class="col-sm-6">€ <%= number_with_precision(@current_expense.quota_capitale, precision: 2) %></div>
                       </div>
                     <% end %>
                     
                     <% if @current_expense.carburante %>
                       <div class="row mb-1">
-                        <div class="col-sm-6">Carburante:</div>
+                        <div class="col-sm-6"><%= t('reimboursements.approve_expenses.carburante') %></div>
                         <div class="col-sm-6">€ <%= number_with_precision(@current_expense.carburante, precision: 2) %></div>
                       </div>
                     <% end %>
                     
                     <% if @current_expense.pneumatici %>
                       <div class="row mb-1">
-                        <div class="col-sm-6">Pneumatici:</div>
+                        <div class="col-sm-6"><%= t('reimboursements.approve_expenses.pneumatici') %></div>
                         <div class="col-sm-6">€ <%= number_with_precision(@current_expense.pneumatici, precision: 2) %></div>
                       </div>
                     <% end %>
                     
                     <% if @current_expense.manutenzione %>
                       <div class="row mb-1">
-                        <div class="col-sm-6">Manutenzione:</div>
+                        <div class="col-sm-6"><%= t('reimboursements.approve_expenses.manutenzione') %></div>
                         <div class="col-sm-6">€ <%= number_with_precision(@current_expense.manutenzione, precision: 2) %></div>
                       </div>
                     <% end %>
                     
                     <hr>
                     <div class="row">
-                      <div class="col-sm-6"><strong>Totale per Km:</strong></div>
+                      <div class="col-sm-6"><strong><%= t('reimboursements.approve_expenses.total_per_km') %></strong></div>
                       <div class="col-sm-6">
                         <strong>€ <%= number_with_precision((@current_expense.quota_capitale || 0) + (@current_expense.carburante || 0) + (@current_expense.pneumatici || 0) + (@current_expense.manutenzione || 0), precision: 2) %></strong>
                       </div>
                     </div>
                     
                     <hr>
-                    <h6 class="text-success">Importi Finali</h6>
+                    <h6 class="text-success"><%= t('reimboursements.approve_expenses.final_amounts') %></h6>
                     <div class="row mb-2">
-                      <div class="col-sm-6">Importo spesa calcolato:</div>
+                      <div class="col-sm-6"><%= t('reimboursements.approve_expenses.calculated_amount') %></div>
                       <div class="col-sm-6"><strong>€ <%= number_with_precision(@current_expense.amount, precision: 2) %></strong></div>
                     </div>
                     <div class="row mb-2">
-                      <div class="col-sm-6"><strong>Importo richiesto:</strong></div>
+                      <div class="col-sm-6"><strong><%= t('reimboursements.approve_expenses.requested_amount') %></strong></div>
                       <div class="col-sm-6">
                         <strong class="text-primary">€ <%= number_with_precision(@current_expense.requested_amount, precision: 2) %></strong>
                         <% if @current_expense.requested_amount != @current_expense.amount %>
-                          <br><small class="text-muted">Differenza: € <%= number_with_precision(@current_expense.amount - @current_expense.requested_amount, precision: 2) %></small>
+                          <br><small class="text-muted"><%= t('reimboursements.approve_expenses.difference') %><%= number_with_precision(@current_expense.amount - @current_expense.requested_amount, precision: 2) %></small>
                         <% end %>
                       </div>
                     </div>
@@ -124,7 +124,7 @@
                     <div class="mt-3 p-2 bg-light rounded">
                       <small class="text-muted">
                         <i class="fas fa-info-circle"></i>
-                        Le spese auto sono calcolate automaticamente e non richiedono allegati.
+                        <%= t('reimboursements.approve_expenses.car_no_attachment') %>
                       </small>
                     </div>
                   </div>
@@ -132,9 +132,9 @@
               <% else %>
                 <h5>
                   <% if @current_expense.electronic_invoice? && @current_expense.has_invoice_pdf? %>
-                    <i class="fas fa-file-invoice me-2"></i>Fattura Elettronica
+                    <i class="fas fa-file-invoice me-2"></i><%= t('reimboursements.approve_expenses.electronic_invoice') %>
                   <% else %>
-                    Allegato
+                    <%= t('reimboursements.approve_expenses.attachment') %>
                   <% end %>
                 </h5>
                 
@@ -142,18 +142,18 @@
                 <div class="card mb-3">
                   <div class="card-body">
                     <h6 class="card-title text-primary">
-                      <i class="fas fa-euro-sign me-2"></i>Dettagli Importo
+                      <i class="fas fa-euro-sign me-2"></i><%= t('reimboursements.approve_expenses.amount_details') %>
                     </h6>
                     <div class="row">
-                      <div class="col-sm-6">Importo spesa:</div>
+                      <div class="col-sm-6"><%= t('reimboursements.approve_expenses.expense_amount') %></div>
                       <div class="col-sm-6"><strong>€ <%= number_with_precision(@current_expense.amount, precision: 2) %></strong></div>
                     </div>
                     <div class="row">
-                      <div class="col-sm-6"><strong>Importo richiesto:</strong></div>
+                      <div class="col-sm-6"><strong><%= t('reimboursements.approve_expenses.requested_amount') %></strong></div>
                       <div class="col-sm-6">
                         <strong class="text-primary">€ <%= number_with_precision(@current_expense.requested_amount, precision: 2) %></strong>
                         <% if @current_expense.requested_amount != @current_expense.amount %>
-                          <br><small class="text-muted">Differenza: € <%= number_with_precision(@current_expense.amount - @current_expense.requested_amount, precision: 2) %></small>
+                          <br><small class="text-muted"><%= t('reimboursements.approve_expenses.difference') %><%= number_with_precision(@current_expense.amount - @current_expense.requested_amount, precision: 2) %></small>
                         <% end %>
                       </div>
                     </div>
@@ -167,7 +167,7 @@
                         <!-- Mostra PDF della fattura elettronica generato -->
                         <div class="mb-3">
                           <span class="badge bg-success">
-                            <i class="fas fa-check-circle me-1"></i>Fattura convertita in PDF
+                            <i class="fas fa-check-circle me-1"></i><%= t('reimboursements.approve_expenses.invoice_converted') %>
                           </span>
                         </div>
                         <div class="border rounded">
@@ -176,18 +176,18 @@
                                   height="600" 
                                   style="border: none;" 
                                   class="rounded">
-                            Il tuo browser non supporta la visualizzazione di PDF.
+                            <%= t('reimboursements.approve_expenses.browser_no_pdf') %>
                           </iframe>
                           <div class="p-2 bg-light border-top d-flex justify-content-between">
                             <div>
-                              <%= link_to "Scarica PDF", download_invoice_pdf_expense_path(@current_expense), 
+                              <%= link_to t('common.actions.download') + " PDF", download_invoice_pdf_expense_path(@current_expense), 
                                           class: "btn btn-sm btn-primary" %>
-                              <%= link_to "File XML Originale", @current_expense.attachment, target: "_blank", 
+                              <%= link_to t('reimboursements.approve_expenses.original_xml'), @current_expense.attachment, target: "_blank", 
                                           class: "btn btn-sm btn-outline-secondary ms-2" %>
                             </div>
                             <small class="text-muted align-self-center">
                               <i class="fas fa-info-circle"></i>
-                              PDF generato automaticamente dalla fattura elettronica
+                              <%= t('reimboursements.approve_expenses.pdf_auto_generated') %>
                             </small>
                           </div>
                         </div>
@@ -195,7 +195,7 @@
                         <!-- Mostra immagine -->
                         <%= image_tag @current_expense.attachment, class: "img-fluid rounded", style: "max-height: 500px;" %>
                         <div class="mt-3">
-                          <%= link_to "Visualizza a Schermo Intero", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                          <%= link_to t('reimboursements.approve_expenses.view_fullscreen'), @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
                         </div>
                       <% elsif @current_expense.attachment.content_type == 'application/pdf' %>
                         <!-- Mostra PDF -->
@@ -205,25 +205,25 @@
                                   height="600" 
                                   style="border: none;" 
                                   class="rounded">
-                            Il tuo browser non supporta la visualizzazione di PDF.
+                            <%= t('reimboursements.approve_expenses.browser_no_pdf') %>
                           </iframe>
                           <div class="p-2 bg-light border-top">
-                            <%= link_to "Apri in Nuova Scheda", @current_expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" %>
-                            <%= link_to "Scarica PDF", @current_expense.attachment, download: true, class: "btn btn-sm btn-outline-secondary ms-2" %>
+                            <%= link_to t('reimboursements.approve_expenses.open_new_tab'), @current_expense.attachment, target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+                            <%= link_to t('common.actions.download') + " PDF", @current_expense.attachment, download: true, class: "btn btn-sm btn-outline-secondary ms-2" %>
                           </div>
                         </div>
                       <% else %>
                         <!-- Altro tipo di file -->
                         <div class="border rounded p-4 bg-light">
                           <i class="fas fa-file fa-5x text-secondary mb-3"></i>
-                          <p>Allegato: <%= @current_expense.attachment.filename %></p>
-                          <%= link_to "Scarica File", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
+                          <p><%= t('activerecord.attributes.expense.attachment') %>: <%= @current_expense.attachment.filename %></p>
+                          <%= link_to t('common.actions.download') + " File", @current_expense.attachment, target: "_blank", class: "btn btn-outline-primary" %>
                         </div>
                       <% end %>
                     <% else %>
                       <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle"></i>
-                        Nessun allegato presente per questo giustificativo.
+                        <%= t('reimboursements.approve_expenses.no_attachment') %>
                       </div>
                     <% end %>
                   </div>
@@ -240,28 +240,28 @@
                 <%= form_with url: approve_expense_reimboursement_path(@reimboursement), method: :patch, local: true, class: "d-inline" do |form| %>
                   <%= form.hidden_field :expense_id, value: @current_expense.id %>
                   <%= form.hidden_field :next_index, value: @current_expense_index + 1 %>
-                  <%= form.submit "Approva", class: "btn btn-success" %>
+                  <%= form.submit t('reimboursements.approve_expenses.approve'), class: "btn btn-success" %>
                 <% end %>
                 
                 <!-- Bottone Rifiuta con modal -->
                 <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#denyModal">
-                  Rifiuta
+                  <%= t('reimboursements.approve_expenses.deny') %>
                 </button>
               <% else %>
-                <span class="text-muted">Giustificativo già revisionato</span>
+                <span class="text-muted"><%= t('reimboursements.approve_expenses.already_reviewed') %></span>
               <% end %>
             </div>
             
             <div class="col-md-4 text-end">
               <!-- Navigazione -->
               <% if @current_expense_index + 1 < @total_expenses %>
-                <%= link_to "Avanti", approve_expenses_reimboursement_path(@reimboursement, expense_index: @current_expense_index + 1), class: "btn btn-primary" %>
+                <%= link_to t('reimboursements.approve_expenses.next'), approve_expenses_reimboursement_path(@reimboursement, expense_index: @current_expense_index + 1), class: "btn btn-primary" %>
               <% else %>
-                <%= link_to "Fine", reimboursement_path(@reimboursement), class: "btn btn-outline-secondary" %>
+                <%= link_to t('reimboursements.approve_expenses.finish'), reimboursement_path(@reimboursement), class: "btn btn-outline-secondary" %>
               <% end %>
               
               <% if @current_expense_index > 0 %>
-                <%= link_to "Indietro", approve_expenses_reimboursement_path(@reimboursement, expense_index: @current_expense_index - 1), class: "btn btn-outline-secondary ms-1" %>
+                <%= link_to t('common.actions.back'), approve_expenses_reimboursement_path(@reimboursement, expense_index: @current_expense_index - 1), class: "btn btn-outline-secondary ms-1" %>
               <% end %>
             </div>
           </div>
@@ -277,7 +277,7 @@
     <div class="modal-content">
       <%= form_with url: deny_expense_reimboursement_path(@reimboursement), method: :patch, local: true do |form| %>
         <div class="modal-header">
-          <h5 class="modal-title" id="denyModalLabel">Rifiuta Giustificativo</h5>
+          <h5 class="modal-title" id="denyModalLabel"><%= t('reimboursements.approve_expenses.deny_modal_title') %></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -285,26 +285,26 @@
           <%= form.hidden_field :next_index, value: @current_expense_index + 1 %>
           
           <div class="mb-3">
-            <%= form.label :note_content, "Motivo del rifiuto (opzionale)", class: "form-label" %>
-            <%= form.text_area :note_content, rows: 3, class: "form-control", placeholder: "Spiega il motivo del rifiuto..." %>
+            <%= form.label :note_content, t('reimboursements.approve_expenses.deny_reason_label'), class: "form-label" %>
+            <%= form.text_area :note_content, rows: 3, class: "form-control", placeholder: t('reimboursements.approve_expenses.deny_reason_placeholder') %>
           </div>
           
           <div class="mb-3">
-            <%= form.label :reimboursement_status, "Cambia stato del rimborso", class: "form-label" %>
+            <%= form.label :reimboursement_status, t('reimboursements.approve_expenses.change_status_label'), class: "form-label" %>
             <%= form.select :reimboursement_status, 
                           options_for_select([
-                            ['Mantieni stato attuale', ''],
-                            ['In Attesa', 'waiting'],
-                            ['Rifiutato', 'denied']
+                            [t('reimboursements.approve_expenses.keep_current_status'), ''],
+                            [t('reimboursements.approve_expenses.set_waiting'), 'waiting'],
+                            [t('reimboursements.approve_expenses.set_denied'), 'denied']
                           ]), 
                           { selected: 'waiting' },
                           { class: "form-select" } %>
-            <small class="form-text text-muted">Di default il rimborso viene messo "In Attesa"</small>
+            <small class="form-text text-muted"><%= t('reimboursements.approve_expenses.deny_default_hint') %></small>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-          <%= form.submit "Rifiuta Giustificativo", class: "btn btn-danger" %>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= t('common.actions.cancel') %></button>
+          <%= form.submit t('reimboursements.approve_expenses.deny_submit'), class: "btn btn-danger" %>
         </div>
       <% end %>
     </div>

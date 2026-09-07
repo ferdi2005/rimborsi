@@ -24,7 +24,7 @@
             </div>
 
             <div class="col-md-6">
-              <%= f.label :password_confirmation, "Conferma Password", class: "form-label" %>
+              <%= f.label :password_confirmation, t('devise.registrations.edit.password_confirmation_label'), class: "form-label" %>
               <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", required: true %>
             </div>
 

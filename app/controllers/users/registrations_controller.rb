@@ -1,7 +1,7 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   # Disabilita la funzionalità di cancellazione dell'account per gli utenti
   def destroy
-    redirect_to edit_user_registration_path, alert: "La cancellazione dell'account non è consentita. Contatta l'amministrazione per assistenza."
+    redirect_to edit_user_registration_path, alert: t("controllers.users.registrations.destroy_forbidden")
   end
 
   protected

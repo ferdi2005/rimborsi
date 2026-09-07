@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <h1>New Role</h1>
+  <h1><%= t('roles.new.title') %></h1>
   <%= render 'form', role: @role %>
-  <%= link_to 'Back', roles_path, class: "btn btn-secondary" %>
+  <%= link_to t('common.actions.back'), roles_path, class: "btn btn-secondary" %>
 </div>

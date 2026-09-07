@@ -16,7 +16,7 @@ class Admin::PaymentsController < ApplicationController
   # GET /admin/payments/1/edit
   def edit
     unless @payment.can_be_modified?
-      redirect_to [ :admin, @payment ], alert: "Non puoi modificare un pagamento già eseguito."
+      redirect_to [ :admin, @payment ], alert: t("controllers.admin.payments.cannot_modify_paid")
       return
     end
     @available_reimboursements = Reimboursement.payable.where(payment_id: nil).includes(:user, :bank_account)
@@ -36,7 +36,7 @@ class Admin::PaymentsController < ApplicationController
       if @payment.save
         # Associa i rimborsi selezionati al pagamento
         update_payment_reimboursements(@payment, payment_params[:reimboursement_ids])
-        format.html { redirect_to [ :admin, @payment ], notice: "Pagamento creato con successo." }
+        format.html { redirect_to [ :admin, @payment ], notice: t("controllers.admin.payments.create_success") }
         format.json { render :show, status: :created, location: [ :admin, @payment ] }
       else
         @available_reimboursements = Reimboursement.payable.where(payment_id: nil).includes(:user, :bank_account)
@@ -50,7 +50,7 @@ class Admin::PaymentsController < ApplicationController
   def update
     unless @payment.can_be_modified?
       respond_to do |format|
-        format.html { redirect_to [ :admin, @payment ], alert: "Non puoi modificare un pagamento già eseguito." }
+        format.html { redirect_to [ :admin, @payment ], alert: t("controllers.admin.payments.cannot_modify_paid") }
         format.json { render json: { error: "Non autorizzato" }, status: :forbidden }
       end
       return
@@ -60,7 +60,7 @@ class Admin::PaymentsController < ApplicationController
       if @payment.update(payment_params.except(:reimboursement_ids))
         # Aggiorna i rimborsi associati al pagamento
         update_payment_reimboursements(@payment, payment_params[:reimboursement_ids])
-        format.html { redirect_to [ :admin, @payment ], notice: "Pagamento aggiornato con successo." }
+        format.html { redirect_to [ :admin, @payment ], notice: t("controllers.admin.payments.update_success") }
         format.json { render :show, status: :ok, location: [ :admin, @payment ] }
       else
         @available_reimboursements = Reimboursement.payable.where(payment_id: nil).includes(:user, :bank_account)
@@ -75,7 +75,7 @@ class Admin::PaymentsController < ApplicationController
     @payment.destroy!
 
     respond_to do |format|
-      format.html { redirect_to admin_payments_path, status: :see_other, notice: "Pagamento eliminato con successo." }
+      format.html { redirect_to admin_payments_path, status: :see_other, notice: t("controllers.admin.payments.delete_success") }
       format.json { head :no_content }
     end
   end
@@ -94,9 +94,9 @@ class Admin::PaymentsController < ApplicationController
   def mark_as_paid
     begin
       @payment.mark_as_paid!(params[:payment_date]&.to_date || Date.current)
-      redirect_to [ :admin, @payment ], notice: "Pagamento contrassegnato come eseguito."
+      redirect_to [ :admin, @payment ], notice: t("controllers.admin.payments.marked_as_paid")
     rescue => e
-      redirect_to [ :admin, @payment ], alert: "Errore: #{e.message}"
+      redirect_to [ :admin, @payment ], alert: t("controllers.admin.payments.error", message: e.message)
     end
   end
 
@@ -104,24 +104,24 @@ class Admin::PaymentsController < ApplicationController
   def revert_to_created
     begin
       @payment.revert_to_created!
-      redirect_to [ :admin, @payment ], notice: "Pagamento riportato allo stato 'Creato'."
+      redirect_to [ :admin, @payment ], notice: t("controllers.admin.payments.reverted_to_created")
     rescue => e
-      redirect_to [ :admin, @payment ], alert: "Errore: #{e.message}"
+      redirect_to [ :admin, @payment ], alert: t("controllers.admin.payments.error", message: e.message)
     end
   end
 
   # PATCH /payments/1/retry
   def retry
     unless @payment.can_be_retried?
-      redirect_to [ :admin, @payment ], alert: "Il pagamento non può essere ritentato."
+      redirect_to [ :admin, @payment ], alert: t("controllers.admin.payments.cannot_retry")
       return
     end
 
     begin
       @payment.retry_processing!
-      redirect_to [ :admin, @payment ], notice: "Processamento riavviato. Il pagamento verrà processato nuovamente."
+      redirect_to [ :admin, @payment ], notice: t("controllers.admin.payments.retry_started")
     rescue => e
-      redirect_to [ :admin, @payment ], alert: "Errore durante il retry: #{e.message}"
+      redirect_to [ :admin, @payment ], alert: t("controllers.admin.payments.retry_error", message: e.message)
     end
   end
 

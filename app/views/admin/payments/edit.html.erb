@@ -1,8 +1,8 @@
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1><i class="fas fa-edit me-2"></i>Modifica Pagamento #<%= @payment.id %></h1>
-    <%= link_to @payment, class: "btn btn-secondary" do %>
-      <i class="fas fa-arrow-left me-2"></i>Torna al Pagamento
+    <h1><i class="fas fa-edit me-2"></i><%= t('admin.payments.edit.title') %> #<%= @payment.id %></h1>
+    <%= link_to [ :admin, @payment ], class: "btn btn-secondary" do %>
+      <i class="fas fa-arrow-left me-2"></i><%= t('common.actions.back') %>
     <% end %>
   </div>
 
@@ -10,12 +10,12 @@
     <div class="col-md-8">
       <%= form_with(model: [:admin, @payment], local: true, class: "card") do |form| %>
         <div class="card-header">
-          <h5><i class="fas fa-file-invoice me-2"></i>Dettagli Pagamento</h5>
+          <h5><i class="fas fa-file-invoice me-2"></i><%= t('admin.payments.edit.details_header') %></h5>
         </div>
         <div class="card-body">
           <% if @payment.errors.any? %>
             <div class="alert alert-danger">
-              <h6><i class="fas fa-exclamation-triangle me-2"></i><%= pluralize(@payment.errors.count, "errore ha", "errori hanno") %> impedito il salvataggio:</h6>
+              <h6><i class="fas fa-exclamation-triangle me-2"></i><%= t('errors.messages.not_saved', count: @payment.errors.count) %></h6>
               <ul class="mb-0">
                 <% @payment.errors.each do |error| %>
                   <li><%= error.full_message %></li>
@@ -25,32 +25,32 @@
           <% end %>
 
           <div class="mb-3">
-            <%= form.label :status, "Stato", class: "form-label" %>
+            <%= form.label :status, t('admin.payments.edit.status_label'), class: "form-label" %>
             <%= form.select :status, 
                           options_for_select([
-                            ['Creato', 'created']
+                            [t('enums.payment.status.created'), 'created']
                           ], @payment.status), 
                           {}, 
                           { class: "form-select", readonly: true } %>
             <small class="form-text text-muted">
-              Lo stato può essere modificato solo tramite le azioni specifiche nella pagina di dettaglio
+              <%= t('admin.payments.edit.status_help') %>
             </small>
           </div>
 
           <div class="mb-3">
-            <label class="form-label"><i class="fas fa-list me-2"></i>Rimborsi Inclusi</label>
+            <label class="form-label"><i class="fas fa-list me-2"></i><%= t('admin.payments.edit.included_label') %></label>
             
             <!-- Rimborsi già inclusi nel pagamento -->
             <% if @payment.reimboursements.any? %>
               <div class="alert alert-info">
-                <h6><i class="fas fa-link me-2"></i>Rimborsi Attualmente Inclusi:</h6>
+                <h6><i class="fas fa-link me-2"></i><%= t('admin.payments.edit.currently_included') %></h6>
                 <% @payment.reimboursements.each do |reimboursement| %>
                   <div class="form-check mb-2">
                     <%= check_box_tag "payment[reimboursement_ids][]", reimboursement.id, 
                                       true,
                                       { class: "form-check-input", id: "current_reimboursement_#{reimboursement.id}" } %>
                     <%= label_tag "current_reimboursement_#{reimboursement.id}", class: "form-check-label" do %>
-                      <strong>Rimborso #<%= reimboursement.id %></strong> - 
+                      <strong><%= t('admin.payments.new.reimbursement_number', id: reimboursement.id) %></strong> - 
                       <%= reimboursement.user.name %> <%= reimboursement.user.surname %>
                       <br>
                       <small class="text-muted">
@@ -66,7 +66,7 @@
 
             <!-- Rimborsi disponibili da aggiungere -->
             <% if @available_reimboursements.any? %>
-              <h6><i class="fas fa-plus-circle me-2"></i>Rimborsi Disponibili da Aggiungere:</h6>
+              <h6><i class="fas fa-plus-circle me-2"></i><%= t('admin.payments.edit.available_label') %></h6>
               <div class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
                 <% @available_reimboursements.each do |reimboursement| %>
                   <div class="form-check mb-2">
@@ -74,7 +74,7 @@
                                       false,
                                       { class: "form-check-input", id: "available_reimboursement_#{reimboursement.id}" } %>
                     <%= label_tag "available_reimboursement_#{reimboursement.id}", class: "form-check-label" do %>
-                      <strong>Rimborso #<%= reimboursement.id %></strong> - 
+                      <strong><%= t('admin.payments.new.reimbursement_number', id: reimboursement.id) %></strong> - 
                       <%= reimboursement.user.name %> <%= reimboursement.user.surname %>
                       <br>
                       <small class="text-muted">
@@ -87,22 +87,22 @@
                 <% end %>
               </div>
               <small class="form-text text-muted">
-                Puoi aggiungere o rimuovere rimborsi approvati da questo pagamento finché non è marcato come "Pagato".
+                <%= t('admin.payments.edit.available_help') %>
               </small>
             <% else %>
               <% unless @payment.reimboursements.any? %>
                 <div class="alert alert-warning">
                   <i class="fas fa-exclamation-triangle me-2"></i>
-                  <strong>Nessun rimborso disponibile</strong><br>
-                  Non ci sono altri rimborsi approvati con conti bancari disponibili da aggiungere.
+                  <strong><%= t('admin.payments.edit.no_available_title') %></strong><br>
+                  <%= t('admin.payments.edit.no_available_text') %>
                 </div>
               <% end %>
             <% end %>
           </div>
         </div>
         <div class="card-footer">
-          <%= form.submit "Aggiorna Pagamento", class: "btn btn-primary" %>
-          <%= link_to "Annulla", @payment, class: "btn btn-secondary" %>
+          <%= form.submit t('admin.payments.edit.update_btn'), class: "btn btn-primary" %>
+          <%= link_to t('common.actions.cancel'), [ :admin, @payment ], class: "btn btn-secondary" %>
         </div>
       <% end %>
     </div>
@@ -110,29 +110,29 @@
     <div class="col-md-4">
       <div class="card">
         <div class="card-header">
-          <h6><i class="fas fa-info-circle me-2"></i>Informazioni Pagamento</h6>
+          <h6><i class="fas fa-info-circle me-2"></i><%= t('admin.payments.new.info_header') %></h6>
         </div>
         <div class="card-body">
           <p class="small">
-            <strong>ID Pagamento:</strong> #<%= @payment.id %><br>
-            <strong>Stato:</strong> 
-            <span class="badge bg-<%= @payment.created? ? 'warning' : 'success' %>">
-              <%= @payment.status.humanize %>
+            <strong><%= t('admin.payments.show.id_label') %></strong> #<%= @payment.id %><br>
+            <strong><%= t('admin.payments.show.status_label') %></strong> 
+            <span class="badge bg-<%= @payment.status_created? ? 'warning' : 'success' %>">
+              <%= @payment.status_name %>
             </span><br>
-            <strong>Creato il:</strong> <%= @payment.created_at.strftime("%d/%m/%Y alle %H:%M") %><br>
+            <strong><%= t('admin.payments.show.created_label') %></strong> <%= @payment.created_at.strftime("%d/%m/%Y #{t('common.at_time')} %H:%M") %><br>
             <% if @payment.payment_date.present? %>
-              <strong>Data Pagamento:</strong> <%= @payment.payment_date.strftime("%d/%m/%Y") %><br>
+              <strong><%= t('admin.payments.show.payment_date_label') %></strong> <%= @payment.payment_date.strftime("%d/%m/%Y") %><br>
             <% end %>
           </p>
           
           <hr>
           
           <p class="small">
-            <strong>Totale Attuale:</strong><br>
+            <strong><%= t('admin.payments.edit.currently_included') %></strong><br>
             €<%= number_with_precision(@payment.total_amount, precision: 2) %>
             <% if @payment.reimboursements.any? %>
               <br><small class="text-muted">
-                (<%= @payment.reimboursements.count %> rimborsi)
+                (<%= pluralize(@payment.reimboursements.count, t('admin.payments.index.reimbursement_singular'), t('admin.payments.index.reimbursement_plural')) %>)
               </small>
             <% end %>
           </p>
@@ -140,17 +140,16 @@
           <% if @available_reimboursements.any? %>
             <hr>
             <p class="small">
-              <strong>Disponibili da Aggiungere:</strong><br>
-              <%= @available_reimboursements.count %> rimborsi per €<%= number_with_precision(@available_reimboursements.sum(&:total_amount), precision: 2) %>
+              <strong><%= t('admin.payments.edit.available_label') %></strong><br>
+              <%= @available_reimboursements.count %> <%= t('admin.payments.index.reimbursement_plural') %> <%= t('admin.payments.new.for_a_total') %> €<%= number_with_precision(@available_reimboursements.sum(&:total_amount), precision: 2) %>
             </p>
           <% end %>
           
           <hr>
           
           <p class="small">
-            <strong>Nota:</strong><br>
-            Puoi modificare i rimborsi inclusi solo finché il pagamento è nello stato "Creato". 
-            Una volta marcato come "Pagato", non sarà più modificabile.
+            <strong><%= t('common.labels.notes') %>:</strong><br>
+            <%= t('admin.payments.edit.available_help') %>
           </p>
         </div>
       </div>
@@ -185,14 +184,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     const difference = total - currentTotal;
-    let message = `<i class="fas fa-calculator me-2"></i><strong>Nuovo Totale:</strong> €${total.toFixed(2)}`;
+    let message = `<i class="fas fa-calculator me-2"></i><strong><%= j t('admin.payments.new.selected_total') %></strong> €${total.toFixed(2)}`;
     
     if (difference !== 0) {
       const diffClass = difference > 0 ? 'text-success' : 'text-danger';
       const diffIcon = difference > 0 ? 'fas fa-plus' : 'fas fa-minus';
       message += `<br><small class="${diffClass}">
         <i class="${diffIcon} me-1"></i>
-        ${difference > 0 ? '+' : ''}€${difference.toFixed(2)} rispetto al totale attuale
+        ${difference > 0 ? '+' : ''}€${difference.toFixed(2)}
       </small>`;
     }
     

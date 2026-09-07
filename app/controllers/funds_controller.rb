@@ -26,7 +26,7 @@ class FundsController < ApplicationController
 
     respond_to do |format|
       if @fund.save
-        format.html { redirect_to @fund, notice: "Fondo creato con successo." }
+        format.html { redirect_to @fund, notice: t("controllers.funds.create_success") }
         format.json { render :show, status: :created, location: @fund }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -39,7 +39,7 @@ class FundsController < ApplicationController
   def update
     respond_to do |format|
       if @fund.update(fund_params)
-        format.html { redirect_to @fund, notice: "Fondo aggiornato con successo." }
+        format.html { redirect_to @fund, notice: t("controllers.funds.update_success") }
         format.json { render :show, status: :ok, location: @fund }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -53,7 +53,7 @@ class FundsController < ApplicationController
     @fund.destroy!
 
     respond_to do |format|
-      format.html { redirect_to funds_path, status: :see_other, notice: "Fondo eliminato con successo." }
+      format.html { redirect_to funds_path, status: :see_other, notice: t("controllers.funds.delete_success") }
       format.json { head :no_content }
     end
   end

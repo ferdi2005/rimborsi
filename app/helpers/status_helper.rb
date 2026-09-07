@@ -15,18 +15,21 @@ module StatusHelper
   private
 
   def reimboursement_status_badge(status)
-    config = reimboursement_status_config[status] || default_status_config
-    render_status_badge(config[:text], config[:class], config[:icon])
+    config = reimboursement_status_config[status.to_s] || default_status_config
+    text = I18n.t("enums.reimboursement.status.#{status}", default: config[:text])
+    render_status_badge(text, config[:class], config[:icon])
   end
 
   def expense_status_badge(status)
-    config = expense_status_config[status] || default_status_config
-    render_status_badge(config[:text], config[:class], config[:icon])
+    config = expense_status_config[status.to_s] || default_status_config
+    text = I18n.t("enums.expense.status.#{status}", default: config[:text])
+    render_status_badge(text, config[:class], config[:icon])
   end
 
   def payment_status_badge(status)
-    config = payment_status_config[status] || default_status_config
-    render_status_badge(config[:text], config[:class], config[:icon])
+    config = payment_status_config[status.to_s] || default_status_config
+    text = I18n.t("enums.payment.status.#{status}", default: config[:text])
+    render_status_badge(text, config[:class], config[:icon])
   end
 
   def render_status_badge(text, css_class, icon)

@@ -326,7 +326,7 @@ module PdfGeneratable
                   margin: [ 0, 0, 20 ])
 
     # Informazioni utente
-    composer.text("Richiedente: #{user.name} #{user.surname} (#{role_in_italian})", font_size: 14)
+    composer.text("Richiedente: #{user.name} #{user.surname} (#{role_name})", font_size: 14)
     composer.text("Email: #{user.email}", font_size: 12)
     composer.text("Data creazione: #{created_at.strftime('%d/%m/%Y')}", font_size: 12)
     composer.text("Totale: € #{number_with_precision(total_amount, precision: 2)}",
@@ -378,7 +378,7 @@ module PdfGeneratable
         create_regular_expense_details(composer, expense)
       end
 
-      composer.text("Stato: #{expense.status_in_italian}", font_size: 10,
+      composer.text("#{I18n.t('activerecord.attributes.expense.status')}: #{expense.status_name}", font_size: 10,
                     font: "Helvetica bold",
                     margin: [ 0, 0, 10 ])
 

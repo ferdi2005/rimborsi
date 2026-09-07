@@ -1,30 +1,28 @@
 <div class="container-fluid">
   <p id="notice"><%= notice %></p>
-  <h1>Notes</h1>
+  <h1><%= t('notes.index.title') %></h1>
   <table class="table">
     <thead>
       <tr>
-                  <th>State</th>
-                  <th>Reimboursment</th>
-                  <th>User</th>
-                  <th>Text</th>
-                <th colspan="3"></th>
+        <th><%= t('activerecord.attributes.note.reimboursement') %></th>
+        <th><%= t('activerecord.attributes.note.user') %></th>
+        <th><%= t('activerecord.attributes.note.text') %></th>
+        <th colspan="3"></th>
       </tr>
     </thead>
     <tbody>
       <% @notes.each do |note| %>
       <tr>
-                  <td><%= note.state_id %></td>
-                  <td><%= note.reimboursement_id %></td>
-                  <td><%= note.user_id %></td>
-                  <td><%= note.text %></td>
-                <td><%= link_to 'Show', note %></td>
-        <td><%= link_to 'Edit', edit_note_path(note) %></td>
-        <td><%= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= note.reimboursement_id %></td>
+        <td><%= note.user&.name %></td>
+        <td><%= note.text %></td>
+        <td><%= link_to t('common.actions.show'), note %></td>
+        <td><%= link_to t('common.actions.edit'), edit_note_path(note) %></td>
+        <td><%= link_to t('common.actions.destroy'), note, method: :delete, data: { confirm: t('common.messages.confirm_delete') } %></td>
       </tr>
       <% end %>
     </tbody>
   </table>
   <br>
-  <%= link_to 'New Note', new_note_path, class: "btn btn-primary" %>
+  <%= link_to t('notes.index.new'), new_note_path, class: "btn btn-primary" %>
 </div>

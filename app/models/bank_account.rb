@@ -5,7 +5,7 @@ class BankAccount < ApplicationRecord
   validates :iban, presence: true
   validates :owner, presence: true, length: { minimum: 2, maximum: 100 }
   validates :bank_name, presence: true, length: { minimum: 2, maximum: 100 }, allow_blank: true
-  validates :bic_swift, length: { minimum: 8, maximum: 11 }, allow_blank: true, format: { with: /\A[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?\z/, message: "deve essere un codice BIC/SWIFT valido" }
+  validates :bic_swift, length: { minimum: 8, maximum: 11 }, allow_blank: true, format: { with: /\A[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?\z/ }
 
   # Callback per normalizzare l'IBAN e BIC/SWIFT
   before_validation :normalize_iban_and_bic
@@ -39,12 +39,12 @@ class BankAccount < ApplicationRecord
     begin
       # Usa iban-tools per validare l'IBAN
       unless IBANTools::IBAN.valid?(iban)
-        errors.add(:iban, "non è un IBAN valido")
+        errors.add(:iban, :invalid)
         nil
       end
 
     rescue StandardError
-      errors.add(:iban, "formato non valido")
+      errors.add(:iban, :invalid)
     end
   end
 
@@ -56,7 +56,7 @@ class BankAccount < ApplicationRecord
 
     # Se il conto non è italiano (IT) e non ha BIC/SWIFT, aggiungi errore
     if country_code != "IT" && bic_swift.blank?
-      errors.add(:bic_swift, "è obbligatorio per conti bancari non italiani")
+      errors.add(:bic_swift, :required_for_non_italian)
     end
   end
 

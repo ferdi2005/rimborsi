@@ -1,325 +1,1029 @@
+---
 it:
+  errors:
+    messages:
+      not_saved:
+        one: 'Si è verificato 1 errore che ha impedito il salvataggio:'
+        other: 'Si sono verificati %{count} errori che hanno impedito il salvataggio:'
   activerecord:
     models:
-      expense: "Spesa"
-      reimboursement: "Rimborso"
-      user: "Utente"
-      vehicle: "Veicolo"
-      bank_account: "conto bancario"
-      paypal_account: "Account PayPal"
-      project: "Progetto"
-      role: "Ruolo"
-      note: "Nota"
-    
+      expense: Spesa
+      reimboursement: Rimborso
+      user: Utente
+      vehicle: Veicolo
+      bank_account: conto bancario
+      paypal_account: Account PayPal
+      project: Progetto
+      role: Ruolo
+      note: Nota
     attributes:
       expense:
-        amount: "Importo"
-        requested_amount: "Importo richiesto"
-        purpose: "Descrizione"
-        date: "Data"
-        attachment: "Allegato"
-        car: "Spesa auto"
-        calculation_date: "Data di calcolo"
-        departure: "Città di partenza"
-        arrival: "Città di arrivo"
-        distance: "Distanza (km)"
-        vehicle: "Veicolo"
-        vehicle_id: "Veicolo"
-        quota_capitale: "Quota capitale"
-        carburante: "Quota carburante"
-        pneumatici: "Pneumatici"
-        manutenzione: "Manutenzione"
-        return_trip: "Andata e ritorno"
-        status: "Stato"
-        project: "Progetto"
-        project_id: "Progetto"
-        reimboursement: "Rimborso"
-        reimboursement_id: "Rimborso"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-        
+        amount: Importo
+        requested_amount: Importo richiesto
+        purpose: Descrizione
+        date: Data
+        attachment: Allegato
+        car: Spesa auto
+        calculation_date: Data di calcolo
+        departure: Città di partenza
+        arrival: Città di arrivo
+        distance: Distanza (km)
+        vehicle: Veicolo
+        vehicle_id: Veicolo
+        quota_capitale: Quota capitale
+        carburante: Quota carburante
+        pneumatici: Pneumatici
+        manutenzione: Manutenzione
+        return_trip: Andata e ritorno
+        status: Stato
+        project: Progetto
+        project_id: Progetto
+        reimboursement: Rimborso
+        reimboursement_id: Rimborso
       reimboursement:
-        status: "Stato"
-        role: "Ruolo"
-        role_other: "Altro (breve)"
-        user: "Utente"
-        user_id: "Utente"
-        bank_account: "conto bancario"
-        bank_account_id: "conto bancario"
-        paypal_account: "Account PayPal"
-        paypal_account_id: "Account PayPal"
-        total_amount: "Importo totale"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-      
+        status: Stato
+        role: Ruolo
+        role_other: Altro (breve)
+        user: Utente
+        user_id: Utente
+        bank_account: conto bancario
+        bank_account_id: conto bancario
+        paypal_account: Account PayPal
+        paypal_account_id: Account PayPal
+        total_amount: Importo totale
       user:
-        name: "Nome"
-        surname: "Cognome"
-        email: "Email"
-        admin: "Amministratore"
-        default_bank_account: "conto bancario predefinito"
-        default_paypal_account: "Account PayPal predefinito"
-        default_vehicle: "Veicolo predefinito"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-      
+        name: Nome
+        surname: Cognome
+        email: Email
+        admin: Amministratore
+        default_bank_account: conto bancario predefinito
+        default_paypal_account: Account PayPal predefinito
+        default_vehicle: Veicolo predefinito
       vehicle:
-        brand: "Marca"
-        model: "Modello"
-        license_plate: "Targa"
-        user: "Proprietario"
-        user_id: "Proprietario"
-        default: "Predefinito"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-      
+        brand: Marca
+        model: Modello
+        license_plate: Targa
+        user: Proprietario
+        user_id: Proprietario
+        default: Predefinito
       bank_account:
-        iban: "IBAN"
-        owner: "Intestatario"
-        bank_name: "Nome banca"
-        user: "Utente"
-        user_id: "Utente"
-        default: "Predefinito"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-      
+        iban: IBAN
+        owner: Intestatario
+        bank_name: Nome banca
+        user: Utente
+        user_id: Utente
+        default: Predefinito
       paypal_account:
-        email: "Email PayPal"
-        user: "Utente"
-        user_id: "Utente"
-        default: "Predefinito"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-      
+        email: Email PayPal
+        user: Utente
+        user_id: Utente
+        default: Predefinito
       project:
-        name: "Nome progetto"
-        description: "Descrizione"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-      
+        name: Nome progetto
+        description: Descrizione
       role:
-        name: "Nome ruolo"
-        description: "Descrizione"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-      
+        name: Nome ruolo
+        description: Descrizione
       note:
-        text: "Testo"
-        reimboursement: "Rimborso"
-        reimboursement_id: "Rimborso"
-        user: "Utente"
-        user_id: "Utente"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-
+        text: Testo
+        reimboursement: Rimborso
+        reimboursement_id: Rimborso
+        user: Utente
+        user_id: Utente
+      created_at: Creato il
+      updated_at: Aggiornato il
     errors:
       models:
         expense:
           attributes:
-            amount:
-              blank: "è obbligatorio"
-              not_a_number: "deve essere un numero"
-              greater_than: "deve essere maggiore di %{count}"
-            purpose:
-              blank: "è obbligatoria"
-            date:
-              blank: "è obbligatoria"
             attachment:
-              blank: "è obbligatorio per le spese non auto"
+              blank: è obbligatorio per le spese non auto
             calculation_date:
-              blank: "è obbligatoria per le spese auto"
+              blank: è obbligatoria per le spese auto
             departure:
-              blank: "è obbligatoria per le spese auto"
+              blank: è obbligatoria per le spese auto
             arrival:
-              blank: "è obbligatoria per le spese auto"
+              blank: è obbligatoria per le spese auto
             distance:
-              blank: "è obbligatoria per le spese auto"
-              greater_than: "deve essere maggiore di 0"
-              not_a_number: "deve essere un numero valido"
+              blank: è obbligatoria per le spese auto
+              greater_than: deve essere maggiore di 0
+              not_a_number: deve essere un numero valido
             vehicle:
-              blank: "è obbligatorio per le spese auto"
+              blank: è obbligatorio per le spese auto
             quota_capitale:
-              blank: "è obbligatoria per le spese auto"
-              greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
-              not_a_number: "deve essere un numero valido"
+              blank: è obbligatoria per le spese auto
+              greater_than_or_equal_to: deve essere maggiore o uguale a 0
+              not_a_number: deve essere un numero valido
             carburante:
-              blank: "è obbligatorio per le spese auto"
-              greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
-              not_a_number: "deve essere un numero valido"
+              blank: è obbligatorio per le spese auto
+              greater_than_or_equal_to: deve essere maggiore o uguale a 0
+              not_a_number: deve essere un numero valido
             pneumatici:
-              blank: "sono obbligatori per le spese auto"
-              greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
-              not_a_number: "deve essere un numero valido"
+              blank: sono obbligatori per le spese auto
+              greater_than_or_equal_to: deve essere maggiore o uguale a 0
+              not_a_number: deve essere un numero valido
             manutenzione:
-              blank: "è obbligatoria per le spese auto"
-              greater_than_or_equal_to: "deve essere maggiore o uguale a 0"
-              not_a_number: "deve essere un numero valido"
-        
-        reimboursement:
-          attributes:
-            user:
-              blank: "è obbligatorio"
-            status:
-              blank: "è obbligatorio"
-            role_other:
-              blank_for_selected_role: "deve essere compilato per il ruolo selezionato"
-        
-        user:
-          attributes:
-            name:
-              blank: "è obbligatorio"
-            surname:
-              blank: "è obbligatorio"
-            email:
-              blank: "è obbligatoria"
-              invalid: "non è valida"
-          required: "è richiesto"
-        
-        vehicle:
-          attributes:
-            brand:
-              blank: "è obbligatoria"
-            model:
-              blank: "è obbligatorio"
-            license_plate:
-              blank: "è obbligatoria"
-        
+              blank: è obbligatoria per le spese auto
+              greater_than_or_equal_to: deve essere maggiore o uguale a 0
+              not_a_number: deve essere un numero valido
         bank_account:
           attributes:
-            iban:
-              blank: "è obbligatorio"
-              invalid: "non è valido"
-            owner:
-              blank: "è obbligatorio"
-        
-        paypal_account:
+            bic_swift:
+              required_for_non_italian: è obbligatorio per conti bancari non italiani
+        reimboursement:
           attributes:
-            email:
-              blank: "è obbligatoria"
-              invalid: "non è valida"
-
+            role_other:
+              blank_for_selected_role: deve essere compilato per il ruolo selezionato
+        user:
+          attributes:
+            locale:
+              inclusion: deve essere %{locales}
       messages:
-        blank: "non può essere vuoto"
-        not_a_number: "deve essere un numero"
-        greater_than: "deve essere maggiore di %{count}"
-        greater_than_or_equal_to: "deve essere maggiore o uguale a %{count}"
-        invalid: "non è valido"
-        taken: "è già in uso"
-        too_short: "è troppo corto (minimo %{count} caratteri)"
-        too_long: "è troppo lungo (massimo %{count} caratteri)"
-        inclusion: "non è incluso nella lista"
-        exclusion: "è riservato"
-        confirmation: "non corrisponde"
-        required: "è richiesto"
-
-  # Traduzioni per enum e status
+        blank: non può essere vuoto
+        not_a_number: deve essere un numero
+        greater_than: deve essere maggiore di %{count}
+        greater_than_or_equal_to: deve essere maggiore o uguale a %{count}
+        invalid: non è valido
+        taken: è già in uso
+        too_short: è troppo corto (minimo %{count} caratteri)
+        too_long: è troppo lungo (massimo %{count} caratteri)
+        inclusion: non è incluso nella lista
+        exclusion: è riservato
+        confirmation: non corrisponde
+        required: è richiesto
   enums:
     expense:
       status:
-        created: "Creata"
-        approved: "Approvata"
-        denied: "Negata"
-    
+        created: Creata
+        approved: Approvata
+        denied: Negata
     reimboursement:
       status:
-        created: "In attesa di elaborazione"
-        in_process: "In elaborazione"
-        approved: "Approvato"
-        paid: "Pagato"
-        waiting: "In attesa dell'utente"
+        created: Creato
+        pending: In attesa
+        approved: Approvato
+        paid: Pagato
+        denied: Negato
+        in_process: In elaborazione
+        waiting: In attesa dell'utente
       role:
-        volunteer: "Volontario"
-        employee_collaborator: "Dipendente/Collaboratore"
-        speaker_presenter: "Relatore/Presentatore"
-        scholarship_holder: "Borsista"
-        event_participant: "Partecipatore evento"
-        event_co_organizer: "Co-organizzatore evento (indicare Nome associazione, sede e codice fiscale, saranno inseriti nel campo altro utilizzato)"
-        other: "Altro"
-
-  # Traduzioni generali dell'interfaccia
+        volunteer: Volontario
+        employee_collaborator: Dipendente/collaboratore
+        speaker_presenter: Relatore/presentatore
+        scholarship_holder: Borsista
+        event_participant: Partecipante evento
+        event_co_organizer: Co-organizzatore evento (indicare nome associazione, sede e codice fiscale nel campo altro)
+        other: Altro
+    payment:
+      status:
+        created: In attesa di elaborazione
+        paid: Pagato
+        error: Errore
   common:
     actions:
-      create: "Crea"
-      edit: "Modifica"
-      update: "Aggiorna"
-      destroy: "Elimina"
-      show: "Mostra"
-      back: "Indietro"
-      cancel: "Annulla"
-      save: "Salva"
-      submit: "Invia"
-      confirm: "Conferma"
-      delete: "Elimina"
-      add: "Aggiungi"
-      remove: "Rimuovi"
-      search: "Cerca"
-      filter: "Filtra"
-      export: "Esporta"
-      import: "Importa"
-      download: "Scarica"
-      upload: "Carica"
-      
+      create: Crea
+      edit: Modifica
+      update: Aggiorna
+      destroy: Elimina
+      delete: Elimina
+      show: Mostra
+      view: Visualizza
+      back: Indietro
+      cancel: Annulla
+      save: Salva
+      submit: Invia
+      confirm: Conferma
+      add: Aggiungi
+      remove: Rimuovi
+      search: Cerca
+      filter: Filtra
+      export: Esporta
+      import: Importa
+      download: Scarica
+      upload: Carica
     labels:
-      required: "obbligatorio"
-      optional: "opzionale"
-      yes: "Sì"
-      no: "No"
-      total: "Totale"
-      subtotal: "Subtotale"
-      date: "Data"
-      time: "Ora"
-      description: "Descrizione"
-      notes: "Note"
-      status: "Stato"
-      type: "Tipo"
-      amount: "Importo"
+      required: obbligatorio
+      optional: opzionale
+      true: Sì
+      false: 'No'
+      total: Totale
+      subtotal: Subtotale
+      date: Data
+      time: Ora
+      description: Descrizione
+      notes: Note
+      status: Stato
+      type: Tipo
+      amount: Importo
       currency: "€"
-      
+      actions: Azioni
+      distance: km
+      'yes': Sì
+      'no': 'No'
     messages:
-      confirm_delete: "Sei sicuro di voler eliminare questo elemento?"
-      success_create: "Elemento creato con successo"
-      success_update: "Elemento aggiornato con successo"
-      success_delete: "Elemento eliminato con successo"
-      error_create: "Errore nella creazione dell'elemento"
-      error_update: "Errore nell'aggiornamento dell'elemento"
-      error_delete: "Errore nell'eliminazione dell'elemento"
-      no_data: "Nessun dato disponibile"
-      loading: "Caricamento..."
-
-  # Traduzioni specifiche per l'applicazione rimborsi
+      confirm_delete: Sei sicuro di voler eliminare questo elemento?
+      success_create: Elemento creato con successo
+      success_update: Elemento aggiornato con successo
+      success_delete: Elemento eliminato con successo
+      error_create: Errore nella creazione dell'elemento
+      error_update: Errore nell'aggiornamento dell'elemento
+      error_delete: Errore nell'eliminazione dell'elemento
+      no_data: Nessun dato disponibile
+      loading: Caricamento...
+    at_time: alle
   rimborsi:
     expense_types:
-      normal: "Normale"
-      car: "Auto"
-    
+      normal: Normale
+      car: Auto
     payment_methods:
-      bank: "conto bancario"
-      paypal: "PayPal"
-    
+      bank: conto bancario
+      paypal: PayPal
     messages:
-      calculation_help: "Utilizza https://costikm.aci.it/ per calcolare i parametri necessari"
-      attachment_help: "Carica ricevuta o fattura (solo per spese non auto)"
-      return_trip_help: "Seleziona se il viaggio è andata e ritorno"
-      auto_calculated: "Importo calcolato automaticamente"
-      
+      calculation_help: Utilizza https://costikm.aci.it/ per calcolare i parametri necessari
+      attachment_help: Carica ricevuta o fattura (solo per spese non auto)
+      return_trip_help: Seleziona se il viaggio è andata e ritorno
+      auto_calculated: Importo calcolato automaticamente
     forms:
       expense:
-        title: "Dettagli Spesa"
-        car_calculation: "Calcolo del rimborso auto"
-        basic_info: "Informazioni di base"
-        car_details: "Dettagli auto"
-        attachment: "Allegato"
-      
+        title: Dettagli Spesa
+        car_calculation: Calcolo del rimborso auto
+        basic_info: Informazioni di base
+        car_details: Dettagli auto
+        attachment: Allegato
       reimboursement:
-        title: "Nuovo rimborso"
-        basic_info: "Informazioni Generali"
-        payment_method: "Metodo di Pagamento"
-        expenses: "Spese"
-        summary: "Riepilogo"
+        title: Nuovo rimborso
+        basic_info: Informazioni generali
+        payment_method: Metodo di pagamento
+        expenses: Spese
+        summary: Riepilogo
         role:
-          title: "Ruolo"
-          label: "Ruolo"
-          prompt: "Seleziona ruolo"
-          other_label: "Altro"
-          other_placeholder: "Specificare qui: nome associazione / sede / codice fiscale o altro breve testo"
-          other_help: "Se scegli \"Co-organizzatore evento\" inserire qui nome associazione, sede e codice fiscale; altrimenti indica il tuo ruolo"
+          title: Ruolo
+          label: Ruolo
+          prompt: Seleziona ruolo
+          other_label: Altro
+          other_placeholder: Specificare qui nome associazione / sede / codice fiscale o altro breve testo
+          other_help: Se scegli "Co-organizzatore evento" inserisci qui nome associazione, sede e codice fiscale; altrimenti indica il tuo ruolo
+  controllers:
+    application:
+      access_denied: Accesso negato. Solo gli amministratori possono accedere a questa sezione.
+      access_denied_short: Accesso negato.
+      admin_only: Solo gli amministratori possono accedere a questa funzionalità.
+      forbidden: Accesso negato. Non hai i permessi per accedere a questa risorsa.
+    users:
+      registrations:
+        destroy_forbidden: La cancellazione dell'account non è consentita. Contatta l'amministrazione per assistenza.
+    admin:
+      payments:
+        cannot_modify_paid: Non puoi modificare un pagamento già eseguito.
+        create_success: Pagamento creato con successo.
+        update_success: Pagamento aggiornato con successo.
+        delete_success: Pagamento eliminato con successo.
+        marked_as_paid: Pagamento contrassegnato come eseguito.
+        reverted_to_created: Pagamento riportato allo stato 'Creato'.
+        cannot_retry: Il pagamento non può essere ritentato.
+        retry_started: Processamento riavviato. Il pagamento verrà processato nuovamente.
+        retry_error: 'Errore durante il retry: %{message}'
+        error: 'Errore: %{message}'
+      users:
+        update_success: Utente aggiornato con successo.
+        delete_success: Utente eliminato con successo.
+        delete_error: 'Impossibile eliminare l''utente: ha dei rimborsi associati.'
+        deactivate_success: Utente disattivato con successo.
+        deactivate_error: 'Errore nella disattivazione: %{message}'
+        activate_success: Utente attivato con successo.
+        activate_error: 'Errore nell''attivazione: %{message}'
+    bank_accounts:
+      create_success: Conto bancario creato con successo.
+      update_success: Conto bancario aggiornato con successo.
+      delete_success: Conto bancario eliminato con successo.
+    vehicles:
+      create_success: Veicolo creato con successo.
+      update_success: Veicolo aggiornato con successo.
+      delete_success: Veicolo eliminato con successo.
+    funds:
+      create_success: Fondo creato con successo.
+      update_success: Fondo aggiornato con successo.
+      delete_success: Fondo eliminato con successo.
+    notes:
+      create_success: Nota aggiunta con successo.
+      create_error: Errore nel salvare la nota.
+      delete_success: Nota eliminata con successo.
+      unauthorized: Non hai i permessi per accedere a questo rimborso.
+    reimboursements:
+      cannot_modify: Non puoi modificare questo rimborso. I rimborsi possono essere modificati solo se sono in stato 'Creato' o 'In attesa', oppure se sei un amministratore.
+      create:
+        success: "\U0001F389 Rimborso creato con successo! Riceverai aggiornamenti via email per ogni cambio di stato."
+      update_success: Rimborso aggiornato con successo.
+      cannot_delete: Non puoi eliminare un rimborso che non è in attesa di elaborazione. Solo i rimborsi in stato 'Creato' possono essere eliminati.
+      delete_success: Rimborso eliminato con successo.
+      all_expenses_reviewed: Tutti i giustificativi sono stati revisionati.
+      expense_approved: Giustificativo approvato.
+      expense_denied: Giustificativo rifiutato.
+      auto_note_approved: Rimborso approvato.
+      reimbursement_approved: Rimborso approvato con successo!
+      pending_expenses_exist: 'Non è possibile approvare il rimborso: ci sono ancora giustificativi in attesa di approvazione.'
+      pdf_error: Errore nella generazione del PDF. Riprova più tardi.
+    expenses:
+      create_success: Spesa creata con successo.
+      update_success: Spesa aggiornata con successo.
+      delete_success: Spesa eliminata con successo.
+      invoice_pdf_not_available: PDF della fattura non disponibile.
+    roles:
+      create_success: Ruolo creato con successo.
+      update_success: Ruolo aggiornato con successo.
+      delete_success: Ruolo eliminato con successo.
+  layouts:
+    navbar:
+      brand: Rimborsi
+      reimboursements: Rimborsi
+      bank_accounts: Conti bancari
+      vehicles: Veicoli
+      funds: Fondi
+      administration: Amministrazione
+      payments: Pagamenti
+      user_management: Gestione utenti
+      role_management: Gestione ruoli
+      profile: Profilo
+      logout: Logout
+      login: Login
+      register: Registrati
+    flashes:
+      reimbursement_created_title: Rimborso creato!
+      next_steps: Prossimi passi
+      next_steps_text: Il tuo rimborso è ora nello stato "Creato" e sarà presto revisionato da un amministratore.
+  reimboursements:
+    index:
+      title: Rimborsi
+      new: Nuovo rimborso
+      filters: Filtri
+      statuses_label: Stati
+      user_label: Utente
+      all_users: Tutti gli utenti
+      apply_filters: Applica filtri
+      reset: Reset
+      active_filters: 'Filtri attivi:'
+      payment_method: 'Metodo di pagamento:'
+      user_info: 'Utente:'
+      total: 'Totale:'
+      expenses_count: 'Spese:'
+      delete_confirm: Sei sicuro di voler eliminare questo rimborso?
+      delete_disabled_title: Puoi eliminare solo rimborsi in attesa di elaborazione
+      empty_title: Nessun rimborso trovato
+      empty_filtered: Non ci sono rimborsi che corrispondono ai filtri selezionati.
+      remove_filters: Rimuovi filtri
+      create_new: Crea nuovo rimborso
+      empty_text: Puoi creare il tuo primo rimborso.
+      found:
+        one: Trovato %{count} rimborso
+        other: Trovati %{count} rimborsi
+      reimbursement_number: 'Rimborso #%{id}'
+      created_at: Creato il %{time}
+      select_all: Seleziona tutti
+      deselect_all: Deseleziona tutti
+      expense_count:
+        one: 1 spesa
+        other: "%{count} spese"
+    new:
+      title: Nuovo rimborso
+      subtitle: Compila tutti i campi richiesti per creare il tuo rimborso
+      step1_title: 1. Informazioni
+      step1_desc: Dati generali e metodo di pagamento
+      step2_title: 2. Spese
+      step2_desc: Aggiungi le spese da rimborsare
+      step3_title: 3. Salvataggio
+      step3_desc: Crea il rimborso
+      step4_title: 4. Revisione
+      step4_desc: Attesa approvazione della segreteria
+    edit:
+      title: Modifica rimborso
+    form:
+      errors_title: "%{count} errori hanno impedito il salvataggio:"
+      general_info_title: Informazioni generali
+      status_label: Stato
+      select_status: Seleziona stato
+      user_label: Utente
+      select_user: Seleziona utente
+      requester_title: Richiedente
+      initial_status_title: Stato iniziale
+      initial_status_text: Il rimborso verrà sottoposto a revisione e riceverai notifiche via email per ogni aggiornamento
+      payment_method_title: Metodo di pagamento
+      add_bank_account: Nuovo conto
+      add_bank_account_help: Aggiungi nuovo conto bancario
+      bank_account_label: conto bancario
+      select_bank_account: Seleziona conto bancario
+      expenses_title: Spese
+      add_expense: Aggiungi spesa
+      total_label: Totale
+      initial_note_title: Nota iniziale (opzionale)
+      initial_note_label: Aggiungi una nota al rimborso
+      initial_note_placeholder: Inserisci qui eventuali informazioni aggiuntive sul rimborso...
+      initial_note_help: Questa nota sarà visibile alla segreteria e potrà aiutarli nella valutazione del rimborso.
+      submit: Salva e invia rimborso
+      submit_hint: Potrai modificare il rimborso anche dopo l'invio fino a quando non passerà in approvazione dalla segreteria.
+      amount_placeholder: Inserisci importo
+    expense_fields:
+      delete_confirm: Sei sicuro di voler cancellare questa spesa?
+      marked_for_deletion: Spesa marcata per la cancellazione
+      calculated_amount_label: Importo calcolato
+      amount_label: Importo spesa
+      auto_calculated: Autocalcolato
+      requested_amount_label: Importo richiesto come rimborso
+      requested_amount_placeholder: Importo richiesto
+      requested_amount_help: Eventuale importo parziale o totale richiesto
+      purpose_placeholder: Descrivi la spesa...
+      date_label: Data giustificativo
+      type_label: Tipo
+      normal: Normale
+      car: Auto
+      fund_label: Fondo
+      select_fund: Seleziona fondo
+      project_label: Progetto
+      project_placeholder: Nome del progetto (es. Microgrant Wiki Loves Puglia 2025)...
+      status_label: Status
+      select_status: Seleziona status
+      attachment_label: Allegato
+      current_file: File attuale
+      view_file: Visualizza file
+      replace_file: Sostituisci file
+      replace_file_help: Carica un nuovo file per sostituire quello esistente
+      attachment_help: Carica ricevuta o fattura (immagine o PDF) o fattura elettronica (.xml, .xml.p7m)
+      car_calculation_title: Calcolo del rimborso auto
+      car_calculation_help_html: Utilizza <a href="%{url}" target="_blank" class="alert-link">%{url}</a> per calcolare i parametri necessari.
+      calculation_date_label: Data di calcolo
+      departure_label: Città di partenza
+      departure_placeholder: 'Es: Milano'
+      arrival_label: Città di arrivo
+      arrival_placeholder: 'Es: Roma'
+      distance_label: Distanza (km)
+      vehicle_label: Veicolo
+      select_vehicle: Seleziona veicolo
+      add_new_vehicle: Aggiungi nuovo veicolo
+      return_trip: Andata e ritorno
+      quota_capitale: Quota capitale
+      carburante: Quota carburante
+      pneumatici: Pneumatici
+      manutenzione: Manutenzione
+    approve_expenses:
+      title: Approvazione giustificativi
+      total_requested: 'Totale richiesto:'
+      expense_counter: Giustificativo %{current} di %{total}
+      back_to_reimbursement: Torna al rimborso
+      edit_expense: Modifica spesa
+      save_changes: Salva modifiche
+      car_expense_title: Spesa auto - dettagli calcolo
+      costs_per_km: Costi per km
+      quota_capitale: 'Quota capitale:'
+      carburante: 'Carburante:'
+      pneumatici: 'Pneumatici:'
+      manutenzione: 'Manutenzione:'
+      total_per_km: 'Totale per km:'
+      final_amounts: Importi finali
+      calculated_amount: 'Importo spesa calcolato:'
+      requested_amount: 'Importo richiesto:'
+      difference: 'Differenza: €'
+      car_no_attachment: Le spese auto sono calcolate automaticamente e non richiedono allegati.
+      electronic_invoice: Fattura elettronica
+      attachment: Allegato
+      amount_details: Dettagli importo
+      expense_amount: 'Importo spesa:'
+      invoice_converted: Fattura convertita in PDF
+      original_xml: File XML originale
+      pdf_auto_generated: PDF generato automaticamente dalla fattura elettronica
+      view_fullscreen: Visualizza a schermo intero
+      open_new_tab: Apri in nuova scheda
+      browser_no_pdf: Il tuo browser non supporta la visualizzazione di PDF.
+      no_attachment: Nessun allegato presente per questo giustificativo.
+      approve: Approva
+      deny: Rifiuta
+      already_reviewed: Giustificativo già revisionato
+      next: Avanti
+      finish: Fine
+      deny_modal_title: Rifiuta giustificativo
+      deny_reason_label: Motivo del rifiuto (opzionale)
+      deny_reason_placeholder: Spiega il motivo del rifiuto...
+      change_status_label: Cambia stato del rimborso
+      keep_current_status: Mantieni stato attuale
+      set_waiting: In attesa
+      set_denied: Rifiutato
+      deny_default_hint: Di default il rimborso viene messo "In attesa"
+      deny_submit: Rifiuta giustificativo
+    show:
+      title: 'Rimborso #%{id}'
+      created: Creato il %{time}
+      created_success_title: Rimborso creato con successo!
+      created_message: 'Il tuo rimborso è stato registrato nel sistema. Ecco cosa succederà ora:'
+      created_step_revision_label: Revisione
+      created_step_revision: La segreteria controllerà i tuoi giustificativi
+      created_step_approval_label: Approvazione
+      created_step_approval: Riceverai una notifica email per ogni aggiornamento
+      created_step_payment_label: Pagamento
+      created_step_payment: Una volta approvato, il rimborso verrà elaborato
+      created_updates_via_email: Ti invieremo aggiornamenti via email per ogni cambio di stato
+      waiting_title: Rimborso in attesa
+      waiting_message: Il tuo rimborso richiede attenzione. Controlla le note per eventuali richieste di chiarimenti.
+      info:
+        title: Informazioni
+      labels:
+        requester: Richiedente
+        current_status: Stato attuale
+        created_at: Data creazione
+        updated_at: Ultima modifica
+        total_amount: Importo totale
+      payment:
+        title: Metodo di pagamento
+        type: Tipo di pagamento
+        iban: IBAN
+        owner: Intestatario
+        none_configured: Nessun metodo di pagamento configurato
+      expenses:
+        title: Spese (%{count})
+        headers:
+          date: Data
+          description: Descrizione
+          type: Tipo
+          status: Status
+          amount: Importo
+          details: Dettagli/Allegato
+        fund: Fondo
+        project: Progetto
+        e_invoice: Fattura elettronica
+        download_invoice_title: Scarica PDF della fattura
+        view_xml_title: Visualizza file XML originale
+        pdf: PDF
+        xml: XML
+        no_attachment: Nessun allegato
+        none: Nessuna spesa presente in questo rimborso.
+        requested_of: richiesto di € %{amount}
+      totals:
+        net: Totale netto
+        denied: Spese negate
+        gross: Totale lordo
+      denied_parenthetical: "(€ %{amount} %{label})"
+      vehicle_label: 'Veicolo:'
+      route_label: 'Percorso:'
+      distance_label: 'Distanza:'
+      calculation_date_label: 'Data calcolo:'
+      notes:
+        title: Note e comunicazioni
+        add_title: Aggiungi nota
+        message_label: Messaggio
+        message_placeholder: Scrivi un messaggio...
+        change_status_label: Cambia stato (opzionale)
+        no_change: Nessun cambio
+        change_status_help: Se selezioni un nuovo stato, il rimborso verrà aggiornato automaticamente
+        submit: Aggiungi nota
+        admin_badge: Admin
+        initial: Nota iniziale
+        note_time: "%{time}"
+        confirm_delete: Sei sicuro di voler eliminare questa nota?
+        status_changed_label: 'Stato cambiato in:'
+        none: Nessuna nota presente per questo rimborso.
+      download_pdf: Scarica PDF
+      open_approve_expenses: Apri approvazione giustificativi
+      approve_reimbursement: Approva rimborso
+      approve_confirm: Sei sicuro di voler approvare questo rimborso?
+  bank_accounts:
+    index:
+      title: Conti bancari
+      new: Nuovo conto bancario
+      user_th: Utente
+      iban_th: IBAN
+      owner_th: Intestatario
+      address_th: Indirizzo
+      cap_th: CAP
+      town_th: Città
+      fiscal_code_th: Codice fiscale
+      default_th: Predefinito
+      is_default: Predefinito
+      not_default: Non predefinito
+      delete_confirm: Sei sicuro di voler eliminare questo conto bancario?
+      empty_title: Nessun conto bancario trovato
+      empty_text: Inizia aggiungendo il tuo primo conto bancario.
+      add: Aggiungi conto bancario
+    show:
+      title: Dettagli conto bancario
+      owner_label: 'Proprietario:'
+      iban_label: 'IBAN:'
+      owner_field: 'Intestatario:'
+      bank_name_label: 'Nome banca:'
+      bic_swift_label: 'Codice BIC/SWIFT:'
+      address_label: 'Indirizzo:'
+      cap_label: 'CAP:'
+      town_label: 'Città:'
+      fiscal_code_label: 'Codice fiscale:'
+      default_label: 'Predefinito:'
+    new:
+      title: Nuovo conto bancario
+    edit:
+      title: Modifica conto bancario
+    form:
+      user_label: Utente
+      select_user: Seleziona utente
+      iban_label: IBAN
+      iban_help: Inserisci l'IBAN senza spazi
+      iban_placeholder: IT00X0000000000000000000000
+      owner_label: Intestatario
+      owner_help: Nome completo del titolare del conto
+      bank_name_label: Nome banca
+      bank_name_help: Nome dell'istituto bancario (opzionale)
+      bic_swift_label: Codice BIC/SWIFT
+      bic_swift_help: Codice BIC/SWIFT della banca (obbligatorio per conti non italiani, opzionale per conti italiani)
+      address_label: Indirizzo dell'intestatario
+      address_help: Residenza dell'intestatario (opzionale)
+      cap_label: CAP
+      cap_help: "(opzionale)"
+      town_label: Città
+      town_help: "(opzionale)"
+      fiscal_code_label: Codice fiscale
+      fiscal_code_help: "(opzionale)"
+      default_label: Conto predefinito
+      default_help: Se selezionato, questo diventerà il tuo conto predefinito (rimuoverà il flag da tutti gli altri conti bancari)
+  vehicles:
+    index:
+      title: I miei veicoli
+      new: Nuovo veicolo
+      user_th: Utente
+      name_th: Nome
+      category_th: Categoria
+      brand_model_th: Marca e modello
+      fuel_th: Carburante
+      default_th: Predefinito
+      is_default: Predefinito
+      delete_confirm: Sei sicuro di voler eliminare questo veicolo?
+      empty_title: Nessun veicolo trovato
+      empty_text: Inizia aggiungendo il tuo primo veicolo per le spese auto.
+      add: Aggiungi veicolo
+    show:
+      title: Dettagli veicolo
+      owner_label: 'Proprietario:'
+      name_label: 'Nome:'
+      category_label: 'Categoria:'
+      brand_label: 'Marca:'
+      model_label: 'Modello:'
+      fuel_label: 'Tipo di carburante:'
+      default_label: 'Predefinito:'
+    new:
+      title: Nuovo veicolo
+    edit:
+      title: Modifica veicolo
+    form:
+      user_label: Utente
+      select_user: Seleziona utente
+      name_label: Nome del veicolo
+      name_help: Nome personalizzato per identificare il veicolo
+      category_label: Categoria
+      select_category: Seleziona categoria
+      brand_label: Marca
+      model_label: Modello
+      fuel_label: Tipo di carburante
+      select_fuel: Seleziona tipo di carburante
+      default_label: Veicolo predefinito
+      default_help: Se selezionato, questo diventerà il tuo veicolo predefinito per le spese auto
+  funds:
+    index:
+      title: Fondi
+      new: Nuovo fondo
+      name_th: Nome
+      budget_th: Budget
+      total_expenses_th: Spese totali
+      used_percent_th: "% Utilizzato"
+      remaining_th: Rimanente
+      active_th: Attivo
+      details_th: Dettagli
+      admin_only: Solo admin
+      delete_confirm: Sei sicuro di voler eliminare questo fondo?
+      empty_title: Nessun progetto trovato
+    show:
+      project_info: Informazioni progetto
+      name_label: 'Nome:'
+      budget_label: 'Budget:'
+      status_label: 'Stato:'
+      active: Attivo
+      inactive: Inattivo
+      budget_stats: Statistiche budget
+      total_expenses: 'Spese totali:'
+      remaining_budget: 'Budget rimanente:'
+      percent_used: 'Percentuale utilizzata:'
+      over_budget: Budget superato!
+      expense_summary: Riepilogo spese
+      total_count: 'Numero totale di spese:'
+      approved_count: 'Spese approvate:'
+      pending_count: 'Spese in attesa:'
+      denied_count: 'Spese negate:'
+      expense_list: Spese del progetto
+      date_th: Data
+      description_th: Descrizione
+      amount_th: Importo
+      type_th: Tipo
+      status_th: Stato
+      reimbursement_th: Rimborso
+      car_type: Auto
+      normal_type: Normale
+      empty_expenses: Nessuna spesa associata
+      empty_expenses_text: Non ci sono ancora spese associate a questo progetto
+    form:
+      new_title: Nuovo progetto
+      edit_title: Modifica progetto
+      validation_errors: 'Errori di validazione:'
+      name_label: Nome del progetto
+      name_placeholder: Inserisci il nome del progetto
+      budget_label: Budget (€)
+      budget_help: Budget massimo per questo progetto
+      active_label: Progetto attivo
+      active_help: Solo i progetti attivi possono essere selezionati nelle spese
+      stats_title: Statistiche progetto
+      total_expenses: 'Spese totali:'
+      remaining_budget: 'Budget rimanente:'
+      percent_used: "% Utilizzato:"
+      expenses_count: 'Nr. Spese:'
+      update: Aggiorna progetto
+      create: Crea progetto
+  roles:
+    role:
+      label: Etichetta
+    index:
+      title: Ruoli
+      label_th: Etichetta
+      destroy_confirm: Sei sicuro?
+      new: Nuovo ruolo
+    new:
+      title: Nuovo ruolo
+    edit:
+      title: Modifica ruolo
+  notes:
+    index:
+      title: Note
+      state_th: Stato
+      reimbursement_th: Rimborso
+      user_th: Utente
+      text_th: Testo
+      destroy: Destroy
+      destroy_confirm: Are you sure?
+      new: Nuova nota
+    new:
+      title: Nuova nota
+    edit:
+      title: Modifica nota
+  admin:
+    payments:
+      index:
+        title: Pagamenti
+        payment: Pagamento
+        reimbursement_singular: rimborso
+        reimbursement_plural: rimborsi
+        new: Nuovo pagamento
+        total_label: 'Totale:'
+        reimbursements_label: 'Rimborsi:'
+        payment_date_label: 'Data pagamento:'
+        created_label: 'Creato:'
+        details: Dettagli
+        retry: Riprova
+        retry_confirm: Sei sicuro di voler ritentare il processamento?
+        empty_title: Nessun pagamento trovato
+        empty_text: Inizia creando il primo pagamento per i rimborsi approvati.
+        create_first: Crea primo pagamento
+      show:
+        retry: Riprova processamento
+        retry_confirm: Sei sicuro di voler ritentare il processamento?
+        details_header: Dettagli pagamento
+        id_label: 'ID:'
+        status_label: 'Stato:'
+        total_label: 'Totale:'
+        created_label: 'Data creazione:'
+        payment_date_label: 'Data pagamento:'
+        reimbursements_count_label: 'Rimborsi inclusi:'
+        error_header: Errore durante il processamento
+        error_text: Il caricamento di questo pagamento su NextCloud ha riscontrato degli errori. Utilizza il pulsante "Riprova processamento" per ritentare l'operazione.
+        included_header: Rimborsi inclusi
+        id_th: ID
+        user_th: Utente
+        total_th: Totale
+        iban_th: IBAN
+        status_th: Stato
+        na: N/D
+        details: Dettagli
+        none_associated: Nessun rimborso associato a questo pagamento.
+        mark_as_paid: Marca come pagato
+        mark_as_paid_confirm: Sei sicuro di voler marcare questo pagamento come pagato? Questa azione avvierà il processo di generazione PDF e caricamento.
+        revert_to_created: Riporta a creato
+        revert_confirm: Sei sicuro di voler riportare questo pagamento a 'creato'? I rimborsi torneranno allo stato 'approvato'.
+        export_flow: Esporta flusso XML
+        edit_payment: Modifica pagamento
+        delete_payment: Elimina pagamento
+        delete_confirm: Sei sicuro di voler eliminare questo pagamento? Questa azione non può essere annullata.
+        available_title: Rimborsi disponibili
+        available_count:
+          one: C'è 1 rimborso approvato disponibile per l'inclusione in pagamenti.
+          other: Ci sono %{count} rimborsi approvati disponibili per l'inclusione in pagamenti.
+        edit_to_add: Modifica per aggiungere
+      new:
+        title: Nuovo pagamento
+        back_to_payments: Torna ai pagamenti
+        details_header: Dettagli pagamento
+        errors_prevented: "%{count} errori hanno impedito il salvataggio:"
+        status_label: Stato
+        status_created: Creato
+        status_help: I nuovi pagamenti vengono sempre creati con stato "Creato"
+        reimbursements_label: Rimborsi da includere
+        reimbursement_number: 'Rimborso #%{id}'
+        selection_help: Seleziona i rimborsi da includere in questo pagamento. Solo i rimborsi approvati con un conto bancario sono disponibili.
+        none_available_title: Nessun rimborso disponibile
+        none_available_text: Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento.
+        create_btn: Crea pagamento
+        info_header: Informazioni
+        how_it_works_title: 'Come funziona:'
+        how_it_works:
+          step1: 1. Seleziona i rimborsi approvati da includere
+          step2: 2. Il totale verrà calcolato automaticamente
+          step3: 3. Il pagamento viene creato con stato "Creato"
+          step4: 4. Segna il pagamento come "Pagato" per il caricamento dei dati in Nextcloud
+          step5: 5. Scarica il flusso e caricalo in banca per i pagamenti
+        available_title: 'Disponibili:'
+        available_count_label: rimborsi
+        for_a_total: per un totale di
+        selected_total: 'Totale selezionato:'
+        no_available_text: Non ci sono rimborsi approvati con conti bancari disponibili per creare un pagamento.
+      edit:
+        title: Modifica pagamento
+        details_header: Dettagli pagamento
+        status_label: Stato
+        status_help: Lo stato può essere modificato solo tramite le azioni specifiche nella pagina di dettaglio
+        included_label: Rimborsi inclusi
+        currently_included: 'Rimborsi attualmente inclusi:'
+        available_label: 'Rimborsi disponibili da aggiungere:'
+        available_help: Puoi aggiungere o rimuovere rimborsi approvati da questo pagamento finché non è marcato come "Pagato".
+        no_available_title: Nessun rimborso disponibile
+        no_available_text: Non ci sono altri rimborsi approvati con conti bancari disponibili da aggiungere.
+        update_btn: Aggiorna pagamento
+    users:
+      index:
+        title: Gestione utenti
+        name_th: Nome
+        surname_th: Cognome
+        email_th: Email
+        phone_th: Telefono
+        fiscal_code_th: Codice fiscale
+        role_th: Ruolo
+        status_th: Stato
+        reimbursements_th: Rimborsi
+        active: Attivo
+        inactive: Disattivo
+        deactivate: Disattiva
+        deactivate_confirm: Sei sicuro di voler disattivare questo utente?
+        activate: Attiva
+        delete_confirm: Sei sicuro? Questa azione non può essere annullata.
+        not_deletable: Non eliminabile
+        has_reimbursements: Ha dei rimborsi associati
+      show:
+        title: Dettagli utente
+        status:
+          active: Attivo
+          deactivated: Disattivato
+        active: Attivo
+        deactivated: Disattivato
+        email_label: 'Email:'
+        phone_label: 'Telefono:'
+        fiscal_code_label: 'Codice fiscale:'
+        role_label: 'Ruolo:'
+        admin_label: 'Amministratore:'
+        registered_label: 'Registrato il:'
+        account_status_label: 'Stato account:'
+        no_role: Nessun ruolo assegnato
+        stats_title: Statistiche rimborsi
+        total_reimbursements: 'Totale rimborsi:'
+        total_amount: 'Totale importo richiesto:'
+        deactivate: Disattiva account
+        deactivate_confirm: Sei sicuro di voler disattivare questo utente?
+        activate: Attiva account
+        delete: Elimina utente
+        delete_confirm: Sei sicuro? Questa azione non può essere annullata.
+        not_deletable: Non eliminabile
+        has_reimbursements: L'utente ha dei rimborsi associati
+      edit:
+        title: 'Modifica utente: %{name} %{surname}'
+        fiscal_code_label: Codice fiscale
+        fiscal_code_title: Codice fiscale
+        role_label: Ruolo
+        select_role_prompt: Seleziona un ruolo
+        account_active_label: Account attivo
+        account_active_help: Deseleziona per disattivare l'accesso dell'utente
+        update_user: Aggiorna utente
+  mailers:
+    reimboursement:
+      admin_note_notification:
+        title: Nuova nota da Utente
+        reimbursement_number: 'Rimborso #%{id}'
+        new_note: Un utente ha aggiunto una nuova nota al rimborso.
+        user_info: 'Informazioni utente:'
+        name: Nome
+        email: Email
+        phone: Telefono
+        note_added_on: Nota aggiunta il
+        content: Contenuto
+        reimbursement_info: 'Dettagli rimborso:'
+        current_status: Stato attuale
+        total: Totale
+        payment_method: Metodo di pagamento
+        expenses_count: Numero di spese
+        view_reimbursement: Visualizza rimborso
+        all_reimbursements: Tutti i rimborsi
+        footer_title: Gestione rimborsi - notifica amministratori
+        footer_text: Accedi alla piattaforma per rispondere alla nota dell'utente.
+        subject: 'Nuova nota da utente - Rimborso #%{id}'
+      status_changed:
+        subject: Stato rimborso aggiornato
+        greeting: Ciao %{name},
+        updated_message: 'Lo stato del tuo rimborso #%{id} è stato aggiornato.'
+        new_status: 'NUOVO STATO:'
+        admin_note: 'NOTA DELL''AMMINISTRATORE:'
+        author: 'Autore: %{name} %{surname}'
+        date: 'Data: %{date}'
+        total: 'TOTALE RIMBORSO: € %{total}'
+        signature: WIKIMEDIA ITALIA - GESTIONE RIMBORSI
+        contact: 'Per chiarimenti contatta: %{email}'
+        reply_request: Ti preghiamo di rispondere a richieste di chiarimenti e integrazioni con una nota direttamente sulla piattaforma.
+        links: 'Link utili:'
+        view_reimbursement: Visualizza questo rimborso
+        all_reimbursements: Tutti i rimborsi
+        subject_with_status: 'Stato rimborso #%{id} aggiornato a: %{status}'
+      note_added:
+        subject: 'Nuova nota - Rimborso #%{id}'
+        title: 'Nuova nota - Rimborso #%{id}'
+        greeting: Ciao %{name},
+        new_note_message: 'È stata aggiunta una nuova nota al tuo rimborso #%{id}.'
+        details: 'DETTAGLI NOTA:'
+        author: 'Autore: %{name} %{surname}'
+        author_label: Autore
+        date: 'Data: %{date}'
+        date_label: Data
+        status_change: 'Cambio di stato: %{status}'
+        status_change_label: Cambio di stato
+        content: 'Contenuto:'
+        current_status: 'STATO ATTUALE: %{status}'
+        current_status_label: Stato attuale del rimborso
+        total: 'TOTALE RIMBORSO: € %{total}'
+        total_label: Totale rimborso
+        signature: WIKIMEDIA ITALIA - GESTIONE RIMBORSI
+        contact: 'Per chiarimenti contatta: %{email}'
+        contact_label: Per chiarimenti contatta
+        reply_request: Ti preghiamo di rispondere a richieste di chiarimenti e integrazioni con una nota direttamente sulla piattaforma.
+        links: 'Link utili:'
+        view_reimbursement: Visualizza questo rimborso
+        all_reimbursements: Tutti i rimborsi
+  devise:
+    passwords:
+      new:
+        title: Recupera la tua password
+        subtitle: 'Inserisci l''indirizzo email associato al tuo account: ti invieremo le istruzioni per reimpostare la password.'
+        email_label: Email
+        email_placeholder: Inserisci la tua email
+        invalid_email: Inserisci un indirizzo email valido.
+        submit: Invia istruzioni di recupero
+      edit:
+        title: Cambia la tua password
+        subtitle: Inserisci la tua nuova password
+        new_password_label: Nuova password
+        min_length: minimo %{count} caratteri
+        password_placeholder: Inserisci la nuova password
+        password_invalid: La password deve essere di almeno %{count} caratteri.
+        confirm_label: Conferma nuova password
+        confirm_placeholder: Conferma la nuova password
+        password_mismatch: Le password non corrispondono.
+        submit: Cambia la mia password
+    mailer:
+      unlock_instructions:
+        greeting: Ciao %{email}!
+        locked_message: Il tuo account è stato bloccato a causa di tentativi di accesso falliti.
+        instructions: 'Clicca il link qui sotto per sbloccare il tuo account:'
+        action: Sblocca il mio account
+    sessions:
+      new:
+        title: Accedi
+        email_label: Email
+        password_label: Password
+        remember_me: Ricordami
+        submit: Accedi
+    registrations:
+      edit:
+        title: Modifica %{resource}
+        role_label: Ruolo
+        select_role_prompt: Seleziona un ruolo
+        no_role_assigned: Nessun ruolo assegnato
+        leave_blank_if_you_don_t_want_to_change_it: "(lascia vuoto se non vuoi cambiarla)"
+        password_label: Password
+        password_min_length: "%{count} caratteri minimo"
+        password_confirmation_label: Conferma password
+        current_password_label: Password attuale
+        current_password_help: "(richiesta per confermare le modifiche)"
+        footer_contact: Per assistenza o problemi con l'account, contatta l'amministrazione.
+      user_fields:
+        name_label: Nome
+        surname_label: Cognome
+        email_label: Email
+        email_help: Inserisci un indirizzo email valido
+        telephone_label: Telefono
+        telephone_help: 'Numero di cellulare senza spazi e senza prefisso: 3331234567'
+        telephone_title: 'Numero di telefono italiano senza spazi e senza prefisso (es: 3331234567)'
+        fiscal_code_label: Codice fiscale
+        fiscal_code_help: Codice fiscale
+        fiscal_code_title: Codice fiscale
