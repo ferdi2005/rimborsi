@@ -112,28 +112,39 @@
     </div>
     <div class="card-body">
       <div class="row">
-        <div class="col-md-12 mb-3">
-          <%= form.label :project, "Progetto", class: "form-label" %>
-          <%= form.text_field :project, class: "form-control", placeholder: "Nome del progetto (es. Microgrant Wiki Loves Puglia 2025)..." %>
+        <div class="col-md-6 mb-3">
+          <%= form.label :fund_id, class: "form-label" do %>
+            Fondo <span class="text-danger">*</span>
+          <% end %>
+          <%= form.select :fund_id,
+                options_from_collection_for_select(Fund.active.order(:name), :id, :name, reimboursement.fund_id),
+                { prompt: "Seleziona fondo" },
+                { class: "form-select", required: true } %>
         </div>
         <div class="col-md-6 mb-3">
-          <%= form.label :role, t("rimborsi.forms.reimboursement.role.label"), class: "form-label" %>
+          <%= form.label :project, class: "form-label" do %>
+            Progetto <span class="text-danger">*</span>
+          <% end %>
+          <%= form.text_field :project, class: "form-control", placeholder: "Nome del progetto (es. Microgrant Wiki Loves Puglia 2025)...", required: true %>
+        </div>
+        <div class="col-md-6 mb-3">
+          <%= form.label :role, class: "form-label" do %>
+            <%= t("rimborsi.forms.reimboursement.role.label") %> <span class="text-danger">*</span>
+          <% end %>
           <%= form.select :role,
                 options_for_select(
                   Reimboursement.role_translations.map { |key, value| [value, key] },
                   reimboursement.role
                 ),
                 { prompt: t("rimborsi.forms.reimboursement.role.prompt") },
-                { class: "form-select", id: "reimboursement_role" } %>
+                { class: "form-select", id: "reimboursement_role", required: true } %>
         </div>
 
-        <% if reimboursement.role.in?(%w[event_co_organizer other]) %>
-        <div class="col-md-6 mb-3 role-other-field">
+        <div class="col-md-6 mb-3 role-other-field" style="<%= 'display: none;' unless reimboursement.role.in?(%w[event_co_organizer other]) %>">
           <%= form.label :role_other, t("rimborsi.forms.reimboursement.role.other_label"), class: "form-label" %>
           <%= form.text_field :role_other, class: "form-control", placeholder: t("rimborsi.forms.reimboursement.role.other_placeholder") %>
           <div class="form-text"><%= t("rimborsi.forms.reimboursement.role.other_help") %></div>
         </div>
-        <% end %>
       </div>
     </div>
   </div>
@@ -228,24 +239,33 @@ document.addEventListener('DOMContentLoaded', function() {
   // Inizializza il conto bancario
   initializeBankAccount();
 
-  // Inizializza campo Ruolo e gestione campo 'Altro'
+  // Inizializza campo ruolo e gestione campo 'altro'
   function initializeRoleField() {
     const roleSelect = document.getElementById('reimboursement_role');
     const roleOther = document.querySelector('.role-other-field');
-    if (!roleSelect) return;
+    if (!roleSelect || !roleOther) return;
 
-    function toggleRoleOther() {
+    function toggleRoleOther(isUserAction) {
       const val = roleSelect.value;
       if (val === 'other' || val === 'event_co_organizer') {
-        if (roleOther) roleOther.style.display = 'block';
+        roleOther.style.display = 'block';
       } else {
-        if (roleOther) roleOther.style.display = 'none';
+        roleOther.style.display = 'none';
+        if (isUserAction) {
+          const input = roleOther.querySelector('input');
+          if (input) input.value = '';
+        }
       }
     }
 
-    roleSelect.addEventListener('change', toggleRoleOther);
-    // Run once on init
-    toggleRoleOther();
+    if (!roleSelect.dataset.roleInitialized) {
+      roleSelect.addEventListener('change', function() {
+        toggleRoleOther(true);
+      });
+      roleSelect.dataset.roleInitialized = 'true';
+    }
+    // Esegui all'avvio
+    toggleRoleOther(false);
   }
 
   initializeRoleField();

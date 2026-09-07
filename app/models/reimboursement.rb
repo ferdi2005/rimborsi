@@ -4,10 +4,13 @@ class Reimboursement < ApplicationRecord
   belongs_to :user
   belongs_to :bank_account
   belongs_to :payment, optional: true
+  belongs_to :fund, optional: true
   has_many :expenses, dependent: :destroy
   has_many :notes, dependent: :destroy
 
   validates :project, presence: true, length: { maximum: 255 }
+  validates :fund, presence: true, if: -> { new_record? || fund_id_was.present? }
+  validates :role, presence: true
 
   # Enumerativo per gli status
   enum :status, {
@@ -63,7 +66,19 @@ class Reimboursement < ApplicationRecord
   end
 
   def role_in_italian
+    return "Non specificato" if role.blank?
     self.class.role_translations[role] || role.humanize
+  end
+
+  def display_role
+    return "Non specificato" if role.blank?
+
+    base = role_in_italian
+    if role_other.present? && (role_event_co_organizer? || role_other?)
+      "#{base} (#{role_other})"
+    else
+      base
+    end
   end
 
   # Metodo per verificare se il rimborso può essere approvato
@@ -103,6 +118,26 @@ class Reimboursement < ApplicationRecord
     return false unless user == self.user
     # Gli utenti normali possono modificare solo i rimborsi in stato "created" o "waiting"
     status.in?([ "created", "waiting" ])
+  end
+
+  def display_fund_name
+    return fund.name if fund.present?
+
+    # Fallback per rimborsi storici con spese su fondi multipli o non ancora sincronizzati
+    fund_names = expenses.map(&:fund).compact.map(&:name).uniq
+    fund_names.any? ? fund_names.join(", ") : "Non assegnato"
+  end
+
+  def single_fund?
+    return true if fund.present?
+
+    expenses.map(&:fund_id).compact.uniq.size <= 1
+  end
+
+  def causale_bonifico
+    base_text = "Rimborso spese n. #{id} - #{display_fund_name} - #{project}"
+    cleaned = base_text.gsub(/\s+/, " ").strip
+    cleaned.truncate(140)
   end
 
   private

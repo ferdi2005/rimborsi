@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_07_170322) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -55,6 +55,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.datetime "updated_at", null: false
     t.string "bank_name"
     t.string "bic_swift"
+    t.index ["user_id"], name: "index_bank_accounts_on_user_id"
   end
 
   create_table "expenses", force: :cascade do |t|
@@ -78,6 +79,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.integer "status", default: 0, null: false
     t.integer "vehicle_id"
     t.decimal "requested_amount", precision: 8, scale: 2
+    t.index ["fund_id"], name: "index_expenses_on_fund_id"
+    t.index ["reimboursement_id"], name: "index_expenses_on_reimboursement_id"
     t.index ["vehicle_id"], name: "index_expenses_on_vehicle_id"
   end
 
@@ -96,6 +99,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "status_change"
+    t.index ["reimboursement_id"], name: "index_notes_on_reimboursement_id"
+    t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -114,17 +119,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
-    t.string "project"
     t.bigint "payment_id"
     t.string "role"
     t.string "role_other"
+    t.string "project"
+    t.bigint "fund_id"
+    t.index ["bank_account_id"], name: "index_reimboursements_on_bank_account_id"
+    t.index ["fund_id"], name: "index_reimboursements_on_fund_id"
     t.index ["payment_id"], name: "index_reimboursements_on_payment_id"
-  end
-
-  create_table "roles", force: :cascade do |t|
-    t.string "label"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_reimboursements_on_user_id"
   end
 
   create_table "states", force: :cascade do |t|
@@ -143,7 +146,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.string "surname"
     t.string "telephone"
     t.boolean "admin"
-    t.bigint "role_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "confirmation_token"
@@ -167,6 +169,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_vehicles_on_user_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -177,8 +180,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_131343) do
   add_foreign_key "notes", "reimboursements"
   add_foreign_key "notes", "users"
   add_foreign_key "reimboursements", "bank_accounts"
+  add_foreign_key "reimboursements", "funds"
   add_foreign_key "reimboursements", "payments"
   add_foreign_key "reimboursements", "users"
-  add_foreign_key "users", "roles"
   add_foreign_key "vehicles", "users"
 end

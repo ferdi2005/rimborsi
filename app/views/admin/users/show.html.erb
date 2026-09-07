@@ -16,10 +16,9 @@
         <div class="col-md-6">
           <p><strong>Email:</strong> <%= @user.email %></p>
           <p><strong>Telefono:</strong> <%= @user.telephone %></p>
-          <p><strong>Codice Fiscale:</strong> <%= @user.fiscal_code %></p>
+          <p><strong>Codice fiscale:</strong> <%= @user.fiscal_code %></p>
         </div>
         <div class="col-md-6">
-          <p><strong>Ruolo:</strong> <%= @user.role&.label || "Nessun ruolo assegnato" %></p>
           <p><strong>Amministratore:</strong> 
             <% if @user.admin? %>
               <span class="badge bg-success">Sì</span>

@@ -11,17 +11,6 @@
 
             <%= render "devise/registrations/user_fields", f: f %>
 
-            <% if current_user.admin? %>
-              <div class="col-md-6">
-                <%= f.label :role_id, "Ruolo", class: "form-label" %>
-                <%= f.collection_select :role_id, Role.all, :id, :label, { prompt: "Seleziona un ruolo" }, { class: "form-select" } %>
-              </div>
-            <% else %>
-              <div class="col-md-6">
-                <%= f.label :role_id, "Ruolo", class: "form-label" %>
-                <p class="form-control-plaintext"><%= current_user.role&.label || "Nessun ruolo assegnato" %></p>
-              </div>
-            <% end %>
 
             <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
               <div class="col-12">

@@ -254,12 +254,11 @@ class ReimboursementsController < ApplicationController
 
     def reimboursement_params
       permitted_params = [ :bank_account_id, :initial_note,
-                         :role, :role_other, :project,
+                         :role, :role_other, :project, :fund_id,
                          expenses_attributes: [
                            :id, :amount, :requested_amount, :purpose, :date, :car, :attachment, :_destroy,
                            :calculation_date, :departure, :arrival, :distance, :return_trip,
-                           :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione,
-                           :fund_id
+                           :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione
                          ] ]
 
       # Se è admin, può anche modificare user_id e status

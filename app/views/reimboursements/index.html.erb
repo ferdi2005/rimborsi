@@ -115,6 +115,11 @@
               <% end %>
             </p>
             
+            <p class="card-text mb-1">
+              <strong>Fondo:</strong> <%= reimboursement.display_fund_name %><br>
+              <strong>Progetto:</strong> <%= reimboursement.project %>
+            </p>
+
             <p class="card-text">
               <strong><%= neutral_icon("euro-sign", class: "me-2") %>Totale:</strong> 
               <span class="h5 text-primary">€ <%= number_with_precision(reimboursement.total_amount, precision: 2) %></span>

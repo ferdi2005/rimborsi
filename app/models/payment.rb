@@ -127,7 +127,7 @@ class Payment < ApplicationRecord
           end
         end
 
-        reimboursements.includes(:bank_account, :user).each do |reimbursement|
+        reimboursements.includes(:bank_account, :user, :fund, expenses: :fund).each do |reimbursement|
           xml.CdtTrfTxInf do |cdt|
             cdt.PmtId do |pmt_id|
               pmt_id.InstrId reimbursement.id.to_s
@@ -165,7 +165,7 @@ class Payment < ApplicationRecord
 
             # Informazioni di rimessa
             cdt.RmtInf do |rmt|
-              rmt.Ustrd "Rimborso spese n. #{reimbursement.id}"
+              rmt.Ustrd reimbursement.causale_bonifico
             end
           end
         end

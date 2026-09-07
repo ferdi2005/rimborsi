@@ -56,7 +56,7 @@ en:
         speaker_presenter: "Speaker/Presenter"
         scholarship_holder: "Scholarship holder"
         event_participant: "Event participant"
-        event_co_organizer: "Event co-organizer (specify association name, location and tax code in the other field)"
+        event_co_organizer: "Event co-organizer (specify association name, location and tax code)"
         other: "Other"
 
   rimborsi:

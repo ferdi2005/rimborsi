@@ -94,8 +94,11 @@
                           <div class="fw-bold">
                             <%= @reimboursement.user&.name %> <%= @reimboursement.user&.surname %>
                           </div>
-                          <div>
-                            <%= @reimboursement.role_in_italian %>
+                          <div class="mt-1">
+                            <strong>Ruolo:</strong> <%= @reimboursement.display_role %>
+                          </div>
+                          <div class="mt-1">
+                            <strong>Fondo:</strong> <%= @reimboursement.display_fund_name %>
                           </div>
                           <div class="mt-1">
                             <strong>Progetto:</strong> <%= @reimboursement.project %>
@@ -295,9 +298,11 @@
                             <% end %>
                           </td>
                           <td>
-                            <div class="small">
-                                <strong>Fondo:</strong> <%= expense.fund.name %><br/>
-                            </div>
+                            <% unless @reimboursement.single_fund? %>
+                              <div class="small">
+                                  <strong>Fondo:</strong> <%= expense.fund&.name %><br/>
+                              </div>
+                            <% end %>
                             <% if expense.car? %>
                               <!-- Dettagli spesa auto -->
                               <div class="small">

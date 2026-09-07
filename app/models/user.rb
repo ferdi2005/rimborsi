@@ -8,7 +8,6 @@ class User < ApplicationRecord
   before_destroy :check_associated_reimboursements
 
   # Associations
-  belongs_to :role, optional: true
   has_many :bank_accounts, dependent: :destroy
   has_many :vehicles, dependent: :destroy
   has_many :reimboursements, dependent: :destroy

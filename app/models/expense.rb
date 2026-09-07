@@ -22,7 +22,6 @@ class Expense < ApplicationRecord
   validates :requested_amount, presence: true, numericality: { greater_than: 0 }
   validates :purpose, presence: true
   validates :date, presence: true
-  validates :fund, presence: true
 
   # Validation: attachment is required only if not car expense
   validates :attachment, presence: true, unless: :car?
@@ -44,9 +43,11 @@ class Expense < ApplicationRecord
   validates :pneumatici, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: :car?
   validates :manutenzione, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: :car?
 
-
   # Callback per calcolare automaticamente l'importo per le spese auto
   before_save :calculate_auto_amount, if: :car?
+
+  # Callback per sincronizzare il fondo dal rimborso se non specificato
+  before_validation :sync_fund_from_reimboursement
 
   # Callback per impostare requested_amount uguale ad amount se non specificato
   before_validation :set_default_requested_amount
@@ -56,6 +57,14 @@ class Expense < ApplicationRecord
 
   # Callback per controllare file duplicati dopo la creazione
   after_create :check_for_duplicate_attachments
+
+  def sync_fund_from_reimboursement
+    self.fund_id ||= reimboursement&.fund_id
+  end
+
+  def effective_fund
+    fund || reimboursement&.fund
+  end
 
   # Scopes
   scope :car_expenses, -> { where(car: true) }

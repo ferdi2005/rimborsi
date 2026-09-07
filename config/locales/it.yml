@@ -8,7 +8,6 @@ it:
       bank_account: "conto bancario"
       paypal_account: "Account PayPal"
       project: "Progetto"
-      role: "Ruolo"
       note: "Nota"
     
     attributes:
@@ -93,12 +92,6 @@ it:
       
       project:
         name: "Nome progetto"
-        description: "Descrizione"
-        created_at: "Creato il"
-        updated_at: "Aggiornato il"
-      
-      role:
-        name: "Nome ruolo"
         description: "Descrizione"
         created_at: "Creato il"
         updated_at: "Aggiornato il"
@@ -233,7 +226,7 @@ it:
         speaker_presenter: "Relatore/Presentatore"
         scholarship_holder: "Borsista"
         event_participant: "Partecipatore evento"
-        event_co_organizer: "Co-organizzatore evento (indicare Nome associazione, sede e codice fiscale, saranno inseriti nel campo altro utilizzato)"
+        event_co_organizer: "Co-organizzatore evento (indicare Nome associazione, sede e codice fiscale)"
         other: "Altro"
 
   # Traduzioni generali dell'interfaccia

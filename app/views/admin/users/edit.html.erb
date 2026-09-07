@@ -34,21 +34,16 @@
     </div>
 
     <div class="col-md-6">
-      <%= form.label :fiscal_code, "Codice Fiscale", class: "form-label" %>
+      <%= form.label :fiscal_code, "Codice fiscale", class: "form-label" %>
       <%= form.text_field :fiscal_code, class: "form-control", required: true,
                           title: "Codice fiscale",
                           style: "text-transform: uppercase;" %>
     </div>
 
     <div class="col-md-6">
-      <%= form.label :role_id, "Ruolo", class: "form-label" %>
-      <%= form.collection_select :role_id, Role.all, :id, :label, { prompt: "Seleziona un ruolo" }, { class: "form-select" } %>
-    </div>
-
-    <div class="col-md-6">
       <div class="form-check mt-4">
         <%= form.check_box :active, class: "form-check-input" %>
-        <%= form.label :active, "Account Attivo", class: "form-check-label" %>
+        <%= form.label :active, "Account attivo", class: "form-check-label" %>
         <small class="form-text text-muted d-block">Deseleziona per disattivare l'accesso dell'utente</small>
       </div>
     </div>

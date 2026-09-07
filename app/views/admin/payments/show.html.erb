@@ -81,12 +81,13 @@
                     <th>Utente</th>
                     <th>Totale</th>
                     <th>IBAN</th>
+                    <th>Fondo e progetto</th>
                     <th>Stato</th>
                     <th>Azioni</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <% @payment.reimboursements.includes(:user, :bank_account).each do |reimboursement| %>
+                  <% @payment.reimboursements.includes(:user, :bank_account, :fund, expenses: :fund).each do |reimboursement| %>
                     <tr>
                       <td>#<%= reimboursement.id %></td>
                       <td>
@@ -101,6 +102,10 @@
                         <% else %>
                           <span class="text-muted">N/D</span>
                         <% end %>
+                      </td>
+                      <td>
+                        <strong><%= reimboursement.display_fund_name %></strong>
+                        <br><small class="text-muted"><%= reimboursement.project %></small>
                       </td>
                       <td>
                         <% 
