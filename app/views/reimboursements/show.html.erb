@@ -18,7 +18,7 @@
               <%= status_badge(@reimboursement.status, :reimboursement) %>
             </div>
             
-            <% if current_user.admin? %>
+            <% if current_user.admin? && !@reimboursement.status_draft? %>
               <div class="btn-group">
                 <% if @reimboursement.expenses.any? %>
                   <%= link_to t('reimboursements.show.open_approve_expenses'), approve_expenses_reimboursement_path(@reimboursement), class: "btn btn-sm btn-warning" %>
@@ -35,7 +35,31 @@
         </div>
         
         <div class="card-body">
-          <% if @reimboursement.status == 'created' %>
+          <% if @reimboursement.status_draft? %>
+            <div class="alert alert-secondary border-start border-secondary border-4 mb-4">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <i class="fas fa-file-alt fa-2x text-secondary"></i>
+                  </div>
+                  <div>
+                    <h6 class="alert-heading mb-1">
+                      <i class="fas fa-pencil-alt me-2"></i><%= t('.draft_title') %>
+                    </h6>
+                    <p class="mb-0"><%= t('.draft_message') %></p>
+                  </div>
+                </div>
+                <% if @reimboursement.user == current_user || current_user.admin? %>
+                  <div>
+                    <%= button_to t('reimboursements.show.submit_reimbursement'), submit_reimboursement_path(@reimboursement), 
+                                  method: :patch, 
+                                  data: { confirm: t('reimboursements.show.submit_confirm') },
+                                  class: "btn btn-success" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% elsif @reimboursement.status == 'created' %>
             <div class="alert alert-warning border-start border-warning border-4 mb-4">
               <div class="d-flex align-items-center">
                 <div class="me-3">
@@ -94,14 +118,38 @@
                           <div class="fw-bold">
                             <%= @reimboursement.user&.name %> <%= @reimboursement.user&.surname %>
                           </div>
-                          <div class="mt-1">
-                            <strong><%= t('activerecord.attributes.reimboursement.role') %>:</strong> <%= @reimboursement.display_role %>
+                          <% if @reimboursement.role.present? %>
+                            <div class="mt-1">
+                              <strong><%= t('activerecord.attributes.reimboursement.role') %>:</strong> <%= @reimboursement.display_role %>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar bg-light rounded-circle p-2 me-3">
+                          <%= neutral_icon("wallet") %>
+                        </div>
+                        <div>
+                          <small class="text-muted"><%= t('.labels.fund') %></small>
+                          <div class="fw-bold">
+                            <%= @reimboursement.display_fund_name %>
                           </div>
-                          <div class="mt-1">
-                            <strong><%= t('.expenses.fund') %>:</strong> <%= @reimboursement.display_fund_name %>
-                          </div>
-                          <div class="mt-1">
-                            <strong><%= t('.expenses.project') %>:</strong> <%= @reimboursement.display_project_name %>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar bg-light rounded-circle p-2 me-3">
+                          <%= neutral_icon("folder") %>
+                        </div>
+                        <div>
+                          <small class="text-muted"><%= t('.labels.project') %></small>
+                          <div class="fw-bold">
+                            <%= @reimboursement.display_project_name %>
                           </div>
                         </div>
                       </div>
@@ -401,38 +449,48 @@
             <div class="col-12">
               <h5><%= t('.notes.title') %></h5>
               
-              <!-- Form per aggiungere nuova nota -->
-              <div class="card mb-3">
-                <div class="card-header">
-                  <h6 class="mb-0"><%= t('.notes.add_title') %></h6>
-                </div>
-                <div class="card-body">
-                  <%= form_with model: [@reimboursement, Note.new], local: true, class: "mb-3" do |form| %>
-                    <div class="mb-3">
-                      <%= form.label :text, t('.notes.message_label'), class: "form-label" %>
-                      <%= form.text_area :text, rows: 3, class: "form-control", required: true, placeholder: t('.notes.message_placeholder') %>
-                    </div>
-                    
-                    <% if current_user.admin? %>
+              <% unless @reimboursement.status_draft? %>
+                <!-- Form per aggiungere nuova nota -->
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h6 class="mb-0"><%= t('.notes.add_title') %></h6>
+                  </div>
+                  <div class="card-body">
+                    <%= form_with model: [@reimboursement, Note.new], local: true, class: "mb-3" do |form| %>
                       <div class="mb-3">
-                        <%= form.label :status_change, t('.notes.change_status_label'), class: "form-label" %>
-                        <%= form.select :status_change, 
-                                      options_for_select(
-                                        [[t('.notes.no_change'), '']] + 
-                                        Reimboursement.status_translations.map { |key, value| [value, key] }
-                                      ), 
-                                      {}, 
-                                      { class: "form-select" } %>
-                        <small class="form-text text-muted"><%= t('.notes.change_status_help') %></small>
+                        <%= form.label :text, t('.notes.message_label'), class: "form-label" %>
+                        <%= form.text_area :text, rows: 3, class: "form-control", required: true, placeholder: t('.notes.message_placeholder') %>
+                      </div>
+                      
+                      <% if current_user.admin? %>
+                        <div class="mb-3">
+                          <%= form.label :status_change, t('.notes.change_status_label'), class: "form-label" %>
+                          <%
+                            available_note_statuses = Reimboursement.status_translations.reject { |k, _| k == 'draft' }
+                          %>
+                          <%= form.select :status_change, 
+                                        options_for_select(
+                                          [[t('.notes.no_change'), '']] + 
+                                          available_note_statuses.map { |key, value| [value, key] }
+                                        ), 
+                                        {}, 
+                                        { class: "form-select" } %>
+                          <small class="form-text text-muted"><%= t('.notes.change_status_help') %></small>
+                        </div>
+                      <% end %>
+                      
+                      <div class="d-flex justify-content-end">
+                        <%= form.submit t('.notes.submit'), class: "btn btn-primary" %>
                       </div>
                     <% end %>
-                    
-                    <div class="d-flex justify-content-end">
-                      <%= form.submit t('.notes.submit'), class: "btn btn-primary" %>
-                    </div>
-                  <% end %>
+                  </div>
                 </div>
-              </div>
+              <% else %>
+                <div class="alert alert-secondary mb-3">
+                  <i class="fas fa-info-circle me-1"></i>
+                  <%= t('reimboursements.show.notes.draft_notice') %>
+                </div>
+              <% end %>
               
               <!-- Lista delle note -->
               <% if @reimboursement.notes.any? %>
@@ -481,14 +539,31 @@
           </div>
         </div>
         
-        <div class="card-footer">
-          <%= link_to download_pdf_reimboursement_path(@reimboursement), class: "btn btn-outline-danger me-2" do %>
-            <i class="fas fa-file-pdf me-2"></i><%= t('.download_pdf') %>
-          <% end %>
-          <% if @reimboursement.can_be_edited_by?(current_user) %>
-            <%= link_to t('common.actions.edit'), edit_reimboursement_path(@reimboursement), class: "btn btn-primary" %>
-          <% end %>
-          <%= link_to t('common.actions.back'), reimboursements_path, class: "btn btn-secondary" %>
+        <div class="card-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <%= link_to download_pdf_reimboursement_path(@reimboursement), class: "btn btn-outline-danger me-2" do %>
+              <i class="fas fa-file-pdf me-2"></i><%= t('.download_pdf') %>
+            <% end %>
+            <% if @reimboursement.can_be_edited_by?(current_user) %>
+              <%= link_to t('common.actions.edit'), edit_reimboursement_path(@reimboursement), class: "btn btn-primary me-2" %>
+            <% end %>
+            <%= link_to t('common.actions.back'), reimboursements_path, class: "btn btn-secondary" %>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <% if @reimboursement.status_draft? && (@reimboursement.user == current_user || current_user.admin?) %>
+              <%= button_to t('reimboursements.show.submit_reimbursement'), submit_reimboursement_path(@reimboursement), 
+                            method: :patch, 
+                            data: { confirm: t('reimboursements.show.submit_confirm') },
+                            class: "btn btn-success" %>
+            <% end %>
+            <% if @reimboursement.status.in?(["draft", "created"]) && (@reimboursement.user == current_user || current_user.admin?) %>
+              <%= button_to t('common.actions.delete'), @reimboursement, 
+                            method: :delete, 
+                            data: { confirm: t('reimboursements.index.delete_confirm') }, 
+                            class: "btn btn-outline-danger" %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

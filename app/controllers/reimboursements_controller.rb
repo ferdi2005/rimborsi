@@ -1,10 +1,10 @@
 class ReimboursementsController < ApplicationController
-  before_action :set_reimboursement, only: %i[ show edit update destroy download_pdf approve_expenses approve_expense deny_expense approve_reimboursement ]
+  before_action :set_reimboursement, only: %i[ show edit update destroy download_pdf approve_expenses approve_expense deny_expense approve_reimboursement submit ]
 
   # GET /reimboursements or /reimboursements.json
   def index
     # Definisci gli stati di default
-    default_statuses = [ "created", "in_process", "waiting" ]
+    default_statuses = current_user.admin? ? [ "created", "in_process", "waiting" ] : [ "draft", "created", "in_process", "waiting" ]
 
     # Ottieni i parametri di filtro
     @filter_statuses = params[:statuses].present? ? params[:statuses].reject(&:blank?) : default_statuses
@@ -53,31 +53,58 @@ class ReimboursementsController < ApplicationController
 
   # POST /reimboursements or /reimboursements.json
   def create
+    saving_as_draft = params[:save_draft].present?
+
     if current_user.admin?
-      # Gli admin possono creare rimborsi per qualsiasi utente
-      @reimboursement = Reimboursement.new(reimboursement_params.except(:initial_note))
+      target_status = if params[:reimboursement][:status].present? && !saving_as_draft
+                        params[:reimboursement][:status]
+                      elsif saving_as_draft
+                        "draft"
+                      else
+                        "created"
+                      end
+      @reimboursement = Reimboursement.new(reimboursement_params.except(:initial_note).merge(status: target_status))
     else
-      # Gli utenti normali possono creare solo rimborsi per se stessi
-      @reimboursement = current_user.reimboursements.build(reimboursement_params.except(:user_id, :initial_note))
+      target_status = saving_as_draft ? "draft" : "created"
+      @reimboursement = current_user.reimboursements.build(reimboursement_params.except(:user_id, :initial_note).merge(status: target_status))
     end
 
     respond_to do |format|
-      if @reimboursement.save
-        # Crea la nota iniziale se presente
-        if params[:reimboursement][:initial_note].present?
-          @reimboursement.notes.create!(
-            text: params[:reimboursement][:initial_note],
-            user: current_user,
-            status_change: false
-          )
+      if saving_as_draft
+        if @reimboursement.save
+          create_initial_note_if_present
+          format.html { redirect_to @reimboursement, notice: t("controllers.reimboursements.create.draft_success") }
+          format.json { render :show, status: :created, location: @reimboursement }
+        else
+          @funds = Fund.active.order(:name)
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
         end
-
-        format.html { redirect_to @reimboursement, notice: t("controllers.reimboursements.create.success") }
-        format.json { render :show, status: :created, location: @reimboursement }
       else
-        @funds = Fund.active.order(:name)
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
+        # Tentativo di invio
+        if @reimboursement.valid? && @reimboursement.save
+          create_initial_note_if_present
+          format.html { redirect_to @reimboursement, notice: t("controllers.reimboursements.create.success") }
+          format.json { render :show, status: :created, location: @reimboursement }
+        else
+          # Se la validazione fallisce, salviamo come bozza per non perdere dati e allegati
+          validation_errors = @reimboursement.errors.dup
+          @reimboursement.status = "draft"
+          if @reimboursement.save
+            create_initial_note_if_present
+            validation_errors.each do |error|
+              @reimboursement.errors.import(error)
+            end
+            flash.now[:alert] = t("controllers.reimboursements.saved_as_draft_due_to_errors")
+            @funds = Fund.active.order(:name)
+            format.html { render :edit, status: :unprocessable_entity }
+            format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
+          else
+            @funds = Fund.active.order(:name)
+            format.html { render :new, status: :unprocessable_entity }
+            format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
+          end
+        end
       end
     end
   end
@@ -92,25 +119,54 @@ class ReimboursementsController < ApplicationController
       return
     end
 
+    update_attrs = reimboursement_params.except(:initial_note)
+
+    if @reimboursement.status_draft?
+      if params[:submit_reimbursement].present?
+        # Tentativo di invio da bozza a creato
+        @reimboursement.assign_attributes(update_attrs.merge(status: "created"))
+        if @reimboursement.valid?
+          @reimboursement.save
+          create_initial_note_if_present
+          respond_to do |format|
+            format.html { redirect_to @reimboursement, notice: t("controllers.reimboursements.submitted_success") }
+            format.json { render :show, status: :ok, location: @reimboursement }
+          end
+          return
+        else
+          # Non valido per l'invio: salva le modifiche come bozza e mostra errori
+          validation_errors = @reimboursement.errors.dup
+          @reimboursement.status = "draft"
+          @reimboursement.save
+          validation_errors.each do |error|
+            @reimboursement.errors.import(error)
+          end
+          flash.now[:alert] = t("controllers.reimboursements.draft_cannot_submit_due_to_errors")
+          @funds = Fund.active.order(:name)
+          respond_to do |format|
+            format.html { render :edit, status: :unprocessable_entity }
+            format.json { render json: @reimboursement.errors, status: :unprocessable_entity }
+          end
+          return
+        end
+      elsif params[:save_draft].present?
+        update_attrs[:status] = "draft" unless current_user.admin? && params[:reimboursement][:status].present?
+      end
+    end
+
     old_status = @reimboursement.status
 
     respond_to do |format|
-      if @reimboursement.update(reimboursement_params.except(:initial_note))
-        # Crea una nuova nota se è presente il campo initial_note
-        if params[:reimboursement][:initial_note].present?
-          @reimboursement.notes.create!(
-            text: params[:reimboursement][:initial_note],
-            user: current_user,
-            status_change: false
-          )
-        end
+      if @reimboursement.update(update_attrs)
+        create_initial_note_if_present
 
-        # Se lo status è cambiato, invia notifica email
-        if old_status != @reimboursement.status
-          ReimboursementMailer.status_changed(@reimboursement).deliver_later
-        end
+        notice_msg = if @reimboursement.status_draft?
+                       t("controllers.reimboursements.draft_update_success")
+                     else
+                       t("controllers.reimboursements.update_success")
+                     end
 
-        format.html { redirect_to @reimboursement, notice: t("controllers.reimboursements.update_success") }
+        format.html { redirect_to @reimboursement, notice: notice_msg }
         format.json { render :show, status: :ok, location: @reimboursement }
       else
         @funds = Fund.active.order(:name)
@@ -120,9 +176,33 @@ class ReimboursementsController < ApplicationController
     end
   end
 
+  # PATCH /reimboursements/1/submit
+  def submit
+    redirect_to root_path and return unless @reimboursement
+
+    unless @reimboursement.user == current_user || current_user.admin?
+      redirect_to @reimboursement, alert: t("controllers.reimboursements.cannot_modify")
+      return
+    end
+
+    unless @reimboursement.status_draft?
+      redirect_to @reimboursement, alert: t("controllers.reimboursements.cannot_submit")
+      return
+    end
+
+    @reimboursement.status = "created"
+    if @reimboursement.valid? && @reimboursement.save
+      redirect_to @reimboursement, notice: t("controllers.reimboursements.submitted_success")
+    else
+      validation_errors = @reimboursement.errors.full_messages.to_sentence
+      @reimboursement.status = "draft"
+      redirect_to edit_reimboursement_path(@reimboursement), alert: t("controllers.reimboursements.cannot_submit_with_errors", errors: validation_errors)
+    end
+  end
+
   # DELETE /reimboursements/1 or /reimboursements/1.json
   def destroy
-    unless @reimboursement.status_created?
+    unless @reimboursement.status_created? || @reimboursement.status_draft?
       redirect_to reimboursements_path, alert: t("controllers.reimboursements.cannot_delete")
       return
     end
@@ -138,8 +218,12 @@ class ReimboursementsController < ApplicationController
   # GET /reimboursements/1/approve_expenses
   def approve_expenses
     redirect_to root_path and return unless @reimboursement
-
     return admin_required unless current_user.admin?
+
+    if @reimboursement.status_draft?
+      redirect_to reimboursement_path(@reimboursement), alert: t("controllers.reimboursements.draft_cannot_approve_expenses")
+      return
+    end
 
     @current_expense_index = params[:expense_index]&.to_i || 0
     # Include sia spese normali che auto, ordinate per data
@@ -159,6 +243,11 @@ class ReimboursementsController < ApplicationController
     redirect_to root_path and return unless @reimboursement
     return admin_required unless current_user.admin?
 
+    if @reimboursement.status_draft?
+      redirect_to reimboursement_path(@reimboursement), alert: t("controllers.reimboursements.draft_cannot_approve_expenses")
+      return
+    end
+
     expense = @reimboursement.expenses.find(params[:expense_id])
 
     # Aggiorna il requested_amount se fornito
@@ -176,6 +265,11 @@ class ReimboursementsController < ApplicationController
   def deny_expense
     redirect_to root_path and return unless @reimboursement
     return admin_required unless current_user.admin?
+
+    if @reimboursement.status_draft?
+      redirect_to reimboursement_path(@reimboursement), alert: t("controllers.reimboursements.draft_cannot_approve_expenses")
+      return
+    end
 
     expense = @reimboursement.expenses.find(params[:expense_id])
 
@@ -210,6 +304,11 @@ class ReimboursementsController < ApplicationController
   def approve_reimboursement
     redirect_to root_path and return unless @reimboursement
     return admin_required unless current_user.admin?
+
+    if @reimboursement.status_draft?
+      redirect_to reimboursement_path(@reimboursement), alert: t("controllers.reimboursements.draft_cannot_approve_expenses")
+      return
+    end
 
     if @reimboursement.can_be_approved?
       @reimboursement.update!(status: "approved")
@@ -271,5 +370,15 @@ class ReimboursementsController < ApplicationController
       end
 
       params.require(:reimboursement).permit(permitted_params)
+    end
+
+    def create_initial_note_if_present
+      if params[:reimboursement] && params[:reimboursement][:initial_note].present?
+        @reimboursement.notes.create!(
+          text: params[:reimboursement][:initial_note],
+          user: current_user,
+          status_change: false
+        )
+      end
     end
 end

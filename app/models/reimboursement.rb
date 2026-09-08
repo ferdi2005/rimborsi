@@ -2,15 +2,15 @@ class Reimboursement < ApplicationRecord
   include PdfGeneratable
 
   belongs_to :user
-  belongs_to :bank_account
+  belongs_to :bank_account, optional: true
   belongs_to :payment, optional: true
   belongs_to :fund, optional: true
   has_many :expenses, dependent: :destroy
   has_many :notes, dependent: :destroy
 
-  validates :project, presence: true, length: { maximum: 255 }, if: -> { new_record? || project_was.present? }
-  validates :fund, presence: true, if: -> { new_record? || fund_id_was.present? }
-  validates :role, presence: true
+  validates :project, presence: true, length: { maximum: 255 }, unless: :status_draft?
+  validates :fund, presence: true, if: -> { !status_draft? && (new_record? || status_was == "draft" || fund_id_was.present?) }
+  validates :role, presence: true, unless: :status_draft?
 
   # Enumerativo per gli status
   enum :status, {
@@ -18,7 +18,8 @@ class Reimboursement < ApplicationRecord
     in_process: 1,
     approved: 2,
     paid: 3,
-    waiting: 4
+    waiting: 4,
+    draft: 5
   }, prefix: true
 
   # Enumerativo per il ruolo del richiedente
@@ -33,9 +34,11 @@ class Reimboursement < ApplicationRecord
   }, prefix: true
 
   # Validazioni
-  validate :must_have_payment_method
-  validate :must_have_expenses
-  validate :role_other_required_for_specific_roles
+  validate :must_have_payment_method, unless: :status_draft?
+  validate :must_have_expenses, unless: :status_draft?
+  validate :must_have_valid_expenses, unless: :status_draft?
+  validate :role_other_required_for_specific_roles, unless: :status_draft?
+  validate :cannot_return_to_draft
 
   # Nested attributes per le spese
   accepts_nested_attributes_for :expenses, reject_if: :all_blank, allow_destroy: true
@@ -78,6 +81,8 @@ class Reimboursement < ApplicationRecord
 
   # Metodo per verificare se il rimborso può essere approvato
   def can_be_approved?
+    return false if status_draft?
+
     # Tutte le spese devono essere approvate
     expenses.any? && expenses.all?(&:status_approved?) && status != "approved" && status != "paid"
   end
@@ -114,8 +119,8 @@ class Reimboursement < ApplicationRecord
   def can_be_edited_by?(user)
     return true if user.admin?
     return false unless user == self.user
-    # Gli utenti normali possono modificare solo i rimborsi in stato "created" o "waiting"
-    status.in?([ "created", "waiting" ])
+    # Gli utenti normali possono modificare i rimborsi in stato "draft", "created" o "waiting"
+    status.in?([ "draft", "created", "waiting" ])
   end
 
   def display_fund_name
@@ -154,7 +159,15 @@ class Reimboursement < ApplicationRecord
 
   private
 
+  def cannot_return_to_draft
+    if persisted? && status_draft? && status_was.present? && status_was != "draft"
+      errors.add(:status, :cannot_return_to_draft)
+    end
+  end
+
   def send_status_change_notification
+    return if status_draft?
+
     ReimboursementMailer.status_changed(self).deliver_later
   end
 
@@ -167,6 +180,23 @@ class Reimboursement < ApplicationRecord
   def must_have_expenses
     if expenses.empty? || expenses.all? { |expense| expense.marked_for_destruction? }
       errors.add(:base, :missing_expenses)
+    end
+  end
+
+  def must_have_valid_expenses
+    expenses.each_with_index do |expense, idx|
+      next if expense.marked_for_destruction?
+
+      expense.reimboursement = self
+      unless expense.valid?
+        expense.errors.each do |err|
+          msg = I18n.t("reimboursements.expenses.item_error",
+                       index: idx + 1,
+                       error: err.full_message,
+                       default: "Spesa %{index}: %{error}")
+          errors.add(:base, msg) unless errors[:base].include?(msg)
+        end
+      end
     end
   end
 

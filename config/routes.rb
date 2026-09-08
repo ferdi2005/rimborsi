@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       patch :deny_expense
       patch :approve_reimboursement
       get :download_pdf
+      patch :submit
     end
   end
   get "reimbursements", to: redirect("/reimbursement")

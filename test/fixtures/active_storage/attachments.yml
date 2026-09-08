@@ -1,0 +1,9 @@
+expense_one_attachment:
+  name: attachment
+  record: one (Expense)
+  blob: expense_one_blob
+
+expense_two_attachment:
+  name: attachment
+  record: two (Expense)
+  blob: expense_two_blob

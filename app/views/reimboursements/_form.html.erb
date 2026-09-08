@@ -23,9 +23,15 @@
           <% if current_user.admin? %>
             <div class="mb-3">
               <%= form.label :status, t('reimboursements.form.status_label'), class: "form-label" %>
+              <%
+                status_options = Reimboursement.status_translations
+                if reimboursement.persisted? && !reimboursement.status_draft?
+                  status_options = status_options.reject { |key, _| key == "draft" }
+                end
+              %>
               <%= form.select :status, 
                             options_for_select(
-                              Reimboursement.status_translations.map { |key, value| [value, key] },
+                              status_options.map { |key, value| [value, key] },
                               reimboursement.status
                             ), 
                             { prompt: t('reimboursements.form.select_status') }, 
@@ -54,24 +60,66 @@
               </div>
             </div>
             
-            <div class="alert alert-warning border-start border-warning border-4 mb-0">
-              <div class="d-flex align-items-center">
-                <div class="me-3">
-                  <i class="fas fa-plus-circle fa-2x text-warning"></i>
-                </div>
-                <div>
-                  <h6 class="mb-1">
-                    <i class="fas fa-clipboard-check me-2"></i><%= t('reimboursements.form.initial_status_title') %>
-                  </h6>
-                  <p class="mb-2">
-                  <%= status_badge("created", :reimboursement) %>
-                  </p>
-                  <small class="text-muted">
-                    <%= t('reimboursements.form.initial_status_text') %>
-                  </small>
+            <% if reimboursement.new_record? %>
+              <div class="alert alert-warning border-start border-warning border-4 mb-0">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <i class="fas fa-plus-circle fa-2x text-warning"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-1">
+                      <i class="fas fa-clipboard-check me-2"></i><%= t('reimboursements.form.initial_status_title') %>
+                    </h6>
+                    <p class="mb-2">
+                      <%= status_badge("draft", :reimboursement) %>
+                      <span class="mx-1 text-muted"><%= t('common.or', default: 'oppure') %></span>
+                      <%= status_badge("created", :reimboursement) %>
+                    </p>
+                    <small class="text-muted">
+                      <%= t('reimboursements.form.initial_status_text') %>
+                    </small>
+                  </div>
                 </div>
               </div>
-            </div>
+            <% elsif reimboursement.status_draft? %>
+              <div class="alert alert-secondary border-start border-secondary border-4 mb-0">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <i class="fas fa-file-alt fa-2x text-secondary"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-1">
+                      <i class="fas fa-pencil-alt me-2"></i><%= t('reimboursements.form.draft_status_title') %>
+                    </h6>
+                    <p class="mb-2">
+                      <%= status_badge("draft", :reimboursement) %>
+                    </p>
+                    <small class="text-muted">
+                      <%= t('reimboursements.form.draft_status_text') %>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            <% else %>
+              <div class="alert alert-info border-start border-info border-4 mb-0">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <i class="fas fa-clock fa-2x text-info"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-1">
+                      <i class="fas fa-clipboard-check me-2"></i><%= t('reimboursements.form.current_status_title') %>
+                    </h6>
+                    <p class="mb-2">
+                      <%= status_badge(reimboursement.status, :reimboursement) %>
+                    </p>
+                    <small class="text-muted">
+                      <%= t('reimboursements.form.already_created_cannot_draft') %>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           <% end %>
         </div>
       </div>
@@ -215,12 +263,33 @@
   </div>
 
   <!-- Bottoni di azione -->
-  <div class="d-flex justify-content-between">
+  <div class="d-flex justify-content-between align-items-center">
     <%= link_to t('common.actions.cancel'), reimboursements_path, class: 'btn btn-secondary' %>
-    <%= form.submit t('reimboursements.form.submit'), class: 'btn btn-success' %>
+    
+    <% if reimboursement.new_record? || reimboursement.status_draft? %>
+      <div class="d-flex gap-2">
+        <%= form.button t('reimboursements.form.save_draft'), 
+                        type: :submit, 
+                        name: 'save_draft', 
+                        value: '1', 
+                        formnovalidate: true, 
+                        class: 'btn btn-outline-primary' %>
+        <%= form.button t('reimboursements.form.submit'), 
+                        type: :submit, 
+                        name: 'submit_reimbursement', 
+                        value: '1', 
+                        class: 'btn btn-success' %>
+      </div>
+    <% else %>
+      <%= form.submit t('reimboursements.form.save_changes'), class: 'btn btn-primary' %>
+    <% end %>
   </div>
-  <div class="form-text text-end">
-    <%= t('reimboursements.form.submit_hint') %>
+  <div class="form-text text-end mt-2">
+    <% if reimboursement.new_record? || reimboursement.status_draft? %>
+      <%= t('reimboursements.form.submit_hint_draft_enabled') %>
+    <% else %>
+      <%= t('reimboursements.form.submit_hint') %>
+    <% end %>
   </div>
 
 <% end %>

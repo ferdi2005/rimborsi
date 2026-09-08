@@ -1,0 +1,15 @@
+expense_one_blob:
+  key: expense_one_key
+  filename: test.pdf
+  content_type: application/pdf
+  byte_size: 14
+  checksum: <%= OpenSSL::Digest::MD5.base64digest(File.read(Rails.root.join("test/fixtures/files/test.pdf"))) %>
+  service_name: test
+
+expense_two_blob:
+  key: expense_two_key
+  filename: test.pdf
+  content_type: application/pdf
+  byte_size: 14
+  checksum: <%= OpenSSL::Digest::MD5.base64digest(File.read(Rails.root.join("test/fixtures/files/test.pdf"))) %>
+  service_name: test

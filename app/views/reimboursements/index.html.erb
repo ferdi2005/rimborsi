@@ -141,7 +141,7 @@
               <% end %>
               <% if reimboursement.user_id == current_user.id || current_user.admin? %>
                 <%= link_to t('common.actions.edit'), edit_reimboursement_path(reimboursement), class: "btn btn-outline-secondary btn-sm" %>
-                <% if reimboursement.status == "created" %>
+                <% if reimboursement.status.in?(["created", "draft"]) %>
                   <%= button_to t('common.actions.delete'), reimboursement, method: :delete, 
                               data: { confirm: t('.delete_confirm') }, 
                               class: "btn btn-outline-danger btn-sm" %>

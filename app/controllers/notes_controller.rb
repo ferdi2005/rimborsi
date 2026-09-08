@@ -4,6 +4,14 @@ class NotesController < ApplicationController
   before_action :check_permissions
 
   def create
+    if @reimboursement.status_draft?
+      respond_to do |format|
+        format.html { redirect_to @reimboursement, alert: t("controllers.notes.draft_cannot_add_note") }
+        format.json { render json: { status: "error", message: t("controllers.notes.draft_cannot_add_note") }, status: :unprocessable_entity }
+      end
+      return
+    end
+
     @note = @reimboursement.notes.build(note_params)
     @note.user = current_user
 

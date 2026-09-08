@@ -65,6 +65,11 @@ module StatusHelper
         text: "In attesa dell'utente",
         class: "status-waiting",
         icon: "pause-circle"
+      },
+      "draft" => {
+        text: "Bozza",
+        class: "status-draft",
+        icon: "file-alt"
       }
     }
   end

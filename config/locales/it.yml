@@ -14,6 +14,7 @@ it:
       bank_account: "conto bancario"
       paypal_account: "Account PayPal"
       project: "Progetto"
+      role: "Ruolo"
       note: "Nota"
     attributes:
       expense:
@@ -43,6 +44,10 @@ it:
         status: Stato
         role: Ruolo
         role_other: Altro (breve)
+        project: Progetto
+        project_id: Progetto
+        fund: Fondo
+        fund_id: Fondo
         user: Utente
         user_id: Utente
         bank_account: conto bancario
@@ -82,6 +87,9 @@ it:
         description: "Descrizione"
         created_at: "Creato il"
         updated_at: "Aggiornato il"
+      role:
+        name: "Nome ruolo"
+        description: "Descrizione"
       note:
         text: Testo
         reimboursement: Rimborso
@@ -135,6 +143,8 @@ it:
               missing_expenses: deve avere almeno una spesa
             role_other:
               blank_for_selected_role: deve essere compilato per il ruolo selezionato
+            status:
+              cannot_return_to_draft: non può tornare in bozza
         user:
           attributes:
             locale:
@@ -167,6 +177,7 @@ it:
         denied: Negato
         in_process: In elaborazione
         waiting: In attesa dell'utente
+        draft: Bozza
       role:
         volunteer: "Volontario"
         employee_collaborator: "Dipendente/Collaboratore"
@@ -232,6 +243,7 @@ it:
       no_data: Nessun dato disponibile
       loading: Caricamento...
     at_time: alle
+    or: oppure
   rimborsi:
     expense_types:
       normal: Normale
@@ -311,12 +323,21 @@ it:
       create_error: Errore nel salvare la nota.
       delete_success: Nota eliminata con successo.
       unauthorized: Non hai i permessi per accedere a questo rimborso.
+      draft_cannot_add_note: Non è possibile aggiungere note a un rimborso in bozza.
     reimboursements:
       cannot_modify: Non puoi modificare questo rimborso. I rimborsi possono essere modificati solo se sono in stato 'Creato' o 'In attesa', oppure se sei un amministratore.
       create:
-        success: "\U0001F389 Rimborso creato con successo! Riceverai aggiornamenti via email per ogni cambio di stato."
+        success: "🎉 Rimborso creato con successo! Riceverai aggiornamenti via email per ogni cambio di stato."
+        draft_success: Bozza salvata con successo.
+      draft_update_success: Bozza aggiornata con successo.
+      submitted_success: Rimborso inviato con successo.
+      saved_as_draft_due_to_errors: Il rimborso è stato salvato come bozza perché contiene errori che devono essere corretti prima dell'invio.
+      draft_cannot_submit_due_to_errors: Non è stato possibile inviare il rimborso. Le modifiche sono state salvate come bozza, correggi gli errori per inviarlo.
+      cannot_submit: Solo i rimborsi in bozza possono essere inviati.
+      cannot_submit_with_errors: "Non è possibile inviare il rimborso: %{errors}."
+      draft_cannot_approve_expenses: Non è possibile revisionare i giustificativi di un rimborso in bozza.
       update_success: Rimborso aggiornato con successo.
-      cannot_delete: Non puoi eliminare un rimborso che non è in attesa di elaborazione. Solo i rimborsi in stato 'Creato' possono essere eliminati.
+      cannot_delete: Non puoi eliminare questo rimborso. Solo i rimborsi in stato 'Bozza' o 'Creato' possono essere eliminati.
       delete_success: Rimborso eliminato con successo.
       all_expenses_reviewed: Tutti i giustificativi sono stati revisionati.
       expense_approved: Giustificativo approvato.
@@ -429,6 +450,15 @@ it:
       submit: Salva e invia rimborso
       submit_hint: Potrai modificare il rimborso anche dopo l'invio fino a quando non passerà in approvazione dalla segreteria.
       amount_placeholder: Inserisci importo
+      draft_status_title: Rimborso in bozza
+      draft_status_text: Questo rimborso è salvato come bozza e non è ancora stato inviato alla segreteria.
+      current_status_title: Stato attuale
+      already_created_cannot_draft: Il rimborso è già stato inviato e non può più tornare in bozza.
+      save_draft: Salva come bozza
+      save_changes: Salva modifiche
+      submit_hint_draft_enabled: Puoi salvare come bozza per completarlo in seguito oppure inviarlo direttamente alla segreteria.
+    expenses:
+      item_error: "Spesa %{index}: %{error}"
     expense_fields:
       delete_confirm: Sei sicuro di voler cancellare questa spesa?
       marked_for_deletion: Spesa marcata per la cancellazione
@@ -529,10 +559,16 @@ it:
       created_updates_via_email: Ti invieremo aggiornamenti via email per ogni cambio di stato
       waiting_title: Rimborso in attesa
       waiting_message: Il tuo rimborso richiede attenzione. Controlla le note per eventuali richieste di chiarimenti.
+      draft_title: Rimborso in bozza
+      draft_message: Questo rimborso è salvato come bozza e non è ancora stato inviato. Puoi modificarlo o inviarlo quando sei pronto.
+      submit_reimbursement: Invia rimborso
+      submit_confirm: Sei sicuro di voler inviare questo rimborso? Non potrà più essere riportato in bozza.
       info:
         title: Informazioni
       labels:
         requester: Richiedente
+        fund: Fondo
+        project: Progetto
         current_status: Stato attuale
         created_at: Data creazione
         updated_at: Ultima modifica
@@ -574,6 +610,7 @@ it:
       calculation_date_label: 'Data calcolo:'
       notes:
         title: Note e comunicazioni
+        draft_notice: Le note potranno essere inserite una volta inviato il rimborso.
         add_title: Aggiungi nota
         message_label: Messaggio
         message_placeholder: Scrivi un messaggio...

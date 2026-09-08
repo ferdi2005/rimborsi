@@ -195,4 +195,54 @@ class ReimboursementTest < ActiveSupport::TestCase
   test "generate_pdf genera correttamente il documento anche con spese e progetti" do
     assert_not_nil @reimboursement.generate_pdf
   end
+
+  test "supporta lo stato bozza (draft)" do
+    draft = Reimboursement.new(
+      user: users(:one),
+      status: :draft
+    )
+    assert draft.status_draft?
+    assert draft.can_be_edited_by?(users(:one))
+    assert_not draft.can_be_approved?
+    assert_equal "Bozza", draft.status_name
+  end
+
+  test "un rimborso creato non puo tornare in bozza" do
+    assert @reimboursement.status_created?
+    @reimboursement.status = :draft
+    assert_not @reimboursement.valid?
+    assert_includes @reimboursement.errors[:status], "non può tornare in bozza"
+  end
+
+  test "le spese possono essere salvate come bozza con validazioni rilassate" do
+    draft = Reimboursement.new(
+      user: users(:one),
+      status: :draft
+    )
+    expense = draft.expenses.build(purpose: "Bozza senza importo")
+    assert expense.valid?
+  end
+
+  test "una bozza con problemi non e pronta per l invio e non puo passare a created" do
+    draft = Reimboursement.create!(
+      user: users(:one),
+      bank_account: bank_accounts(:one),
+      fund: funds(:one),
+      project: "",
+      role: "volunteer",
+      status: :draft
+    )
+    draft.expenses.create!(
+      purpose: "Spesa senza allegato",
+      amount: 10.0,
+      requested_amount: 10.0,
+      date: Date.current,
+      car: false
+    )
+
+    draft.status = :created
+    assert_not draft.valid?
+    assert draft.errors[:project].any?
+    assert draft.errors[:base].any? { |msg| msg.include?("Allegato") }
+  end
 end

@@ -17,31 +17,31 @@ class Expense < ApplicationRecord
   }, prefix: true
 
   # Validazioni
-  validates :amount, presence: true, unless: :car?
+  validates :amount, presence: true, unless: -> { car? || reimboursement&.status_draft? }
   validates :amount, numericality: { greater_than: 0 }, allow_blank: true
-  validates :requested_amount, presence: true, numericality: { greater_than: 0 }
-  validates :purpose, presence: true
-  validates :date, presence: true
+  validates :requested_amount, presence: true, numericality: { greater_than: 0 }, unless: -> { reimboursement&.status_draft? }
+  validates :purpose, presence: true, unless: -> { reimboursement&.status_draft? }
+  validates :date, presence: true, unless: -> { reimboursement&.status_draft? }
 
   # Validation: attachment is required only if not car expense
-  validates :attachment, presence: true, unless: :car?
+  validates :attachment, presence: true, unless: -> { car? || reimboursement&.status_draft? }
 
   # Validazione del formato dell'allegato
   validate :validate_attachment_format, if: -> { attachment.attached? }
 
   # Validazione che il requested_amount non superi l'amount
-  validate :validate_requested_amount_not_exceeding_amount
+  validate :validate_requested_amount_not_exceeding_amount, unless: -> { reimboursement&.status_draft? }
 
   # Validazioni specifiche per spese auto
-  validates :calculation_date, presence: true, if: :car?
-  validates :departure, presence: true, if: :car?
-  validates :arrival, presence: true, if: :car?
-  validates :distance, presence: true, numericality: { greater_than: 0 }, if: :car?
-  validates :vehicle, presence: true, if: :car?
-  validates :quota_capitale, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: :car?
-  validates :carburante, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: :car?
-  validates :pneumatici, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: :car?
-  validates :manutenzione, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: :car?
+  validates :calculation_date, presence: true, if: -> { car? && !reimboursement&.status_draft? }
+  validates :departure, presence: true, if: -> { car? && !reimboursement&.status_draft? }
+  validates :arrival, presence: true, if: -> { car? && !reimboursement&.status_draft? }
+  validates :distance, presence: true, numericality: { greater_than: 0 }, if: -> { car? && !reimboursement&.status_draft? }
+  validates :vehicle, presence: true, if: -> { car? && !reimboursement&.status_draft? }
+  validates :quota_capitale, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: -> { car? && !reimboursement&.status_draft? }
+  validates :carburante, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: -> { car? && !reimboursement&.status_draft? }
+  validates :pneumatici, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: -> { car? && !reimboursement&.status_draft? }
+  validates :manutenzione, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: -> { car? && !reimboursement&.status_draft? }
 
   # Callback per calcolare automaticamente l'importo per le spese auto
   before_save :calculate_auto_amount, if: :car?

@@ -60,6 +60,13 @@
   border-color: #9ca3af20;
 }
 
+/* Draft states - Slate/Neutral theme */
+.status-draft {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
 /* Unknown/Generic states */
 .status-unknown,
 .status-generic {
@@ -145,6 +152,12 @@
     background-color: #374151;
     color: #d1d5db;
     border-color: #6b728040;
+  }
+  
+  .status-draft {
+    background-color: #1e293b;
+    color: #94a3b8;
+    border-color: #47556940;
   }
   
   /* Dark mode icon colors */

@@ -44,6 +44,10 @@ en:
         status: Status
         role: Role
         role_other: Other (short)
+        project: Project
+        project_id: Project
+        fund: Fund
+        fund_id: Fund
         user: User
         user_id: User
         bank_account: Bank account
@@ -81,6 +85,8 @@ en:
       project:
         name: Project name
         description: Description
+        created_at: Created at
+        updated_at: Updated at
       role:
         name: Role name
         description: Description
@@ -137,6 +143,8 @@ en:
               missing_expenses: must have at least one expense
             role_other:
               blank_for_selected_role: must be filled for the selected role
+            status:
+              cannot_return_to_draft: cannot return to draft
         user:
           attributes:
             locale:
@@ -169,6 +177,7 @@ en:
         denied: Denied
         in_process: In process
         waiting: Waiting for user
+        draft: Draft
       role:
         volunteer: "Volunteer"
         employee_collaborator: "Employee/Collaborator"
@@ -234,6 +243,7 @@ en:
       no_data: No data available
       loading: Loading...
     at_time: at
+    or: or
   mailers:
     reimboursement:
       admin_note_notification:
@@ -432,12 +442,21 @@ en:
       create_error: Error saving note.
       delete_success: Note deleted successfully.
       unauthorized: You do not have permission to access this reimbursement.
+      draft_cannot_add_note: Cannot add notes to a draft reimbursement.
     reimboursements:
       cannot_modify: You cannot edit this reimbursement. Reimbursements can only be edited if in 'Created' or 'Pending' status, or if you are an administrator.
       create:
-        success: "\U0001F389 Reimbursement created successfully! You will receive email updates for each status change."
+        success: "🎉 Reimbursement created successfully! You will receive email updates for each status change."
+        draft_success: Draft saved successfully.
+      draft_update_success: Draft updated successfully.
+      submitted_success: Reimbursement submitted successfully.
+      saved_as_draft_due_to_errors: The reimbursement was saved as draft because it contains errors that must be corrected before submission.
+      draft_cannot_submit_due_to_errors: Could not submit reimbursement. Changes were saved as draft, please correct errors to submit.
+      cannot_submit: Only draft reimbursements can be submitted.
+      cannot_submit_with_errors: "Cannot submit reimbursement: %{errors}."
+      draft_cannot_approve_expenses: Cannot review expenses for a draft reimbursement.
       update_success: Reimbursement updated successfully.
-      cannot_delete: You cannot delete a reimbursement that is not pending processing. Only reimbursements in 'Created' status can be deleted.
+      cannot_delete: You cannot delete this reimbursement. Only reimbursements in 'Draft' or 'Created' status can be deleted.
       delete_success: Reimbursement deleted successfully.
       all_expenses_reviewed: All expenses have been reviewed.
       expense_approved: Expense approved.
@@ -550,6 +569,15 @@ en:
       submit: Save and submit reimbursement
       submit_hint: You will be able to edit the reimbursement after submission until it enters office approval.
       amount_placeholder: Enter amount
+      draft_status_title: Reimbursement draft
+      draft_status_text: This reimbursement is saved as a draft and has not been submitted to the office yet.
+      current_status_title: Current status
+      already_created_cannot_draft: The reimbursement has already been submitted and cannot return to draft.
+      save_draft: Save as draft
+      save_changes: Save changes
+      submit_hint_draft_enabled: You can save as a draft to complete it later or submit it directly to the office.
+    expenses:
+      item_error: "Expense %{index}: %{error}"
     expense_fields:
       delete_confirm: Are you sure you want to delete this expense?
       marked_for_deletion: Expense marked for deletion
@@ -650,10 +678,16 @@ en:
       created_updates_via_email: We will send you updates by email for each status change
       waiting_title: Reimbursement Pending
       waiting_message: Your reimbursement requires attention. Check notes for any clarification requests.
+      draft_title: Reimbursement draft
+      draft_message: This reimbursement is saved as a draft and has not been submitted yet. You can edit it or submit it when ready.
+      submit_reimbursement: Submit reimbursement
+      submit_confirm: Are you sure you want to submit this reimbursement? It cannot be returned to draft.
       info:
         title: Information
       labels:
         requester: Requester
+        fund: Fund
+        project: Project
         current_status: Current status
         created_at: Created at
         updated_at: Last updated
@@ -695,6 +729,7 @@ en:
       calculation_date_label: 'Calculation date:'
       notes:
         title: Notes and communications
+        draft_notice: Notes can be added once the reimbursement is submitted.
         add_title: Add Note
         message_label: Message
         message_placeholder: Write a message...
