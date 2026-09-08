@@ -51,7 +51,7 @@ end
 
 namespace :deploy do
     namespace :check do
-      before :linked_files, :set_master_key do
+      before :linked_files, :upload_config_files do
         on roles(:app), in: :sequence, wait: 10 do
             stage = fetch(:stage)
             env_candidates = [".env.#{stage}", ".env"]
@@ -63,23 +63,30 @@ namespace :deploy do
             else
               puts "No .env file found locally (checked: #{env_candidates.join(', ')})."
             end
-        end
-      end
-    end
-end
 
-
-
-namespace :deploy do
-    namespace :check do
-      before :linked_files, :set_master_key do
-        on roles(:app), in: :sequence, wait: 10 do
-            puts "Uploading config file file..."
+            execute :mkdir, "-p", "#{shared_path}/config"
+            puts "Uploading config/puma.rb to #{shared_path}/config/puma.rb..."
             upload! "config/puma.rb", "#{shared_path}/config/puma.rb"
         end
       end
     end
 end
+
+
+
+namespace :puma do
+  desc "Crea le directory tmp/sockets e tmp/pids in shared_path se non esistono"
+  task :make_dirs do
+    on roles(:app) do
+      execute :mkdir, "-p", "#{shared_path}/tmp/sockets", "#{shared_path}/tmp/pids"
+    end
+  end
+
+  before :start, :make_dirs
+  before :restart, :make_dirs
+  before :install, :make_dirs
+end
+
 
 
 namespace :bundler do

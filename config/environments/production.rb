@@ -84,7 +84,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address:         ENV["EMAIL_SMTP_ADDRESS"] || "mail.wikimedia.it",
-    port:            ENV["PORT"] || 587,
+    port:            ENV["EMAIL_SMTP_PORT"] || ENV["PORT"] || 587,
     domain:          ENV["HOST"] || "rimborsi.wikimedia.it",
     user_name:       ENV["MAIL_USERNAME"],
     password:        ENV["MAIL_PASSWORD"],
