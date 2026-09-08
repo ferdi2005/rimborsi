@@ -849,7 +849,7 @@ it:
         na: N/D
         details: Dettagli
         none_associated: Nessun rimborso associato a questo pagamento.
-        mark_as_paid: Marca come pagato
+        mark_as_paid: Marca come pagato e carica su NextCloud
         mark_as_paid_confirm: Sei sicuro di voler marcare questo pagamento come pagato? Questa azione avvierà il processo di generazione PDF e caricamento.
         revert_to_created: Riporta a creato
         revert_confirm: Sei sicuro di voler riportare questo pagamento a 'creato'? I rimborsi torneranno allo stato 'approvato'.

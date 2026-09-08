@@ -968,7 +968,7 @@ en:
         na: N/A
         details: Details
         none_associated: No reimbursements associated with this payment.
-        mark_as_paid: Mark as paid
+        mark_as_paid: Mark as paid and upload on NextCloud
         mark_as_paid_confirm: Are you sure you want to mark this payment as paid? This action will start PDF generation and upload.
         revert_to_created: Revert to created
         revert_confirm: Are you sure you want to revert this payment to 'created'? Reimbursements will return to 'approved' status.

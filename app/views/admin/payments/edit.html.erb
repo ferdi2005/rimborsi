@@ -129,7 +129,7 @@
           
           <p class="small">
             <strong><%= t('admin.payments.edit.currently_included') %></strong><br>
-            €<%= number_with_precision(@payment.total_amount, precision: 2) %>
+            €<%= number_with_precision(@payment.total, precision: 2) %>
             <% if @payment.reimboursements.any? %>
               <br><small class="text-muted">
                 (<%= pluralize(@payment.reimboursements.count, t('admin.payments.index.reimbursement_singular'), t('admin.payments.index.reimbursement_plural')) %>)
@@ -160,7 +160,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const checkboxes = document.querySelectorAll('input[name="payment[reimboursement_ids][]"]');
-  const currentTotal = <%= @payment.total_amount %>;
+  const currentTotal = <%= @payment.total %>;
   
   const updateTotal = () => {
     let total = 0;
