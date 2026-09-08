@@ -28,6 +28,10 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     registrations: "users/registrations"
   }
+  devise_scope :user do
+    patch "users/dismiss_whats_new", to: "users/registrations#dismiss_whats_new", as: :dismiss_whats_new
+  end
+
 
   # Admin routes
   namespace :admin do

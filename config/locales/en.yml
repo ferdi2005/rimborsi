@@ -1073,4 +1073,15 @@ en:
         account_active_label: Account active
         account_active_help: Uncheck to disable user's access
         update_user: Update user
+  whats_new:
+    title: "Platform updates"
+    dismiss: "Understood"
+    content_html: |-
+      <p class="mb-2">The following new features have been introduced:</p>
+      <ul class="mb-0 ps-3">
+        <li class="mb-2"><strong>One reimbursement, one project and one fund:</strong> each reimbursement request is now associated directly with a single project and a single fund.</li>
+        <li class="mb-2"><strong>Draft status:</strong> new reimbursement requests are created in draft status and can be edited before final submission.</li>
+        <li><strong>English translation:</strong> the interface is now also available in English, selectable from the top menu.</li>
+      </ul>
+
 

@@ -4,6 +4,22 @@ class Users::RegistrationsController < Devise::RegistrationsController
     redirect_to edit_user_registration_path, alert: t("controllers.users.registrations.destroy_forbidden")
   end
 
+  def dismiss_whats_new
+    if user_signed_in?
+      current_user.update_column(:seen_whats_new, true)
+      respond_to do |format|
+        format.json { head :ok }
+        format.html { redirect_back(fallback_location: root_path) }
+      end
+    else
+      respond_to do |format|
+        format.json { head :unauthorized }
+        format.html { redirect_to new_user_session_path }
+      end
+    end
+  end
+
+
   protected
 
   def update_resource(resource, params)

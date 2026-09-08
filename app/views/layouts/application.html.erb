@@ -28,6 +28,10 @@
       <% end %>
       <%= render 'layouts/navbar' %>
       <%= yield %>
+      <% if user_signed_in? && !current_user.seen_whats_new? %>
+        <%= render 'layouts/whats_new_modal' %>
+      <% end %>
     </div>
   </body>
+
 </html>

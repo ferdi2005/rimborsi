@@ -1073,5 +1073,16 @@ it:
         fiscal_code_label: Codice fiscale
         fiscal_code_help: Codice fiscale
         fiscal_code_title: Codice fiscale
+  whats_new:
+    title: "Novità della piattaforma"
+    dismiss: "Ho capito"
+    content_html: |-
+      <p class="mb-2">Sono state introdotte le seguenti novità:</p>
+      <ul class="mb-0 ps-3">
+        <li class="mb-2"><strong>Un rimborso = un progetto e un fondo:</strong> per trasparenza e gestione contabile, ogni richiesta di rimborso deve essere associata direttamente a un unico progetto e a un unico fondo. Deve essere inoltre indicato il ruolo ricoperto da chi richiede il rimborso (volontario, organizzatore, borsista...).</li>
+        <li class="mb-2"><strong>Stato bozza:</strong> le nuove richieste di rimborso vengono create in stato di bozza e possono essere modificate prima dell'invio definitivo.</li>
+        <li><strong>Traduzione in inglese:</strong> l'interfaccia è ora disponibile anche in lingua inglese, selezionabile dal menu in alto.</li>
+      </ul>
+
 
 
