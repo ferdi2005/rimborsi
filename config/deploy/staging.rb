@@ -1,5 +1,6 @@
 set :stage,           :staging
-set :rails_env,       :production
+set :rails_env,       :staging
+set :bundle_without,  %w[development test production].join(":")
 set :user, "deploy"
 server "c.ferdi.cc", user: "deploy", port: 22, roles: [ :web, :app, :db, :worker ], primary: true
 set :deploy_to,       "/home/#{fetch(:user)}/apps/#{fetch(:application)}"

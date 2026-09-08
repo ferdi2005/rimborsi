@@ -1,5 +1,5 @@
 set :user, "rimborsi"
-set :bundle_flags, "--without development test staging"
+set :bundle_without, %w[development test staging].join(":")
 
 set :stage, :production
 server "morfema.wikimedia.it", user: "rimborsi", port: 22, roles: [ :web, :app, :db, :worker ], primary: true
