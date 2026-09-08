@@ -13,6 +13,7 @@ class PaymentTest < ActiveSupport::TestCase
     expected_causale = @reimboursement.causale_bonifico
 
     assert_includes xml, "<Ustrd>#{expected_causale}</Ustrd>"
+    assert_includes xml, "<BtchBookg>false</BtchBookg>"
     assert_includes xml, @reimboursement.fund.name
     assert_includes xml, @reimboursement.project
   end

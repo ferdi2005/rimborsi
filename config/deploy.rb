@@ -12,15 +12,16 @@ set :puma_workers,    0
 set :pty,             true
 set :use_sudo,        false
 set :deploy_via,      :remote_cache
-set :puma_bind,       "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
-set :puma_state,      "#{shared_path}/tmp/pids/puma.state"
-set :puma_pid,        "#{shared_path}/tmp/pids/puma.pid"
-set :puma_access_log, "#{release_path}/log/puma.access.log"
-set :puma_error_log,  "#{release_path}/log/puma.error.log"
+set :puma_bind,       -> { "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock" }
+set :puma_state,      -> { "#{shared_path}/tmp/pids/puma.state" }
+set :puma_pid,        -> { "#{shared_path}/tmp/pids/puma.pid" }
+set :puma_access_log, -> { "#{release_path}/log/puma.access.log" }
+set :puma_error_log,  -> { "#{release_path}/log/puma.error.log" }
 set :puma_preload_app, true
 set :puma_worker_timeout, nil
 set :puma_phased_restart, true
 set :puma_enable_socket_service, true # importantissimo per far funzionare puma
+set :puma_systemd_watchdog_sec, 0      # disabilita watchdog che uccide puma se non configurato
 set :puma_init_active_record, true  # Change to false when not using ActiveRecord
 set :sidekiq_roles, :worker                  # Default role for Sidekiq processes
 set :sidekiq_default_hooks, true             # Enable default deployment hooks
@@ -52,8 +53,16 @@ namespace :deploy do
     namespace :check do
       before :linked_files, :set_master_key do
         on roles(:app), in: :sequence, wait: 10 do
-            puts "Uploading .env file..."
-            upload! ".env", "#{shared_path}/.env"
+            stage = fetch(:stage)
+            env_candidates = [".env.#{stage}", ".env"]
+            local_env = env_candidates.find { |f| File.exist?(f) }
+
+            if local_env
+              puts "Uploading #{local_env} to #{shared_path}/.env..."
+              upload! local_env, "#{shared_path}/.env"
+            else
+              puts "No .env file found locally (checked: #{env_candidates.join(', ')})."
+            end
         end
       end
     end

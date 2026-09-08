@@ -99,6 +99,7 @@ class Payment < ApplicationRecord
       xml.PmtInf do |pmt|
         pmt.PmtInfId "pagrimb#{id}"
         pmt.PmtMtd "TRF"
+        pmt.BtchBookg "false"
         pmt.PmtTpInf do |pmt_tp|
           pmt_tp.SvcLvl do |svc|
             svc.Cd "SEPA"
