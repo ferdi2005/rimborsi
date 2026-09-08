@@ -353,7 +353,7 @@
                             <% end %>
                             <% unless @reimboursement.single_project? %>
                               <div class="small">
-                                  <strong><%= t('.expenses.project') %>:</strong> <%= expense.project %><br/>
+                                  <strong><%= t('.expenses.project') %>:</strong> <%= expense.effective_project %><br/>
                               </div>
                             <% end %>
                             <% if expense.car? %>

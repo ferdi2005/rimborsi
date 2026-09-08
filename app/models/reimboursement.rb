@@ -50,6 +50,7 @@ class Reimboursement < ApplicationRecord
 
   # Callbacks
   after_update :send_status_change_notification, if: :saved_change_to_status?
+  after_save :sync_project_to_expenses, if: :saved_change_to_project?
 
   # Metodi per la traduzione degli status e ruoli
   def self.status_translations
@@ -146,9 +147,20 @@ class Reimboursement < ApplicationRecord
   end
 
   def single_project?
-    return true if project.present?
+    distinct_projects = expenses.map(&:project).compact.reject(&:blank?).uniq
+    return false if distinct_projects.size > 1
 
-    expenses.map(&:project).compact.reject(&:blank?).uniq.size <= 1
+    true
+  end
+
+  def sync_project_to_expenses
+    return if project.blank?
+
+    if single_project?
+      expenses.where(project: [nil, "", project_before_last_save]).update_all(project: project)
+    else
+      expenses.where(project: [nil, ""]).update_all(project: project)
+    end
   end
 
   def causale_bonifico

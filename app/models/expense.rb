@@ -46,8 +46,9 @@ class Expense < ApplicationRecord
   # Callback per calcolare automaticamente l'importo per le spese auto
   before_validation :calculate_auto_amount, if: :car?
 
-  # Callback per sincronizzare il fondo dal rimborso se non specificato
+  # Callback per sincronizzare fondo e progetto dal rimborso se non specificati
   before_validation :sync_fund_from_reimboursement
+  before_validation :sync_project_from_reimboursement
 
   # Callback per impostare requested_amount uguale ad amount se non specificato
   before_validation :set_default_requested_amount
@@ -58,13 +59,23 @@ class Expense < ApplicationRecord
   # Callback per controllare file duplicati dopo la creazione
   after_create :check_for_duplicate_attachments
 
+
   def sync_fund_from_reimboursement
     self.fund_id ||= reimboursement&.fund_id
+  end
+
+  def sync_project_from_reimboursement
+    self.project = reimboursement.project if reimboursement&.project.present? && project.blank?
   end
 
   def effective_fund
     fund || reimboursement&.fund
   end
+
+  def effective_project
+    project.presence || reimboursement&.project
+  end
+
 
   # Scopes
   scope :car_expenses, -> { where(car: true) }

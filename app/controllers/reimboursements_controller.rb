@@ -357,7 +357,7 @@ class ReimboursementsController < ApplicationController
                          expenses_attributes: [
                            :id, :amount, :requested_amount, :purpose, :date, :car, :attachment, :_destroy,
                            :calculation_date, :departure, :arrival, :distance, :return_trip,
-                           :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione
+                           :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione, :project
                          ] ]
 
       # Se è admin, può anche modificare user_id e status

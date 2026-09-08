@@ -380,7 +380,7 @@ module PdfGeneratable
 
       # Mostra il progetto per riga solo nei rimborsi storici a progetti multipli
       unless single_project?
-        composer.text("Progetto: #{expense.project}", font_size: 11)
+        composer.text("Progetto: #{expense.effective_project}", font_size: 11)
       end
 
       # Se è una spesa auto, mostra i dettagli specifici

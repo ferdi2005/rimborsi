@@ -85,7 +85,9 @@ namespace :puma do
   before :start, :make_dirs
   before :restart, :make_dirs
   before :install, :make_dirs
+  before :restart, :restart_socket
 end
+
 
 
 

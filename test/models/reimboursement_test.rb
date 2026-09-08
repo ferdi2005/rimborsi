@@ -71,7 +71,41 @@ class ReimboursementTest < ActiveSupport::TestCase
     r_history.expenses.build(project: "Progetto B", amount: 20, requested_amount: 20, purpose: "Test", date: Date.current)
     assert_not r_history.single_project?
     assert_equal "Progetto A, Progetto B", r_history.display_project_name
+
+    # Rimborso con project presente ma spese su progetti diversi deve essere considerato multiplo
+    r_multi = Reimboursement.new(project: "Progetto A / Progetto B")
+    r_multi.expenses.build(project: "Progetto A", amount: 10, requested_amount: 10, purpose: "Test", date: Date.current)
+    r_multi.expenses.build(project: "Progetto B", amount: 20, requested_amount: 20, purpose: "Test", date: Date.current)
+    assert_not r_multi.single_project?
+    assert_equal "Progetto A / Progetto B", r_multi.display_project_name
   end
+
+  test "sincronizza automaticamente project sulle nuove spese create con il rimborso" do
+    expense = @reimboursement.expenses.build(
+      purpose: "Spesa con progetto ereditato",
+      date: Date.current,
+      amount: 15.0,
+      requested_amount: 15.0,
+      car: false
+    )
+    expense.attachment.attach(
+      io: StringIO.new("%PDF-1.4 dummy pdf"),
+      filename: "test.pdf",
+      content_type: "application/pdf"
+    )
+    assert @reimboursement.save
+    assert_equal @reimboursement.project, expense.project
+  end
+
+  test "aggiorna il progetto delle spese collegate quando il progetto del rimborso cambia" do
+    expense = @reimboursement.expenses.first
+    assert_equal @reimboursement.project, expense.project
+
+    @reimboursement.update!(project: "Progetto Rinominato")
+    expense.reload
+    assert_equal "Progetto Rinominato", expense.project
+  end
+
 
   test "validates payment method and expenses with i18n messages" do
     r = Reimboursement.new(bank_account: nil)

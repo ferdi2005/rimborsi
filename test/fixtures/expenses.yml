@@ -9,6 +9,7 @@ one:
   car: false
   status: 0
   fund: one
+  project: "Wiki Loves Monuments"
 
 two:
   reimboursement: two
@@ -19,3 +20,5 @@ two:
   car: false
   status: 0
   fund: two
+  project: "Wiki Loves Puglia"
+
