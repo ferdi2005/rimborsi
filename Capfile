@@ -26,7 +26,12 @@ require "capistrano/rails"
 require 'capistrano/rails/assets'
 require 'capistrano/rails/migrations'
 
-require "capistrano/rbenv"
+stage = ARGV.find { |arg| %w[staging production].include?(arg) } || ENV["STAGE"]
+if stage == "staging"
+  require "capistrano/rvm"
+else
+  require "capistrano/rbenv"
+end
 require 'capistrano/puma'
 install_plugin Capistrano::Puma
 # cap production puma:config

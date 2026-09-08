@@ -3,7 +3,7 @@ set :rails_env,       :production
 set :user, "deploy"
 server "c.ferdi.cc", user: "deploy", port: 22, roles: [ :web, :app, :db, :worker ], primary: true
 set :deploy_to,       "/home/#{fetch(:user)}/apps/#{fetch(:application)}"
-set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_rsa] }
+set :ssh_options,     { forward_agent: true, user: fetch(:user) }
 set :sidekiq_user, fetch(:user)
 set :puma_user, fetch(:user)
 

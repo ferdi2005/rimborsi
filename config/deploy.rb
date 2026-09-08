@@ -1,5 +1,5 @@
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.19.2"
+lock "~> 3.20"
 
 set :application, "rimborsi"
 
@@ -26,7 +26,7 @@ set :sidekiq_roles, :worker                  # Default role for Sidekiq processe
 set :sidekiq_default_hooks, true             # Enable default deployment hooks
 set :sidekiq_env, fetch(:rack_env, fetch(:rails_env, fetch(:stage)))  # Environment for Sidekiq processes
 # Single config file
-#set :service_unit_user, :system
+# set :service_unit_user, :system
 
 set :nginx_template, "deploy/nginx.conf.erb"
 
