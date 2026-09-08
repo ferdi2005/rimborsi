@@ -1,3 +1,6 @@
+require "dotenv"
+Dotenv.load
+
 # Puma configuration file
 # https://github.com/puma/puma/blob/master/examples/config.rb
 
@@ -31,5 +34,6 @@ plugin :tmp_restart
 
 # Bind to unix socket for Nginx (production)
 unless ENV["RAILS_ENV"] == "development"
-  bind ENV["PUMA_SOCKET"] || "unix:///home/rimborsi/apps/rimborsi/shared/tmp/sockets/rimborsi-puma.sock"
+  default_socket = "unix://#{File.expand_path('~/apps/rimborsi/shared/tmp/sockets/rimborsi-puma.sock')}"
+  bind ENV["PUMA_SOCKET"] || default_socket
 end
