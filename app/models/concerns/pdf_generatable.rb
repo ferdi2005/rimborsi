@@ -13,30 +13,32 @@ module PdfGeneratable
   def generate_pdf
     return nil if expenses.empty?
 
-    begin
-      # Create main PDF with expense details using HexaPDF::Composer
-      composer = HexaPDF::Composer.new(page_size: :A4, margin: 50)
+    I18n.with_locale(:it) do
+      begin
+        # Create main PDF with expense details using HexaPDF::Composer
+        composer = HexaPDF::Composer.new(page_size: :A4, margin: 50)
 
-      # Set default font and styles
-      composer.style(:base, font: "Helvetica", font_size: 12)
+        # Set default font and styles
+        composer.style(:base, font: "Helvetica", font_size: 12)
 
-      create_pdf_header(composer)
-      create_pdf_body(composer)
-      create_pdf_footer(composer)
+        create_pdf_header(composer)
+        create_pdf_body(composer)
+        create_pdf_footer(composer)
 
-      # If there are attachments, combine them with the main PDF
-      if has_attachments?
-        combine_with_attachments(composer.document)
-      else
-        io = StringIO.new
-        composer.write(io, optimize: true)
-        io.string
+        # If there are attachments, combine them with the main PDF
+        if has_attachments?
+          combine_with_attachments(composer.document)
+        else
+          io = StringIO.new
+          composer.write(io, optimize: true)
+          io.string
+        end
+      rescue StandardError => e
+        Rails.logger.error "Error generating PDF for reimbursement #{id}: #{e.message}"
+        puts "Error generating PDF: #{e.message}"
+        puts e.backtrace
+        nil
       end
-    rescue StandardError => e
-      Rails.logger.error "Error generating PDF for reimbursement #{id}: #{e.message}"
-      puts "Error generating PDF: #{e.message}"
-      puts e.backtrace
-      nil
     end
   end
 
@@ -325,10 +327,13 @@ module PdfGeneratable
                   font: "Helvetica bold",
                   margin: [ 0, 0, 20 ])
 
-    # Informazioni utente
-    composer.text("Richiedente: #{user.name} #{user.surname} (#{role_name})", font_size: 14)
+    composer.text("Richiedente: #{user.name} #{user.surname}", font_size: 14)
+    composer.text("Ruolo: #{display_role}", font_size: 12)
     composer.text("Email: #{user.email}", font_size: 12)
     composer.text("Data creazione: #{created_at.strftime('%d/%m/%Y')}", font_size: 12)
+    composer.text("Fondo: #{display_fund_name}", font_size: 14)
+    composer.text("Progetto: #{display_project_name}", font_size: 14)
+
     composer.text("Totale: € #{number_with_precision(total_amount, precision: 2)}",
                   font_size: 14,
                   font: "Helvetica bold",
@@ -346,7 +351,7 @@ module PdfGeneratable
   end
 
   def create_pdf_body(composer)
-    composer.text("Dettaglio Spese:", font_size: 16,
+    composer.text("Dettaglio spese:", font_size: 16,
                   font: "Helvetica bold",
                   margin: [ 0, 0, 10 ])
 
@@ -368,8 +373,15 @@ module PdfGeneratable
         composer.text("Importo richiesto: € #{number_with_precision(expense.requested_amount, precision: 2)}", font_size: 11)
       end
 
-      composer.text("Fondo: #{expense.fund.name}", font_size: 11)
-      composer.text("Progetto: #{expense.project}", font_size: 11)
+      # Mostra il fondo per riga solo nei rimborsi storici a fondi multipli
+      unless single_fund?
+        composer.text("Fondo: #{expense.fund&.name}", font_size: 11)
+      end
+
+      # Mostra il progetto per riga solo nei rimborsi storici a progetti multipli
+      unless single_project?
+        composer.text("Progetto: #{expense.project}", font_size: 11)
+      end
 
       # Se è una spesa auto, mostra i dettagli specifici
       if expense.car?
@@ -444,7 +456,7 @@ module PdfGeneratable
 
     # Informazioni pagamento
     if bank_account
-      composer.text("Coordinate Bancarie:", font_size: 14,
+      composer.text("Coordinate bancarie:", font_size: 14,
                     font: "Helvetica bold")
       composer.text("IBAN: #{bank_account.iban}", font_size: 12)
       composer.text("Intestatario: #{bank_account.owner}", font_size: 12)

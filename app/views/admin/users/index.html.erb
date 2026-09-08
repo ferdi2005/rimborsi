@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <h1><%= t('.title') %></h1>
+  <h1><%= t('admin.users.index.title') %></h1>
   
   <div class="table-responsive">
     <table class="table table-striped">
@@ -10,7 +10,6 @@
           <th><%= t('admin.users.index.email_th') %></th>
           <th><%= t('admin.users.index.phone_th') %></th>
           <th><%= t('admin.users.index.fiscal_code_th') %></th>
-          <th><%= t('admin.users.index.role_th') %></th>
           <th><%= t('admin.users.index.status_th') %></th>
           <th><%= t('admin.users.index.reimbursements_th') %></th>
           <th><%= t('common.labels.actions') %></th>
@@ -19,17 +18,16 @@
       <tbody>
         <% @users.each do |user| %>
           <tr class="<%= 'table-warning' unless user.active? %>">
-            <td><%= user.name %></td>
-            <td><%= user.surname %></td>
-            <td><%= user.email %></td>
-            <td><%= user.telephone %></td>
-            <td><%= user.fiscal_code.presence || "-" %></td>
             <td>
-              <%= user.role&.label %>
+              <%= user.name %>
               <% if user.admin? %>
                 <span class="badge bg-danger ms-1">Admin</span>
               <% end %>
             </td>
+            <td><%= user.surname %></td>
+            <td><%= user.email %></td>
+            <td><%= user.telephone %></td>
+            <td><%= user.fiscal_code.presence || "-" %></td>
             <td>
               <% if user.active? %>
                 <span class="badge bg-success">Attivo</span>

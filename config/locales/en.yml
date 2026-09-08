@@ -132,6 +132,9 @@ en:
               required_for_non_italian: is required for non-Italian bank accounts
         reimboursement:
           attributes:
+            base:
+              missing_bank_account: a bank account must be selected
+              missing_expenses: must have at least one expense
             role_other:
               blank_for_selected_role: must be filled for the selected role
         user:
@@ -167,13 +170,13 @@ en:
         in_process: In process
         waiting: Waiting for user
       role:
-        volunteer: Volunteer
-        employee_collaborator: Employee/collaborator
-        speaker_presenter: Speaker/presenter
-        scholarship_holder: Scholarship holder
-        event_participant: Event participant
-        event_co_organizer: Event co-organizer (specify association name, location and tax code in the other field)
-        other: Other
+        volunteer: "Volunteer"
+        employee_collaborator: "Employee/Collaborator"
+        speaker_presenter: "Speaker/Presenter"
+        scholarship_holder: "Scholarship holder"
+        event_participant: "Event participant"
+        event_co_organizer: "Event co-organizer (specify association name, location and tax code)"
+        other: "Other"
     payment:
       status:
         created: Pending processing
@@ -357,6 +360,7 @@ en:
     payment_methods:
       bank: Bank account
       paypal: PayPal
+      none: None
     messages:
       calculation_help: Use https://costikm.aci.it/ to calculate the required values
       attachment_help: Upload receipt or invoice (only for non-car expenses)
@@ -471,6 +475,12 @@ en:
       next_steps: Next steps
       next_steps_text: Your reimbursement is now in "Created" status and will soon be reviewed by an administrator.
   reimboursements:
+    role:
+      not_specified: Not specified
+    funds:
+      not_assigned: Not assigned
+    projects:
+      not_assigned: Not assigned
     index:
       title: Reimbursements
       new: New reimbursement
@@ -672,7 +682,8 @@ en:
         xml: XML
         no_attachment: No attachment
         none: No expenses in this reimbursement.
-        requested_of: requested of $ %{amount}
+        requested_of: requested of € %{amount}
+        of_amount: of € %{amount}
       totals:
         net: Net Total
         denied: Denied Expenses
@@ -1027,3 +1038,4 @@ en:
         account_active_label: Account active
         account_active_help: Uncheck to disable user's access
         update_user: Update user
+

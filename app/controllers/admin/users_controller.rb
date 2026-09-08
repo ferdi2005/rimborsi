@@ -3,7 +3,7 @@ class Admin::UsersController < ApplicationController
   before_action :set_user, only: [ :show, :edit, :update, :destroy, :deactivate, :activate ]
 
   def index
-    @users = User.includes(:role).order(:name, :surname)
+    @users = User.order(:name, :surname)
   end
 
   def show
@@ -50,6 +50,6 @@ class Admin::UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:name, :surname, :email, :telephone, :fiscal_code, :active, :role_id)
+    params.require(:user).permit(:name, :surname, :email, :telephone, :fiscal_code, :active)
   end
 end

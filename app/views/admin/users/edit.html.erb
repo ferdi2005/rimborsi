@@ -41,11 +41,6 @@
     </div>
 
     <div class="col-md-6">
-      <%= form.label :role_id, t('admin.users.edit.role_label'), class: "form-label" %>
-      <%= form.collection_select :role_id, Role.all, :id, :label, { prompt: t('admin.users.edit.select_role_prompt') }, { class: "form-select" } %>
-    </div>
-
-    <div class="col-md-6">
       <div class="form-check mt-4">
         <%= form.check_box :active, class: "form-check-input" %>
         <%= form.label :active, t('admin.users.edit.account_active_label'), class: "form-check-label" %>

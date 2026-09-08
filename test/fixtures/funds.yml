@@ -1,0 +1,9 @@
+one:
+  name: "Fondo itWikiCon"
+  budget: 15000.00
+  active: true
+
+two:
+  name: "Fondo Wikimania"
+  budget: 20000.00
+  active: true

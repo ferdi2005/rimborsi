@@ -4,8 +4,13 @@ class Reimboursement < ApplicationRecord
   belongs_to :user
   belongs_to :bank_account
   belongs_to :payment, optional: true
+  belongs_to :fund, optional: true
   has_many :expenses, dependent: :destroy
   has_many :notes, dependent: :destroy
+
+  validates :project, presence: true, length: { maximum: 255 }, if: -> { new_record? || project_was.present? }
+  validates :fund, presence: true, if: -> { new_record? || fund_id_was.present? }
+  validates :role, presence: true
 
   # Enumerativo per gli status
   enum :status, {
@@ -22,7 +27,7 @@ class Reimboursement < ApplicationRecord
     employee_collaborator: "dipendente",
     speaker_presenter: "relatore",
     scholarship_holder: "borsista",
-    event_participant: "partecipatore",
+    event_participant: "partecipante",
     event_co_organizer: "co_organizzatore",
     other: "altro"
   }, prefix: true
@@ -60,8 +65,15 @@ class Reimboursement < ApplicationRecord
     self.class.status_translations[status] || status.humanize
   end
 
-  def role_name
-    self.class.role_translations[role] || role.to_s.humanize
+  def display_role
+    return I18n.t("reimboursements.role.not_specified", default: "Non specificato") if role.blank?
+
+    base = self.class.role_translations[role] || role.to_s.humanize
+    if role_other.present? && (role_event_co_organizer? || role_other?)
+      "#{base} (#{role_other})"
+    else
+      base
+    end
   end
 
   # Metodo per verificare se il rimborso può essere approvato
@@ -76,8 +88,11 @@ class Reimboursement < ApplicationRecord
   end
 
   def payment_method_type
-    return "conto bancario" if bank_account.present?
-    "Nessuno"
+    if bank_account.present?
+      I18n.t("rimborsi.payment_methods.bank", default: "conto bancario")
+    else
+      I18n.t("rimborsi.payment_methods.none", default: "nessuno")
+    end
   end
 
   # Calcola il totale escludendo le spese negate
@@ -103,6 +118,40 @@ class Reimboursement < ApplicationRecord
     status.in?([ "created", "waiting" ])
   end
 
+  def display_fund_name
+    return fund.name if fund.present?
+
+    # Fallback per rimborsi storici con spese su fondi multipli o non ancora sincronizzati
+    fund_names = expenses.map(&:fund).compact.map(&:name).uniq
+    fund_names.any? ? fund_names.join(", ") : I18n.t("reimboursements.funds.not_assigned", default: "Non assegnato")
+  end
+
+  def single_fund?
+    return true if fund.present?
+
+    expenses.map(&:fund_id).compact.uniq.size <= 1
+  end
+
+  def display_project_name
+    return project if project.present?
+
+    # Fallback per rimborsi storici con spese su progetti multipli o non ancora sincronizzati
+    project_names = expenses.map(&:project).compact.reject(&:blank?).uniq
+    project_names.any? ? project_names.join(", ") : I18n.t("reimboursements.projects.not_assigned", default: "Non assegnato")
+  end
+
+  def single_project?
+    return true if project.present?
+
+    expenses.map(&:project).compact.reject(&:blank?).uniq.size <= 1
+  end
+
+  def causale_bonifico
+    base_text = "Rimborso spese n. #{id} - #{display_fund_name} - #{display_project_name}"
+    cleaned = base_text.gsub(/\s+/, " ").strip
+    cleaned.truncate(140)
+  end
+
   private
 
   def send_status_change_notification
@@ -111,13 +160,13 @@ class Reimboursement < ApplicationRecord
 
   def must_have_payment_method
     if bank_account.blank?
-      errors.add(:base, "Deve essere selezionato un conto bancario")
+      errors.add(:base, :missing_bank_account)
     end
   end
 
   def must_have_expenses
     if expenses.empty? || expenses.all? { |expense| expense.marked_for_destruction? }
-      errors.add(:base, "Deve avere almeno una spesa")
+      errors.add(:base, :missing_expenses)
     end
   end
 

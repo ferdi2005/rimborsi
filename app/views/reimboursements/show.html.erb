@@ -10,7 +10,7 @@
             </h2>
             <small class="text-muted">
               <%= neutral_icon("calendar", class: "me-1") %>
-              <%= t('.created', time: @reimboursement.created_at.strftime("%d/%m/%Y alle %H:%M")) %>
+              <%= t('.created', time: @reimboursement.created_at.strftime("%d/%m/%Y #{t('common.at_time')} %H:%M")) %>
             </small>
           </div>
           <div class="d-flex align-items-center">
@@ -94,8 +94,14 @@
                           <div class="fw-bold">
                             <%= @reimboursement.user&.name %> <%= @reimboursement.user&.surname %>
                           </div>
-                          <div>
-                            <%= @reimboursement.role_name %>
+                          <div class="mt-1">
+                            <strong><%= t('activerecord.attributes.reimboursement.role') %>:</strong> <%= @reimboursement.display_role %>
+                          </div>
+                          <div class="mt-1">
+                            <strong><%= t('.expenses.fund') %>:</strong> <%= @reimboursement.display_fund_name %>
+                          </div>
+                          <div class="mt-1">
+                            <strong><%= t('.expenses.project') %>:</strong> <%= @reimboursement.display_project_name %>
                           </div>
                         </div>
                       </div>
@@ -285,17 +291,23 @@
                                 <strong>€ <%= number_with_precision(expense.requested_amount, precision: 2) %></strong>
                                 <% if expense.requested_amount != expense.amount %>
                                   <small class="text-muted d-block">
-                                    di € <%= number_with_precision(expense.amount, precision: 2) %>
+                                    <%= t('reimboursements.show.expenses.of_amount', amount: number_with_precision(expense.amount, precision: 2)) %>
                                   </small>
                                 <% end %>
                               </div>
                             <% end %>
                           </td>
                           <td>
-                            <div class="small">
-                                <strong><%= t('.expenses.fund') %>:</strong> <%= expense.fund.name %><br/>
-                                <strong><%= t('.expenses.project') %>:</strong> <%= expense.project %><br/>
-                            </div>
+                            <% unless @reimboursement.single_fund? %>
+                              <div class="small">
+                                  <strong><%= t('.expenses.fund') %>:</strong> <%= expense.fund&.name %><br/>
+                              </div>
+                            <% end %>
+                            <% unless @reimboursement.single_project? %>
+                              <div class="small">
+                                  <strong><%= t('.expenses.project') %>:</strong> <%= expense.project %><br/>
+                              </div>
+                            <% end %>
                             <% if expense.car? %>
                               <!-- Dettagli spesa auto -->
                               <div class="small">
@@ -438,7 +450,7 @@
                               <i class="fas fa-sticky-note me-1"></i><%= t('.notes.initial') %>
                             </span>
                           <% end %>
-                          <small class="text-muted ms-2"><%= t('.notes.note_time', time: note.created_at.strftime("%d/%m/%Y alle %H:%M")) %></small>
+                          <small class="text-muted ms-2"><%= t('.notes.note_time', time: note.created_at.strftime("%d/%m/%Y #{t('common.at_time')} %H:%M")) %></small>
                         </div>
                         <% if current_user.admin? %>
                           <%= button_to [@reimboursement, note], method: :delete, 

@@ -2,6 +2,10 @@
 
 one:
   label: MyString
+  created_at: 2024-10-18 13:17:42
+  updated_at: 2024-10-18 13:17:42
 
 two:
   label: MyString
+  created_at: 2024-10-18 13:17:42
+  updated_at: 2024-10-18 13:17:42

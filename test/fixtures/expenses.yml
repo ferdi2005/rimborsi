@@ -8,6 +8,7 @@ one:
   requested_amount: 9.99
   car: false
   status: 0
+  fund: one
 
 two:
   reimboursement: two
@@ -17,4 +18,4 @@ two:
   requested_amount: 9.99
   car: false
   status: 0
-
+  fund: two

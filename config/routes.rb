@@ -24,7 +24,6 @@ Rails.application.routes.draw do
   get "reimbursements/:id", to: redirect("/reimbursement/%{id}")
   get "reimbursements/:id/:action", to: redirect("/reimbursement/%{id}/%{action}")
 
-  resources :roles
   devise_for :users, controllers: {
     registrations: "users/registrations"
   }

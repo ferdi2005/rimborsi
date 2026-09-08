@@ -28,7 +28,6 @@ class ExpensesTest < ApplicationSystemTestCase
     fill_in "Manutenzione", with: @expense.manutenzione
     fill_in "Model", with: @expense.model
     fill_in "Pneumatici", with: @expense.pneumatici
-    fill_in "Project", with: @expense.project_id
     fill_in "Purpose", with: @expense.purpose
     fill_in "Quota capitale", with: @expense.quota_capitale
     fill_in "Reimboursment", with: @expense.reimboursement_id
@@ -57,7 +56,6 @@ class ExpensesTest < ApplicationSystemTestCase
     fill_in "Manutenzione", with: @expense.manutenzione
     fill_in "Model", with: @expense.model
     fill_in "Pneumatici", with: @expense.pneumatici
-    fill_in "Project", with: @expense.project_id
     fill_in "Purpose", with: @expense.purpose
     fill_in "Quota capitale", with: @expense.quota_capitale
     fill_in "Reimboursment", with: @expense.reimboursement_id

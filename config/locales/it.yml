@@ -7,15 +7,14 @@ it:
         other: 'Si sono verificati %{count} errori che hanno impedito il salvataggio:'
   activerecord:
     models:
-      expense: Spesa
-      reimboursement: Rimborso
-      user: Utente
-      vehicle: Veicolo
-      bank_account: conto bancario
-      paypal_account: Account PayPal
-      project: Progetto
-      role: Ruolo
-      note: Nota
+      expense: "Spesa"
+      reimboursement: "Rimborso"
+      user: "Utente"
+      vehicle: "Veicolo"
+      bank_account: "conto bancario"
+      paypal_account: "Account PayPal"
+      project: "Progetto"
+      note: "Nota"
     attributes:
       expense:
         amount: Importo
@@ -79,11 +78,10 @@ it:
         user_id: Utente
         default: Predefinito
       project:
-        name: Nome progetto
-        description: Descrizione
-      role:
-        name: Nome ruolo
-        description: Descrizione
+        name: "Nome progetto"
+        description: "Descrizione"
+        created_at: "Creato il"
+        updated_at: "Aggiornato il"
       note:
         text: Testo
         reimboursement: Rimborso
@@ -132,6 +130,9 @@ it:
               required_for_non_italian: è obbligatorio per conti bancari non italiani
         reimboursement:
           attributes:
+            base:
+              missing_bank_account: deve essere selezionato un conto bancario
+              missing_expenses: deve avere almeno una spesa
             role_other:
               blank_for_selected_role: deve essere compilato per il ruolo selezionato
         user:
@@ -167,13 +168,13 @@ it:
         in_process: In elaborazione
         waiting: In attesa dell'utente
       role:
-        volunteer: Volontario
-        employee_collaborator: Dipendente/collaboratore
-        speaker_presenter: Relatore/presentatore
-        scholarship_holder: Borsista
-        event_participant: Partecipante evento
-        event_co_organizer: Co-organizzatore evento (indicare nome associazione, sede e codice fiscale nel campo altro)
-        other: Altro
+        volunteer: "Volontario"
+        employee_collaborator: "Dipendente/Collaboratore"
+        speaker_presenter: "Relatore/Presentatore"
+        scholarship_holder: "Borsista"
+        event_participant: "Partecipante evento"
+        event_co_organizer: "Co-organizzatore evento (indicare Nome associazione, sede e codice fiscale)"
+        other: "Altro"
     payment:
       status:
         created: In attesa di elaborazione
@@ -238,6 +239,7 @@ it:
     payment_methods:
       bank: conto bancario
       paypal: PayPal
+      none: nessuno
     messages:
       calculation_help: Utilizza https://costikm.aci.it/ per calcolare i parametri necessari
       attachment_help: Carica ricevuta o fattura (solo per spese non auto)
@@ -352,6 +354,12 @@ it:
       next_steps: Prossimi passi
       next_steps_text: Il tuo rimborso è ora nello stato "Creato" e sarà presto revisionato da un amministratore.
   reimboursements:
+    role:
+      not_specified: Non specificato
+    funds:
+      not_assigned: Non assegnato
+    projects:
+      not_assigned: Non assegnato
     index:
       title: Rimborsi
       new: Nuovo rimborso
@@ -554,6 +562,7 @@ it:
         no_attachment: Nessun allegato
         none: Nessuna spesa presente in questo rimborso.
         requested_of: richiesto di € %{amount}
+        of_amount: di € %{amount}
       totals:
         net: Totale netto
         denied: Spese negate
@@ -1027,3 +1036,5 @@ it:
         fiscal_code_label: Codice fiscale
         fiscal_code_help: Codice fiscale
         fiscal_code_title: Codice fiscale
+
+

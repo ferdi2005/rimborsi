@@ -3,7 +3,7 @@ require "test_helper"
 class ExpenseTest < ActiveSupport::TestCase
   def setup
     @user = users(:one)
-    @fund = projects(:one)
+    @fund = funds(:one)
     @reimboursement = reimboursements(:one)
   end
 

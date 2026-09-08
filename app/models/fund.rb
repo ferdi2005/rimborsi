@@ -1,4 +1,5 @@
 class Fund < ApplicationRecord
+  has_many :reimboursements, dependent: :nullify
   has_many :expenses, dependent: :nullify
 
   validates :name, presence: true, uniqueness: true
