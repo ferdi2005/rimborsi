@@ -101,9 +101,9 @@
             <!-- Informazioni generali -->
             <div class="col-md-6">
               <div class="card h-100">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-light py-3">
                   <h5 class="mb-0">
-                    <%= info_icon("info-circle", class: "me-2") %> <%= t('.info.title') %>
+                    <%= neutral_icon("info-circle", class: "me-2 text-primary") %> <%= t('.info.title') %>
                   </h5>
                 </div>
                 <div class="card-body">
@@ -202,11 +202,11 @@
                     <div class="col-12">
                       <div class="d-flex align-items-center">
                         <div class="avatar bg-light rounded-circle p-2 me-3">
-                          <%= success_icon("euro-sign") %>
+                          <%= neutral_icon("euro-sign") %>
                         </div>
                         <div>
                           <small class="text-muted"><%= t('.labels.total_amount') %></small>
-                          <div class="fw-bold fs-5 text-success">
+                          <div class="fw-bold fs-5">
                             € <%= number_with_precision(@reimboursement.total_amount, precision: 2) %>
                           </div>
                           <% if @reimboursement.denied_amount > 0 %>
@@ -225,9 +225,9 @@
             <!-- Metodo di pagamento -->
             <div class="col-md-6">
               <div class="card h-100">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
-                    <%= info_icon("credit-card", class: "me-2") %> <%= t('.payment.title') %>
+                <div class="card-header bg-light py-3">
+                  <h5 class="mb-0">
+                    <%= neutral_icon("credit-card", class: "me-2 text-primary") %> <%= t('.payment.title') %>
                   </h5>
                 </div>
                 <div class="card-body">
@@ -236,7 +236,7 @@
                       <div class="d-flex align-items-center">
                         <div class="avatar bg-light rounded-circle p-2 me-3">
                           <% if @reimboursement.bank_account.present? %>
-                            <%= primary_icon("university") %>
+                            <%= neutral_icon("university") %>
                           <% else %>
                             <%= muted_icon("question") %>
                           <% end %>
@@ -254,7 +254,7 @@
                       <div class="col-12">
                         <div class="d-flex align-items-center">
                           <div class="avatar bg-light rounded-circle p-2 me-3">
-                            <%= primary_icon("hashtag") %>
+                            <%= neutral_icon("hashtag") %>
                           </div>
                           <div>
                             <small class="text-muted"><%= t('.payment.iban') %></small>
@@ -268,7 +268,7 @@
                       <div class="col-12">
                         <div class="d-flex align-items-center">
                           <div class="avatar bg-light rounded-circle p-2 me-3">
-                            <%= secondary_icon("user-tie") %>
+                            <%= neutral_icon("user-tie") %>
                           </div>
                           <div>
                             <small class="text-muted"><%= t('.payment.owner') %></small>
@@ -302,7 +302,7 @@
               <% if @reimboursement.expenses.any? %>
                 <div class="table-responsive">
                   <table class="table table-striped">
-                    <thead class="table-dark">
+                    <thead class="table-light">
                       <tr>
                         <th><%= t('.expenses.headers.date') %></th>
                         <th><%= t('.expenses.headers.description') %></th>
@@ -435,7 +435,8 @@
                   </table>
                 </div>
               <% else %>
-                <div class="alert alert-info">
+                <div class="text-muted fst-italic py-3">
+                  <i class="fas fa-info-circle me-1"></i>
                   <%= t('.expenses.none') %>
                 </div>
               <% end %>
@@ -530,8 +531,9 @@
                     </div>
                   <% end %>
                 </div>
-              <% else %>
-                <div class="alert alert-info">
+              <% elsif !@reimboursement.status_draft? %>
+                <div class="text-muted fst-italic py-2">
+                  <i class="fas fa-info-circle me-1"></i>
                   <%= t('.notes.none') %>
                 </div>
               <% end %>
@@ -541,13 +543,13 @@
         
         <div class="card-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
           <div>
-            <%= link_to download_pdf_reimboursement_path(@reimboursement), class: "btn btn-outline-danger me-2" do %>
-              <i class="fas fa-file-pdf me-2"></i><%= t('.download_pdf') %>
+            <%= link_to download_pdf_reimboursement_path(@reimboursement), class: "btn btn-outline-secondary me-2" do %>
+              <i class="fas fa-file-pdf me-2 text-danger"></i><%= t('.download_pdf') %>
             <% end %>
             <% if @reimboursement.can_be_edited_by?(current_user) %>
               <%= link_to t('common.actions.edit'), edit_reimboursement_path(@reimboursement), class: "btn btn-primary me-2" %>
             <% end %>
-            <%= link_to t('common.actions.back'), reimboursements_path, class: "btn btn-secondary" %>
+            <%= link_to t('common.actions.back'), reimboursements_path, class: "btn btn-outline-secondary" %>
           </div>
           
           <div class="d-flex gap-2">

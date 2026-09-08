@@ -7,7 +7,7 @@
           <div class="row text-center">
             <div class="col-md-3 mb-3 mb-md-0">
               <div class="step-item">
-                <div class="step-circle bg-primary text-white mb-2 mx-auto">
+                <div class="step-circle bg-white border border-primary border-opacity-25 text-primary mb-2 mx-auto shadow-sm">
                   <i class="fas fa-info-circle"></i>
                 </div>
                 <h6 class="mb-1"><%= t('reimboursements.new.step1_title') %></h6>
@@ -16,7 +16,7 @@
             </div>
             <div class="col-md-3 mb-3 mb-md-0">
               <div class="step-item">
-                <div class="step-circle bg-primary text-white mb-2 mx-auto">
+                <div class="step-circle bg-white border border-primary border-opacity-25 text-primary mb-2 mx-auto shadow-sm">
                   <i class="fas fa-receipt"></i>
                 </div>
                 <h6 class="mb-1"><%= t('reimboursements.new.step2_title') %></h6>
@@ -25,7 +25,7 @@
             </div>
             <div class="col-md-3 mb-3 mb-md-0">
               <div class="step-item">
-                <div class="step-circle bg-warning text-dark mb-2 mx-auto">
+                <div class="step-circle bg-white border border-primary border-opacity-25 text-primary mb-2 mx-auto shadow-sm">
                   <i class="fas fa-save"></i>
                 </div>
                 <h6 class="mb-1"><%= t('reimboursements.new.step3_title') %></h6>
@@ -34,7 +34,7 @@
             </div>
             <div class="col-md-3">
               <div class="step-item">
-                <div class="step-circle bg-success text-white mb-2 mx-auto">
+                <div class="step-circle bg-white border border-primary border-opacity-25 text-primary mb-2 mx-auto shadow-sm">
                   <i class="fas fa-check-circle"></i>
                 </div>
                 <h6 class="mb-1"><%= t('reimboursements.new.step4_title') %></h6>
@@ -46,12 +46,12 @@
       </div>
       
       <div class="card">
-        <div class="card-header bg-gradient-primary text-white">
+        <div class="card-header py-3" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
           <div class="d-flex align-items-center">
-            <i class="fas fa-plus-circle fa-2x me-3"></i>
+            <i class="fas fa-plus-circle fa-2x me-3 text-primary"></i>
             <div>
               <h2 class="mb-1"><%= t('reimboursements.new.title') %></h2>
-              <p class="mb-0"><%= t('reimboursements.new.subtitle') %></p>
+              <p class="mb-0 text-muted"><%= t('reimboursements.new.subtitle') %></p>
             </div>
           </div>
         </div>
@@ -76,9 +76,5 @@
 
 .step-item {
   position: relative;
-}
-
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
 }
 </style>

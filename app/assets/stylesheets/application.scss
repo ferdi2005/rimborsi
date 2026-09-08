@@ -26,6 +26,11 @@
   flex-shrink: 0;
 }
 
+.avatar.bg-light {
+  background-color: #f8f9fa !important;
+  border: 1px solid #e9ecef;
+}
+
 .card-header {
   border-bottom: none;
 }
