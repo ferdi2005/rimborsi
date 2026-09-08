@@ -1080,8 +1080,9 @@ it:
       <p class="mb-2">Sono state introdotte le seguenti novità:</p>
       <ul class="mb-0 ps-3">
         <li class="mb-2"><strong>Un rimborso = un progetto e un fondo:</strong> per trasparenza e gestione contabile, ogni richiesta di rimborso deve essere associata direttamente a un unico progetto e a un unico fondo. Deve essere inoltre indicato il ruolo ricoperto da chi richiede il rimborso (volontario, organizzatore, borsista...).</li>
-        <li class="mb-2"><strong>Stato bozza:</strong> le nuove richieste di rimborso vengono create in stato di bozza e possono essere modificate prima dell'invio definitivo.</li>
+        <li class="mb-2"><strong>Stato bozza:</strong> le nuove richieste di rimborso vengono create in stato di bozza e possono essere modificate prima dell'invio definitivo. Anche in caso di errore di compilazione dei campi non verranno più persi gli allegati ma il rimborso verrà salvato come bozza.</li>
         <li><strong>Traduzione in inglese:</strong> l'interfaccia è ora disponibile anche in lingua inglese, selezionabile dal menu in alto.</li>
+        <li><strong>Mantenimento dati auto:</strong> quota capitale, manutenzione e pneumatici non devono essere più reinseriti se non sono cambiati rispetto al precedente rimborso.</li>
       </ul>
 
 
