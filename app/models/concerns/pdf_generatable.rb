@@ -332,7 +332,7 @@ module PdfGeneratable
     composer.text("Email: #{user.email}", font_size: 12)
     composer.text("Data creazione: #{created_at.strftime('%d/%m/%Y')}", font_size: 12)
     composer.text("Fondo: #{display_fund_name}", font_size: 14)
-    composer.text("Progetto: #{display_project_name}", font_size: 14)
+    composer.text("Progetto: #{display_project_name}", font_size: 14) if display_project_name.present?
 
     composer.text("Totale: € #{number_with_precision(total_amount, precision: 2)}",
                   font_size: 14,
@@ -379,7 +379,7 @@ module PdfGeneratable
       end
 
       # Mostra il progetto per riga solo nei rimborsi storici a progetti multipli
-      unless single_project?
+      if expense.effective_project.present? && !single_project?
         composer.text("Progetto: #{expense.effective_project}", font_size: 11)
       end
 

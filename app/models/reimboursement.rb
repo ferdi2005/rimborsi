@@ -143,28 +143,22 @@ class Reimboursement < ApplicationRecord
 
     # Fallback per rimborsi storici con spese su progetti multipli o non ancora sincronizzati
     project_names = expenses.map(&:project).compact.reject(&:blank?).uniq
-    project_names.any? ? project_names.join(", ") : I18n.t("reimboursements.projects.not_assigned", default: "Non assegnato")
+    project_names.any? ? project_names.join(", ") : nil
   end
 
   def single_project?
-    distinct_projects = expenses.map(&:project).compact.reject(&:blank?).uniq
-    return false if distinct_projects.size > 1
-
-    true
+    expenses.map(&:project).compact.reject(&:blank?).uniq.size <= 1
   end
 
   def sync_project_to_expenses
     return if project.blank?
 
-    if single_project?
-      expenses.where(project: [nil, "", project_before_last_save]).update_all(project: project)
-    else
-      expenses.where(project: [nil, ""]).update_all(project: project)
-    end
+    expenses.where(project: [nil, "", project_before_last_save]).update_all(project: project)
   end
 
   def causale_bonifico
-    base_text = "Rimborso spese n. #{id} - #{display_fund_name} - #{display_project_name}"
+    parts = ["Rimborso spese n. #{id}", display_fund_name, display_project_name].select(&:present?)
+    base_text = parts.join(" - ")
     cleaned = base_text.gsub(/\s+/, " ").strip
     cleaned.truncate(140)
   end

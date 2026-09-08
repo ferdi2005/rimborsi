@@ -141,19 +141,21 @@
                       </div>
                     </div>
 
-                    <div class="col-12">
-                      <div class="d-flex align-items-center">
-                        <div class="avatar bg-light rounded-circle p-2 me-3">
-                          <%= neutral_icon("folder") %>
-                        </div>
-                        <div>
-                          <small class="text-muted"><%= t('.labels.project') %></small>
-                          <div class="fw-bold">
-                            <%= @reimboursement.display_project_name %>
+                    <% if @reimboursement.display_project_name.present? %>
+                      <div class="col-12">
+                        <div class="d-flex align-items-center">
+                          <div class="avatar bg-light rounded-circle p-2 me-3">
+                            <%= neutral_icon("folder") %>
+                          </div>
+                          <div>
+                            <small class="text-muted"><%= t('.labels.project') %></small>
+                            <div class="fw-bold">
+                              <%= @reimboursement.display_project_name %>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    <% end %>
                     
                     <div class="col-12">
                       <div class="d-flex align-items-center">
@@ -351,7 +353,7 @@
                                   <strong><%= t('.expenses.fund') %>:</strong> <%= expense.fund&.name %><br/>
                               </div>
                             <% end %>
-                            <% unless @reimboursement.single_project? %>
+                            <% if expense.effective_project.present? %>
                               <div class="small">
                                   <strong><%= t('.expenses.project') %>:</strong> <%= expense.effective_project %><br/>
                               </div>

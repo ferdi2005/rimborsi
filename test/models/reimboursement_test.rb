@@ -52,12 +52,12 @@ class ReimboursementTest < ActiveSupport::TestCase
     I18n.with_locale(:it) do
       assert_equal "nessuno", without_account.payment_method_type
       assert_equal "Non assegnato", without_account.display_fund_name
-      assert_equal "Non assegnato", without_account.display_project_name
+      assert_nil without_account.display_project_name
     end
     I18n.with_locale(:en) do
       assert_equal "None", without_account.payment_method_type
       assert_equal "Not assigned", without_account.display_fund_name
-      assert_equal "Not assigned", without_account.display_project_name
+      assert_nil without_account.display_project_name
     end
   end
 

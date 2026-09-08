@@ -13,12 +13,9 @@ class MoveProjectFromExpenseToReimboursement < ActiveRecord::Migration[7.2]
         reimboursement.update_column(:project, projects.first)
       elsif projects.size > 1
         reimboursement.update_column(:project, projects.join(" / "))
-      elsif reimboursement.project.blank?
-        fallback = reimboursement.fund&.name || "Non assegnato"
-        reimboursement.update_column(:project, fallback)
       end
 
-      # Popola il progetto sulle spese del rimborso che ne sono prive
+      # Popola il progetto sulle spese del rimborso che ne sono prive se il rimborso ha un progetto
       if reimboursement.project.present?
         reimboursement.expenses.where(project: [nil, ""]).update_all(project: reimboursement.project)
       end

@@ -116,8 +116,10 @@
             </p>
             
             <p class="card-text mb-1">
-              <strong><%= t("reimboursements.show.expenses.fund") %>:</strong> <%= reimboursement.display_fund_name %><br>
-              <strong><%= t("reimboursements.show.expenses.project") %>:</strong> <%= reimboursement.display_project_name %>
+              <strong><%= t("reimboursements.show.expenses.fund") %>:</strong> <%= reimboursement.display_fund_name %>
+              <% if reimboursement.display_project_name.present? %>
+                <br><strong><%= t("reimboursements.show.expenses.project") %>:</strong> <%= reimboursement.display_project_name %>
+              <% end %>
             </p>
 
             <p class="card-text">
