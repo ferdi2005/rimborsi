@@ -44,7 +44,7 @@ class Expense < ApplicationRecord
   validates :manutenzione, presence: true, numericality: { greater_than_or_equal_to: 0 }, if: -> { car? && !reimboursement&.status_draft? }
 
   # Callback per calcolare automaticamente l'importo per le spese auto
-  before_save :calculate_auto_amount, if: :car?
+  before_validation :calculate_auto_amount, if: :car?
 
   # Callback per sincronizzare il fondo dal rimborso se non specificato
   before_validation :sync_fund_from_reimboursement

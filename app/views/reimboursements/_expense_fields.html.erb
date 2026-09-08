@@ -189,12 +189,25 @@
         <%= f.label :vehicle_id, class: "form-label" do %>
           <%= t('reimboursements.expense_fields.vehicle_label') %> <span class="text-danger">*</span>
         <% end %>
-        <%= f.collection_select :vehicle_id, 
-                                (current_user.admin? ? Vehicle.includes(:user).all : current_user.vehicles), 
-                                :id, 
-                                ->(vehicle) { current_user.admin? ? "#{vehicle.display_name} (#{vehicle.user.name} #{vehicle.user.surname})" : vehicle.display_name },
-                                { prompt: t('reimboursements.expense_fields.select_vehicle'), selected: current_user.default_vehicle&.id },
-                                { class: "form-select" } %>
+        <%
+          available_vehicles = (current_user.admin? ? Vehicle.includes(:user).all : current_user.vehicles)
+          rates_map = Vehicle.latest_rates_for(available_vehicles)
+          vehicle_options = available_vehicles.map do |vehicle|
+            rates = rates_map[vehicle.id] || {}
+            label = current_user.admin? ? "#{vehicle.display_name} (#{vehicle.user.name} #{vehicle.user.surname})" : vehicle.display_name
+            html_attributes = {
+              'data-quota-capitale': rates[:quota_capitale],
+              'data-pneumatici': rates[:pneumatici],
+              'data-manutenzione': rates[:manutenzione]
+            }.compact
+            [label, vehicle.id, html_attributes]
+          end
+          selected_vehicle_id = f.object.vehicle_id || (f.object.new_record? ? current_user.default_vehicle&.id : nil)
+        %>
+        <%= f.select :vehicle_id, 
+                     options_for_select(vehicle_options, selected_vehicle_id), 
+                     { prompt: t('reimboursements.expense_fields.select_vehicle') }, 
+                     { class: "form-select vehicle-select" } %>
         <small class="form-text text-muted">
           <%= link_to t('reimboursements.expense_fields.add_new_vehicle'), new_vehicle_path, target: "_blank", class: "text-decoration-none" %>
         </small>

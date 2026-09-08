@@ -70,6 +70,43 @@ class Vehicle < ApplicationRecord
     end
   end
 
+  def latest_car_expense
+    expenses.where(car: true)
+            .where.not(quota_capitale: nil)
+            .order(created_at: :desc, id: :desc)
+            .first
+  end
+
+  def latest_rates
+    last = latest_car_expense
+    return {} unless last
+
+    {
+      quota_capitale: last.quota_capitale,
+      pneumatici: last.pneumatici,
+      manutenzione: last.manutenzione
+    }
+  end
+
+  def self.latest_rates_for(vehicles)
+    vehicle_ids = vehicles.map(&:id)
+    return {} if vehicle_ids.empty?
+
+    expenses_by_vehicle = Expense.where(vehicle_id: vehicle_ids, car: true)
+                                 .where.not(quota_capitale: nil)
+                                 .order(created_at: :desc, id: :desc)
+                                 .group_by(&:vehicle_id)
+
+    expenses_by_vehicle.transform_values do |exps|
+      last = exps.first
+      {
+        quota_capitale: last.quota_capitale,
+        pneumatici: last.pneumatici,
+        manutenzione: last.manutenzione
+      }
+    end
+  end
+
   private
 
   def ensure_single_default_vehicle

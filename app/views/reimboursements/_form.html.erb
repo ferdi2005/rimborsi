@@ -544,6 +544,47 @@ document.addEventListener('DOMContentLoaded', function() {
     window.updateTotal();
   }
 
+  // Funzione per precompilare le quote dal veicolo selezionato
+  window.populateVehicleRates = function(expenseRow, overwrite = false) {
+    if (!expenseRow) return;
+    const vehicleSelect = expenseRow.querySelector('select[name*="[vehicle_id]"], .vehicle-select');
+    if (!vehicleSelect) return;
+
+    const selectedOption = vehicleSelect.options[vehicleSelect.selectedIndex];
+    if (!selectedOption || !selectedOption.value) {
+      if (overwrite) {
+        const quotaInput = expenseRow.querySelector('input[name*="[quota_capitale]"]');
+        const pneumaticiInput = expenseRow.querySelector('input[name*="[pneumatici]"]');
+        const manutenzioneInput = expenseRow.querySelector('input[name*="[manutenzione]"]');
+        if (quotaInput) quotaInput.value = '';
+        if (pneumaticiInput) pneumaticiInput.value = '';
+        if (manutenzioneInput) manutenzioneInput.value = '';
+        window.calculateAutoAmount(expenseRow);
+      }
+      return;
+    }
+
+    const quotaCapitale = selectedOption.getAttribute('data-quota-capitale');
+    const pneumatici = selectedOption.getAttribute('data-pneumatici');
+    const manutenzione = selectedOption.getAttribute('data-manutenzione');
+
+    const quotaInput = expenseRow.querySelector('input[name*="[quota_capitale]"]');
+    const pneumaticiInput = expenseRow.querySelector('input[name*="[pneumatici]"]');
+    const manutenzioneInput = expenseRow.querySelector('input[name*="[manutenzione]"]');
+
+    if (quotaInput && (overwrite || !quotaInput.value)) {
+      quotaInput.value = quotaCapitale || '';
+    }
+    if (pneumaticiInput && (overwrite || !pneumaticiInput.value)) {
+      pneumaticiInput.value = pneumatici || '';
+    }
+    if (manutenzioneInput && (overwrite || !manutenzioneInput.value)) {
+      manutenzioneInput.value = manutenzione || '';
+    }
+
+    window.calculateAutoAmount(expenseRow);
+  };
+
   // Funzione globale per calcolo automatico spese auto
   window.calculateAutoAmount = function(expenseRow) {
     if (!expenseRow) return;
@@ -560,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const manutenzione = parseFloat(expenseRow.querySelector('input[name*="[manutenzione]"]')?.value) || 0;
     const distance = parseFloat(expenseRow.querySelector('input[name*="[distance]"]')?.value) || 0;
     
-    // Leggi il valore del checkbox return_trip (Rails genera due input, prendiamo quello visible)
+    // Leggi il valore del checkbox return_trip (Rails genera due input, prendiamo quello visibile)
     const returnTripCheckbox = expenseRow.querySelector('input[name*="[return_trip]"]:not([type="hidden"])');
     const returnTrip = returnTripCheckbox ? returnTripCheckbox.checked : false;
     
@@ -614,6 +655,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Toggle tra spese auto e normali
     if (e.target.classList.contains('car-type') || (e.target.name && e.target.name.includes('[car]'))) {
       toggleExpenseType(e.target.closest('.expense-row'));
+    }
+
+    // Cambio veicolo per spese auto
+    if ((e.target.name && e.target.name.includes('[vehicle_id]')) || e.target.classList.contains('vehicle-select')) {
+      window.populateVehicleRates(e.target.closest('.expense-row'), true);
     }
     
     // Calcolo automatico per campi auto
@@ -669,11 +715,11 @@ document.addEventListener('DOMContentLoaded', function() {
       if (amountField) {
         amountField.readOnly = true;
         amountField.className = 'form-control calculated-amount';
-        amountField.placeholder = 'Auto-calcolato';
+        amountField.placeholder = '<%= j t("reimboursements.expense_fields.auto_calculated") %>';
         amountField.style.backgroundColor = '#f8f9fa';
       }
       if (amountLabel) {
-        amountLabel.textContent = 'Importo calcolato';
+        amountLabel.textContent = '<%= j t("reimboursements.expense_fields.calculated_amount_label") %>';
       }
       
       // Svuota il campo file
@@ -681,6 +727,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (fileInput) {
         fileInput.value = '';
       }
+
+      // Precompila i dati del veicolo se vuoti
+      window.populateVehicleRates(expenseRow, false);
       
       // Calcola importo iniziale se tutti i campi sono già popolati
       window.calculateAutoAmount(expenseRow);
@@ -693,12 +742,12 @@ document.addEventListener('DOMContentLoaded', function() {
       if (amountField) {
         amountField.readOnly = false;
         amountField.className = 'form-control';
-        amountField.placeholder = 'Inserisci importo';
+        amountField.placeholder = '<%= j t("reimboursements.form.amount_placeholder") %>';
         amountField.style.backgroundColor = '';
         amountField.value = ''; // Reset del valore calcolato
       }
       if (amountLabel) {
-        amountLabel.textContent = 'Importo';
+        amountLabel.textContent = '<%= j t("activerecord.attributes.expense.amount") %>';
       }
     }
   }
@@ -707,6 +756,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.expense-row').forEach(expenseRow => {
     const carRadio = expenseRow.querySelector('input[name*="[car]"][value="true"]');
     if (carRadio && carRadio.checked) {
+      window.populateVehicleRates(expenseRow, false);
       window.calculateAutoAmount(expenseRow);
     }
   });
