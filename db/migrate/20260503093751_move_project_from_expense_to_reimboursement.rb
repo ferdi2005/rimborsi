@@ -1,6 +1,11 @@
 class MoveProjectFromExpenseToReimboursement < ActiveRecord::Migration[7.2]
   def up
-    add_column :reimboursements, :project, :string unless column_exists?(:reimboursements, :project)
+    if column_exists?(:reimboursements, :project)
+      change_column :reimboursements, :project, :text
+    else
+      add_column :reimboursements, :project, :text
+    end
+
     add_reference :reimboursements, :fund, foreign_key: true unless column_exists?(:reimboursements, :fund_id)
 
     # Migrate data

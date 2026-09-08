@@ -2,6 +2,9 @@ class CleanupNonAssegnatoProjects < ActiveRecord::Migration[7.2]
   def up
     return if Rails.env.production?
 
+    change_column :reimboursements, :project, :text if column_exists?(:reimboursements, :project)
+    change_column :expenses, :project, :string if column_exists?(:expenses, :project)
+
     Reimboursement.reset_column_information
     Expense.reset_column_information
 
