@@ -229,4 +229,83 @@ class ReimboursementsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to reimboursement_url(draft)
     assert_equal "Non è possibile revisionare i giustificativi di un rimborso in bozza.", flash[:alert]
   end
+
+  test "admin can approve expense without attachment and updates reimboursement status to in_process" do
+    admin = users(:two)
+    sign_in admin
+
+    # Crea un rimborso created con due spese senza allegato (es. create prima o in bozza)
+    reimboursement = Reimboursement.new(
+      user: @user,
+      bank_account: @reimboursement.bank_account,
+      fund: funds(:one),
+      project: "Progetto test",
+      role: "volontario",
+      status: :draft
+    )
+    reimboursement.expenses.build(
+      purpose: "Spesa senza allegato 1",
+      amount: 50.0,
+      requested_amount: 50.0,
+      date: Date.current,
+      car: false
+    )
+    reimboursement.expenses.build(
+      purpose: "Spesa senza allegato 2",
+      amount: 30.0,
+      requested_amount: 30.0,
+      date: Date.current,
+      car: false
+    )
+    reimboursement.save!(validate: false)
+    reimboursement.update_columns(status: Reimboursement.statuses[:created])
+
+    first_expense = reimboursement.expenses.first
+
+    patch approve_expense_reimboursement_url(reimboursement), params: {
+      expense_id: first_expense.id,
+      next_index: 1
+    }
+
+    assert_redirected_to approve_expenses_reimboursement_url(reimboursement, expense_index: 1)
+    assert first_expense.reload.status_approved?
+    assert reimboursement.reload.status_in_process?
+  end
+
+  test "admin can deny expense without attachment and add a note" do
+    admin = users(:two)
+    sign_in admin
+
+    reimboursement = Reimboursement.new(
+      user: @user,
+      bank_account: @reimboursement.bank_account,
+      fund: funds(:one),
+      project: "Progetto test",
+      role: "volontario",
+      status: :draft
+    )
+    reimboursement.expenses.build(
+      purpose: "Spesa da negare",
+      amount: 40.0,
+      requested_amount: 40.0,
+      date: Date.current,
+      car: false
+    )
+    reimboursement.save!(validate: false)
+    reimboursement.update_columns(status: Reimboursement.statuses[:created])
+
+    expense = reimboursement.expenses.first
+
+    patch deny_expense_reimboursement_url(reimboursement), params: {
+      expense_id: expense.id,
+      next_index: 1,
+      note_content: "Allegato mancante",
+      reimboursement_status: "waiting"
+    }
+
+    assert_redirected_to approve_expenses_reimboursement_url(reimboursement, expense_index: 1)
+    assert expense.reload.status_denied?
+    assert reimboursement.reload.status_waiting?
+    assert_equal "Allegato mancante", reimboursement.notes.last.text
+  end
 end

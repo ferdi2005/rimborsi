@@ -24,7 +24,7 @@ class Expense < ApplicationRecord
   validates :date, presence: true, unless: -> { reimboursement&.status_draft? }
 
   # Validation: attachment is required only if not car expense
-  validates :attachment, presence: true, unless: -> { car? || reimboursement&.status_draft? }
+  validates :attachment, presence: true, unless: -> { car? || reimboursement&.status_draft? || status_approved? || status_denied? }
 
   # Validazione del formato dell'allegato
   validate :validate_attachment_format, if: -> { attachment.attached? }
@@ -200,7 +200,7 @@ class Expense < ApplicationRecord
     # Se questa è la prima spesa approvata e il rimborso è ancora in "created",
     # passa il rimborso a "in_process"
     if reimboursement.status_created? && reimboursement.expenses.status_approved.count == 1
-      reimboursement.update!(status: "in_process")
+      reimboursement.update_attribute(:status, "in_process")
     end
   end
 

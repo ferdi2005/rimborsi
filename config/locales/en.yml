@@ -162,6 +162,10 @@ en:
         exclusion: is reserved
         confirmation: does not match
         required: is required
+        record_invalid: 'Validation failed: %{errors}'
+        restrict_dependent_destroy:
+          has_one: Cannot delete record because dependent %{record} exists
+          has_many: Cannot delete record because dependent %{record} exist
   enums:
     expense:
       status:

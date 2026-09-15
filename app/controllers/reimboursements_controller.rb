@@ -250,12 +250,10 @@ class ReimboursementsController < ApplicationController
 
     expense = @reimboursement.expenses.find(params[:expense_id])
 
-    # Aggiorna il requested_amount se fornito
-    if params[:requested_amount].present?
-      expense.update!(requested_amount: params[:requested_amount])
-    end
-
-    expense.update!(status: "approved")
+    # Aggiorna il requested_amount se fornito e imposta lo stato ad approved
+    expense.requested_amount = params[:requested_amount] if params[:requested_amount].present?
+    expense.status = "approved"
+    expense.save!
 
     redirect_to approve_expenses_reimboursement_path(@reimboursement, expense_index: params[:next_index]),
                 notice: t("controllers.reimboursements.expense_approved")
@@ -273,12 +271,10 @@ class ReimboursementsController < ApplicationController
 
     expense = @reimboursement.expenses.find(params[:expense_id])
 
-    # Aggiorna il requested_amount se fornito
-    if params[:requested_amount].present?
-      expense.update!(requested_amount: params[:requested_amount])
-    end
-
-    expense.update!(status: "denied")
+    # Aggiorna il requested_amount se fornito e imposta lo stato a denied
+    expense.requested_amount = params[:requested_amount] if params[:requested_amount].present?
+    expense.status = "denied"
+    expense.save!
 
     # Crea una nota se fornita
     if params[:note_content].present?
@@ -291,7 +287,7 @@ class ReimboursementsController < ApplicationController
       if note.save
         # Aggiorna lo status del rimborso se specificato
         if params[:reimboursement_status].present?
-          @reimboursement.update!(status: params[:reimboursement_status])
+          @reimboursement.update_attribute(:status, params[:reimboursement_status])
         end
       end
     end
@@ -311,7 +307,7 @@ class ReimboursementsController < ApplicationController
     end
 
     if @reimboursement.can_be_approved?
-      @reimboursement.update!(status: "approved")
+      @reimboursement.update_attribute(:status, "approved")
 
       # Crea una nota automatica
       @reimboursement.notes.create!(

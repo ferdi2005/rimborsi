@@ -162,6 +162,10 @@ it:
         exclusion: è riservato
         confirmation: non corrisponde
         required: è richiesto
+        record_invalid: 'Validazione fallita: %{errors}'
+        restrict_dependent_destroy:
+          has_one: Il record non può essere cancellato perchè esiste un %{record} dipendente
+          has_many: Il record non può essere cancellato perchè esistono %{record} dipendenti
   enums:
     expense:
       status:
