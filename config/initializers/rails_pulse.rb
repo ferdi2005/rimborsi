@@ -268,10 +268,10 @@ RailsPulse.configure do |config|
 
   # RECOMMENDED: a fail-closed predicate. Receives the controller; return
   # true to allow. Anything else (false, nil, no user) is a 403 Forbidden.
-  # config.authorize = ->(controller) { controller.current_user&.admin? }
+  config.authorize = ->(controller) { controller.current_user&.admin? }
   #
   # A zero-argument proc runs in the controller's context instead:
-  config.authorize = proc { authenticate_user && ensure_admin }
+  # config.authorize = proc { authenticate_user && ensure_admin }
 
   # Alternatively, a hook that runs in the controller and DENIES BY RENDERING
   # OR REDIRECTING. Returning false without responding is also a denial;

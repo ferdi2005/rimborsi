@@ -54,7 +54,7 @@ namespace :deploy do
       before :linked_files, :upload_config_files do
         on roles(:app), in: :sequence, wait: 10 do
             stage = fetch(:stage)
-            env_candidates = [".env.#{stage}", ".env"]
+            env_candidates = [ ".env.#{stage}", ".env" ]
             local_env = env_candidates.find { |f| File.exist?(f) }
 
             if local_env
@@ -134,18 +134,3 @@ set :branch, :main
 
 # Default value for keep_releases is 5
 # set :keep_releases, 5
-
-namespace :deploy do
-  desc "Prepara il database SQLite dedicato a Rails Pulse"
-  task :prepare_rails_pulse do
-    on roles(:db) do
-      within release_path do
-        with rails_env: fetch(:rails_env) do
-          execute :rake, "db:prepare:rails_pulse"
-        end
-      end
-    end
-  end
-
-  after "deploy:migrate", "deploy:prepare_rails_pulse"
-end
