@@ -1093,7 +1093,7 @@ it:
     content_html: |-
       <p class="mb-2">Sono state introdotte le seguenti novità:</p>
       <ul class="mb-0 ps-3">
-        <li class="mb-2"><strong>Ricevuta bancaria / ricevuta tasso di cambio:</strong> è possibile allegare la ricevuta bancaria per ciascuna spesa (obbligatoria se la spesa è stata sostenuta in valuta estera o per chi imposta il ruolo Dipendente / collaboratore a norma dell'art. 51, comma 5, del TUIR). Il documento è visibile in fase di approvazione e viene inserito automaticamente nel PDF finale del rimborso.</li>
+        <li class="mb-2"><strong>Ricevuta bancaria / ricevuta tasso di cambio:</strong> è possibile allegare la ricevuta bancaria per ciascuna spesa (per esempio se la spesa è stata sostenuta in valuta estera o per chi è Dipendente / collaboratore).</li>
       </ul>
 
 
