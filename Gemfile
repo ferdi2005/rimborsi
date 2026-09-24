@@ -99,3 +99,5 @@ gem "iban-tools"
 gem "sidekiq", "~> 7.3"
 
 gem "pdfinfo"
+
+gem "rails_pulse"

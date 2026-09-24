@@ -63,4 +63,6 @@ Rails.application.routes.draw do
   # mount Sidekiq::Web, at: "/sidekiq"
   # Defines the root path route ("/")
   # root "posts#index"
+  #
+  mount RailsPulse::Engine => "/performance"
 end
