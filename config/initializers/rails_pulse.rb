@@ -227,9 +227,9 @@ RailsPulse.configure do |config|
   # Uncomment and configure one of the following patterns:
 
   # Option 1: Separate single database for Rails Pulse
-  # config.connects_to = {
-  #   database: { writing: :rails_pulse, reading: :rails_pulse }
-  # }
+  config.connects_to = {
+    database: { writing: :rails_pulse, reading: :rails_pulse }
+  }
 
   # Option 2: Primary/replica configuration for Rails Pulse
   # config.connects_to = {

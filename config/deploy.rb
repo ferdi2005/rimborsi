@@ -135,5 +135,17 @@ set :branch, :main
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-# Uncomment the following to require manually verifying the host key before first deploy.
-# set :ssh_options, verify_host_key: :secure
+namespace :deploy do
+  desc "Prepara il database SQLite dedicato a Rails Pulse"
+  task :prepare_rails_pulse do
+    on roles(:db) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, "db:prepare:rails_pulse"
+        end
+      end
+    end
+  end
+
+  after "deploy:migrate", "deploy:prepare_rails_pulse"
+end

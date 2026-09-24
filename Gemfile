@@ -44,6 +44,8 @@ group :production do
   gem "mysql2", "~> 0.5.7"
 end
 
+gem "sqlite3", ">= 1.4"
+
 group :development, :test, :staging do
   gem "pg", "~> 1.1"
 end
