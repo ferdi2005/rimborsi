@@ -70,6 +70,22 @@ namespace :deploy do
         end
       end
     end
+
+    namespace :rails_pulse do
+      desc "Esegue le migrazioni del database Rails Pulse e l'aggiornamento delle rotte"
+      task :migrate do
+        on roles(fetch(:migration_role, :db)) do
+          within release_path do
+            with rails_env: fetch(:rails_env) do
+              execute :rake, "db:migrate:rails_pulse"
+              execute :rake, "rails_pulse:migrate_routes"
+            end
+          end
+        end
+      end
+    end
+
+    after "deploy:migrating", "deploy:rails_pulse:migrate"
 end
 
 
