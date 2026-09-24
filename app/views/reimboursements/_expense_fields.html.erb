@@ -145,6 +145,62 @@
         <small class="form-text text-muted"><%= t('reimboursements.expense_fields.attachment_help') %></small>
       <% end %>
     </div>
+
+    <!-- Campo ricevuta bancaria / tasso di cambio -->
+    <div class="col-md-12 mt-3">
+      <%= f.label :bank_receipt_attachment, class: "form-label" do %>
+        <%= t('reimboursements.expense_fields.bank_receipt_label') %>
+      <% end %>
+
+      <% if f.object.bank_receipt_attachment.attached? && f.object.bank_receipt_attachment.persisted? %>
+        <!-- Ricevuta bancaria esistente -->
+        <div class="alert alert-info mb-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-receipt me-2"></i>
+              <div>
+                <strong><%= t('reimboursements.expense_fields.current_file') %>:</strong> <%= f.object.bank_receipt_attachment.filename %>
+                <br>
+                <small class="text-muted">
+                  <%= number_to_human_size(f.object.bank_receipt_attachment.byte_size) %>
+                </small>
+              </div>
+            </div>
+            <div class="btn-group btn-group-sm">
+              <%= link_to f.object.bank_receipt_attachment, target: "_blank",
+                          class: "btn btn-outline-primary btn-sm",
+                          title: t('reimboursements.expense_fields.view_file') do %>
+                <i class="fas fa-eye"></i>
+              <% end %>
+              <button type="button" class="btn btn-outline-warning btn-sm"
+                      onclick="toggleFileReplacement(this)"
+                      title="<%= t('reimboursements.expense_fields.replace_file') %>">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo nascosto per sostituire la ricevuta bancaria -->
+        <div class="file-replacement-field" style="display: none;">
+          <%= f.file_field :bank_receipt_attachment, class: "form-control", accept: "image/*,.pdf"%>
+          <small class="form-text text-muted">
+            <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+            <%= t('reimboursements.expense_fields.replace_file_help') %>
+          </small>
+          <div class="mt-2">
+            <button type="button" class="btn btn-sm btn-secondary"
+                    onclick="cancelFileReplacement(this)">
+              <i class="fas fa-times"></i> <%= t('common.actions.cancel') %>
+            </button>
+          </div>
+        </div>
+      <% else %>
+        <!-- Nessuna ricevuta bancaria esistente -->
+        <%= f.file_field :bank_receipt_attachment, class: "form-control", accept: "image/*,.pdf"%>
+        <small class="form-text text-muted"><%= t('reimboursements.expense_fields.bank_receipt_help') %></small>
+      <% end %>
+    </div>
   </div>
 
   <!-- Campi specifici per spese auto -->

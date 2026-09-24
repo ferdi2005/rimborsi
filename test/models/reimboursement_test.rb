@@ -2,6 +2,7 @@ require "test_helper"
 
 class ReimboursementTest < ActiveSupport::TestCase
   setup do
+    I18n.locale = :it
     @reimboursement = reimboursements(:one)
     @fund = funds(:one)
   end
@@ -277,6 +278,50 @@ class ReimboursementTest < ActiveSupport::TestCase
     draft.status = :created
     assert_not draft.valid?
     assert draft.errors[:project].any?
-    assert draft.errors[:base].any? { |msg| msg.include?("Allegato") }
+    assert draft.errors[:base].any? { |msg| msg.include?("Scontrino") || msg.include?("Allegato") }
+  end
+
+  test "generate_pdf includes bank receipt attachment in output" do
+    reimboursement = reimboursements(:one)
+    expense = reimboursement.expenses.build(
+      purpose: "Foreign travel expense",
+      amount: 150.0,
+      requested_amount: 150.0,
+      date: Date.current,
+      fund: @fund
+    )
+
+    receipt_file = Tempfile.new([ "receipt", ".pdf" ])
+    receipt_doc = HexaPDF::Composer.new
+    receipt_doc.text("Receipt Document")
+    receipt_doc.write(receipt_file.path)
+
+    expense.attachment.attach(
+      io: File.open(receipt_file.path),
+      filename: "receipt.pdf",
+      content_type: "application/pdf"
+    )
+
+    bank_receipt_file = Tempfile.new([ "bank_receipt", ".pdf" ])
+    bank_receipt_doc = HexaPDF::Composer.new
+    bank_receipt_doc.text("Bank Receipt Document")
+    bank_receipt_doc.write(bank_receipt_file.path)
+
+    expense.bank_receipt_attachment.attach(
+      io: File.open(bank_receipt_file.path),
+      filename: "bank_receipt.pdf",
+      content_type: "application/pdf"
+    )
+
+    expense.save!
+
+    pdf_data = reimboursement.generate_pdf
+    assert_not_nil pdf_data
+    assert pdf_data.start_with?("%PDF")
+
+    receipt_file.close
+    receipt_file.unlink
+    bank_receipt_file.close
+    bank_receipt_file.unlink
   end
 end

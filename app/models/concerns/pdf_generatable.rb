@@ -45,7 +45,7 @@ module PdfGeneratable
   private
 
   def has_attachments?
-    expenses.any? { |expense| expense.attachment.attached? || expense.pdf_attachment.attached? }
+    expenses.any? { |expense| expense.attachment.attached? || expense.pdf_attachment.attached? || expense.bank_receipt_attachment.attached? }
   end
 
   def validate_file_before_processing!(file, allow_images: false)
@@ -222,63 +222,13 @@ module PdfGeneratable
       end
 
       # Handle receipt attachments
-      next unless expense.attachment.attached?
+      if expense.attachment.attached?
+        append_attachment_to_doc(expense.attachment, target_doc, expense_id: expense.id, label: "ricevuta")
+      end
 
-      receipt = expense.attachment
-      begin
-        # Validazione del file prima del processamento
-        validate_file_before_processing!(receipt, allow_images: true)
-
-        if receipt.content_type == "application/pdf"
-          # For PDF receipts, try to open with HexaPDF (handles most encrypted PDFs automatically)
-          temp_receipt = Tempfile.new([ "receipt", ".pdf" ])
-          temp_receipt.binmode
-          receipt_data = receipt.download
-          temp_receipt.write(receipt_data)
-          temp_receipt.close
-
-          begin
-            # Processa con timeout e validazione struttura
-            safe_process_file_with_timeout(temp_receipt) do |file|
-              receipt_doc = validate_pdf_structure!(file.path)
-              receipt_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
-            end
-          rescue HexaPDF::EncryptionError => e
-            Rails.logger.error "PDF ricevuta #{receipt.filename} è protetto da password: #{e.message}"
-            raise StandardError, "PDF #{receipt.filename} è protetto da password e non può essere elaborato"
-          end
-
-          temp_receipt.unlink
-        else
-          # For image receipts, convert to PDF first using HexaPDF
-          temp_image = Tempfile.new([ "receipt", receipt.filename.extension ])
-          temp_image.binmode
-          receipt_data = receipt.download
-          temp_image.write(receipt_data)
-          temp_image.close
-
-          # Processa con timeout
-          safe_process_file_with_timeout(temp_image) do |file|
-            # Create a temporary PDF with the image using HexaPDF
-            image_composer = HexaPDF::Composer.new
-            image_composer.image(file.path)
-
-            temp_image_pdf = Tempfile.new([ "receipt_pdf", ".pdf" ])
-            temp_image_pdf.close
-            image_composer.write(temp_image_pdf.path)
-
-            image_doc = HexaPDF::Document.open(temp_image_pdf.path)
-            image_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
-
-            File.unlink(temp_image_pdf.path)
-          end
-
-          temp_image.unlink
-        end
-      rescue Timeout::Error => e
-        Rails.logger.error "Timeout elaborazione ricevuta #{expense.id}: #{e.message}"
-      rescue StandardError => e
-        Rails.logger.error "Errore ricevuta #{expense.id}: #{e.message}"
+      # Handle bank receipt attachments
+      if expense.bank_receipt_attachment.attached?
+        append_attachment_to_doc(expense.bank_receipt_attachment, target_doc, expense_id: expense.id, label: "ricevuta bancaria")
       end
     end
 
@@ -294,6 +244,56 @@ module PdfGeneratable
     io = StringIO.new
     main_doc.write(io, optimize: true)
     io.string
+  end
+
+  def append_attachment_to_doc(attachment, target_doc, expense_id:, label:)
+    validate_file_before_processing!(attachment, allow_images: true)
+
+    if attachment.content_type == "application/pdf"
+      temp_receipt = Tempfile.new([ label, ".pdf" ])
+      temp_receipt.binmode
+      receipt_data = attachment.download
+      temp_receipt.write(receipt_data)
+      temp_receipt.close
+
+      begin
+        safe_process_file_with_timeout(temp_receipt) do |file|
+          receipt_doc = validate_pdf_structure!(file.path)
+          receipt_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+        end
+      rescue HexaPDF::EncryptionError => e
+        Rails.logger.error "PDF #{label} #{attachment.filename} è protetto da password: #{e.message}"
+        raise StandardError, "PDF #{attachment.filename} è protetto da password e non può essere elaborato"
+      end
+
+      temp_receipt.unlink
+    else
+      temp_image = Tempfile.new([ label, attachment.filename.extension ])
+      temp_image.binmode
+      receipt_data = attachment.download
+      temp_image.write(receipt_data)
+      temp_image.close
+
+      safe_process_file_with_timeout(temp_image) do |file|
+        image_composer = HexaPDF::Composer.new
+        image_composer.image(file.path)
+
+        temp_image_pdf = Tempfile.new([ "#{label}_pdf", ".pdf" ])
+        temp_image_pdf.close
+        image_composer.write(temp_image_pdf.path)
+
+        image_doc = HexaPDF::Document.open(temp_image_pdf.path)
+        image_doc.pages.each { |page| target_doc.pages << target_doc.import(page) }
+
+        File.unlink(temp_image_pdf.path)
+      end
+
+      temp_image.unlink
+    end
+  rescue Timeout::Error => e
+    Rails.logger.error "Timeout elaborazione #{label} #{expense_id}: #{e.message}"
+  rescue StandardError => e
+    Rails.logger.error "Errore #{label} #{expense_id}: #{e.message}"
   end
 
   def create_pdf_header(composer)
@@ -442,6 +442,10 @@ module PdfGeneratable
       composer.formatted_text([ { text: "Fattura elettronica allegata", font_size: 10 } ], fill_color: "008800")
     elsif expense.attachment.attached?
       composer.formatted_text([ { text: "Ricevuta allegata", font_size: 10 } ], fill_color: "008800")
+    end
+
+    if expense.bank_receipt_attachment.attached?
+      composer.formatted_text([ { text: "Ricevuta bancaria allegata", font_size: 10 } ], fill_color: "008800")
     end
   end
 

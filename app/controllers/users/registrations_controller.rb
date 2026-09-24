@@ -6,7 +6,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def dismiss_whats_new
     if user_signed_in?
-      current_user.update_column(:seen_whats_new, true)
+      version = params[:version].presence || Rimborsi::VERSION
+      current_user.dismiss_whats_new!(version)
       respond_to do |format|
         format.json { head :ok }
         format.html { redirect_back(fallback_location: root_path) }

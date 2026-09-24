@@ -72,12 +72,22 @@ namespace :deploy do
     end
 
     namespace :rails_pulse do
-      desc "Esegue le migrazioni del database Rails Pulse e l'aggiornamento delle rotte"
-      task :migrate do
+      desc "Carica lo schema iniziale di Rails Pulse se mancante prima di db:migrate"
+      task :load_schema do
         on roles(fetch(:migration_role, :db)) do
           within release_path do
             with rails_env: fetch(:rails_env) do
-              execute :rake, "db:migrate:rails_pulse"
+              execute :rake, "db:schema:load_rails_pulse"
+            end
+          end
+        end
+      end
+
+      desc "Aggiorna le rotte di Rails Pulse dopo la migrazione"
+      task :migrate_routes do
+        on roles(fetch(:migration_role, :db)) do
+          within release_path do
+            with rails_env: fetch(:rails_env) do
               execute :rake, "rails_pulse:migrate_routes"
             end
           end
@@ -85,7 +95,8 @@ namespace :deploy do
       end
     end
 
-    after "deploy:migrating", "deploy:rails_pulse:migrate"
+    before "deploy:migrating", "deploy:rails_pulse:load_schema"
+    after "deploy:migrating", "deploy:rails_pulse:migrate_routes"
 end
 
 

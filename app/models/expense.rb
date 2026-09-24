@@ -5,6 +5,7 @@ class Expense < ApplicationRecord
 
   has_one_attached :attachment
   has_one_attached :pdf_attachment
+  has_one_attached :bank_receipt_attachment
 
   # Include il concern per la gestione delle fatture elettroniche
   include ElectronicInvoiceProcessor
@@ -26,8 +27,13 @@ class Expense < ApplicationRecord
   # Validation: attachment is required only if not car expense
   validates :attachment, presence: true, unless: -> { car? || reimboursement&.status_draft? || status_approved? || status_denied? }
 
-  # Validazione del formato dell'allegato
+  # Validazione ricevuta bancaria per collaboratori / dipendenti (solo per nuove spese o rimborsi inviati da bozza)
+  validate :validate_bank_receipt_for_employee_collaborator,
+           if: -> { requires_bank_receipt_validation? }
+
+  # Validazione del formato degli allegati
   validate :validate_attachment_format, if: -> { attachment.attached? }
+  validate :validate_bank_receipt_format, if: -> { bank_receipt_attachment.attached? }
 
   # Validazione che il requested_amount non superi l'amount
   validate :validate_requested_amount_not_exceeding_amount, unless: -> { reimboursement&.status_draft? }
@@ -190,6 +196,72 @@ class Expense < ApplicationRecord
       unless filename.include?(".xml.p7m")
         errors.add(:attachment, "i file P7M devono avere estensione .xml.p7m")
       end
+    end
+  end
+
+  def requires_bank_receipt_validation?
+    return false if car?
+    return false if reimboursement&.status_draft?
+    return false if status_approved? || status_denied?
+
+    # Applica il controllo per nuove spese o rimborsi inviati ex novo / da bozza
+    new_record? || reimboursement&.new_record? || reimboursement&.status_was == "draft" || reimboursement&.role_was != "employee_collaborator"
+  end
+
+  # Validazione ricevuta bancaria obbligatoria per dipendenti / collaboratori
+  def validate_bank_receipt_for_employee_collaborator
+    return unless reimboursement&.role_employee_collaborator?
+
+    unless bank_receipt_attachment.attached?
+      errors.add(:bank_receipt_attachment, :required_for_employee_collaborator,
+                 message: I18n.t("activerecord.errors.models.expense.attributes.bank_receipt_attachment.required_for_employee_collaborator",
+                                 default: "A norma dell'articolo 51, comma 5, del TUIR, i collaboratori devono presentare per ciascuna spesa sia la ricevuta fiscale/fattura sia la relativa ricevuta bancaria"))
+    end
+  end
+
+  # Validazione del formato della ricevuta bancaria
+  def validate_bank_receipt_format
+    return unless bank_receipt_attachment.attached?
+
+    allowed_content_types = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/tiff",
+      "image/webp",
+      "application/pdf"
+    ]
+
+    allowed_extensions = %w[.jpg .jpeg .png .gif .bmp .tiff .webp .pdf]
+
+    content_type = bank_receipt_attachment.content_type
+    filename = bank_receipt_attachment.filename.to_s.downcase
+    file_extension = File.extname(filename)
+
+    unless allowed_content_types.include?(content_type)
+      errors.add(:bank_receipt_attachment, :invalid_format,
+                 message: I18n.t("activerecord.errors.models.expense.attributes.bank_receipt_attachment.invalid_format",
+                                 format: content_type,
+                                 default: "deve essere un'immagine o un PDF. Formato ricevuto: #{content_type}"))
+      return
+    end
+
+    unless allowed_extensions.include?(file_extension)
+      errors.add(:bank_receipt_attachment, :invalid_extension,
+                 message: I18n.t("activerecord.errors.models.expense.attributes.bank_receipt_attachment.invalid_extension",
+                                 extensions: allowed_extensions.join(", "),
+                                 default: "deve avere un'estensione valida: #{allowed_extensions.join(', ')}"))
+      return
+    end
+
+    max_size = 20.megabytes
+    if bank_receipt_attachment.byte_size > max_size
+      errors.add(:bank_receipt_attachment, :too_large,
+                 message: I18n.t("activerecord.errors.models.expense.attributes.bank_receipt_attachment.too_large",
+                                 max_size: max_size / 1.megabyte,
+                                 default: "non può essere più grande di #{max_size / 1.megabyte}MB"))
     end
   end
 

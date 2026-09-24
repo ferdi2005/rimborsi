@@ -412,6 +412,15 @@
                                 <% else %>
                                   <span class="text-muted"><%= t('.expenses.no_attachment') %></span>
                                 <% end %>
+
+                                <% if expense.bank_receipt_attachment.attached? %>
+                                  <!-- Ricevuta bancaria -->
+                                  <div class="mt-2">
+                                    <%= link_to expense.bank_receipt_attachment, target: "_blank", class: "btn btn-sm btn-outline-secondary" do %>
+                                      <i class="fas fa-receipt me-1"></i><%= t('.expenses.bank_receipt') %>
+                                    <% end %>
+                                  </div>
+                                <% end %>
                               </div>
                             <% end %>
                           </td>

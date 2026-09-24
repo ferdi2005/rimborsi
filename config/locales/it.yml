@@ -22,7 +22,8 @@ it:
         requested_amount: Importo richiesto
         purpose: Descrizione
         date: Data
-        attachment: Allegato
+        attachment: Scontrino / ricevuta / fattura
+        bank_receipt_attachment: Ricevuta bancaria / ricevuta tasso di cambio
         car: Spesa auto
         calculation_date: Data di calcolo
         departure: Città di partenza
@@ -104,6 +105,11 @@ it:
           attributes:
             attachment:
               blank: è obbligatorio per le spese non auto
+            bank_receipt_attachment:
+              required_for_employee_collaborator: "A norma dell'articolo 51, comma 5, del TUIR, i collaboratori devono presentare per ciascuna spesa sia la ricevuta fiscale/fattura sia la relativa ricevuta bancaria"
+              invalid_format: "deve essere un'immagine o un PDF. Formato ricevuto: %{format}"
+              invalid_extension: "deve avere un'estensione valida: %{extensions}"
+              too_large: "non può essere più grande di %{max_size}MB"
             calculation_date:
               blank: è obbligatoria per le spese auto
             departure:
@@ -267,7 +273,7 @@ it:
         car_calculation: Calcolo del rimborso auto
         basic_info: Informazioni di base
         car_details: Dettagli auto
-        attachment: Allegato
+        attachment: Dettagli / allegato
       reimboursement:
         title: Nuovo rimborso
         basic_info: Informazioni generali
@@ -483,12 +489,14 @@ it:
       project_placeholder: Nome del progetto (es. Microgrant Wiki Loves Puglia 2025)...
       status_label: Status
       select_status: Seleziona status
-      attachment_label: Allegato
+      attachment_label: Scontrino / ricevuta / fattura
+      bank_receipt_label: Ricevuta bancaria / ricevuta tasso di cambio
       current_file: File attuale
       view_file: Visualizza file
       replace_file: Sostituisci file
       replace_file_help: Carica un nuovo file per sostituire quello esistente
       attachment_help: Carica ricevuta o fattura (immagine o PDF) o fattura elettronica (.xml, .xml.p7m)
+      bank_receipt_help: Allegare la ricevuta bancaria se la spesa è stata effettuata in valuta estera. Si ricorda che la sola ricevuta della transazione bancaria non è un giustificativo analitico valido.
       car_calculation_title: Calcolo del rimborso auto
       car_calculation_help_html: Utilizza <a href="%{url}" target="_blank" class="alert-link">%{url}</a> per calcolare i parametri necessari.
       calculation_date_label: Data di calcolo
@@ -525,7 +533,8 @@ it:
       difference: 'Differenza: €'
       car_no_attachment: Le spese auto sono calcolate automaticamente e non richiedono allegati.
       electronic_invoice: Fattura elettronica
-      attachment: Allegato
+      attachment: Scontrino / ricevuta / fattura
+      bank_receipt_title: Ricevuta bancaria (per staff o per il tasso di cambio)
       amount_details: Dettagli importo
       expense_amount: 'Importo spesa:'
       invoice_converted: Fattura convertita in PDF
@@ -599,6 +608,7 @@ it:
         view_xml_title: Visualizza file XML originale
         pdf: PDF
         xml: XML
+        bank_receipt: Ricevuta bancaria
         no_attachment: Nessun allegato
         none: Nessuna spesa presente in questo rimborso.
         requested_of: richiesto di € %{amount}
@@ -1083,10 +1093,7 @@ it:
     content_html: |-
       <p class="mb-2">Sono state introdotte le seguenti novità:</p>
       <ul class="mb-0 ps-3">
-        <li class="mb-2"><strong>Un rimborso = un progetto e un fondo:</strong> per trasparenza e gestione contabile, ogni richiesta di rimborso deve essere associata direttamente a un unico progetto e a un unico fondo. Deve essere inoltre indicato il ruolo ricoperto da chi richiede il rimborso (volontario, organizzatore, borsista...).</li>
-        <li class="mb-2"><strong>Stato bozza:</strong> le nuove richieste di rimborso vengono create in stato di bozza e possono essere modificate prima dell'invio definitivo. Anche in caso di errore di compilazione dei campi non verranno più persi gli allegati ma il rimborso verrà salvato come bozza.</li>
-        <li><strong>Traduzione in inglese:</strong> l'interfaccia è ora disponibile anche in lingua inglese, selezionabile dal menu in alto.</li>
-        <li><strong>Mantenimento dati auto:</strong> quota capitale, manutenzione e pneumatici non devono essere più reinseriti se non sono cambiati rispetto al precedente rimborso.</li>
+        <li class="mb-2"><strong>Ricevuta bancaria / ricevuta tasso di cambio:</strong> è possibile allegare la ricevuta bancaria per ciascuna spesa (obbligatoria se la spesa è stata sostenuta in valuta estera o per chi imposta il ruolo Dipendente / collaboratore a norma dell'art. 51, comma 5, del TUIR). Il documento è visibile in fase di approvazione e viene inserito automaticamente nel PDF finale del rimborso.</li>
       </ul>
 
 

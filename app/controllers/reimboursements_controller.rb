@@ -351,7 +351,7 @@ class ReimboursementsController < ApplicationController
       permitted_params = [ :bank_account_id, :initial_note,
                          :role, :role_other, :project, :fund_id,
                          expenses_attributes: [
-                           :id, :amount, :requested_amount, :purpose, :date, :car, :attachment, :_destroy,
+                           :id, :amount, :requested_amount, :purpose, :date, :car, :attachment, :bank_receipt_attachment, :_destroy,
                            :calculation_date, :departure, :arrival, :distance, :return_trip,
                            :vehicle_id, :quota_capitale, :carburante, :pneumatici, :manutenzione, :project
                          ] ]

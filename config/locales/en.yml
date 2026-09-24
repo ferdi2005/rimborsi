@@ -23,6 +23,7 @@ en:
         purpose: Description
         date: Date
         attachment: Attachment
+        bank_receipt_attachment: Bank receipt / exchange rate receipt
         car: Car expense
         calculation_date: Calculation date
         departure: Departure city
@@ -104,6 +105,11 @@ en:
           attributes:
             attachment:
               blank: is required for non-car expenses
+            bank_receipt_attachment:
+              required_for_employee_collaborator: "Under article 51, paragraph 5 of the TUIR, collaborators must submit both the invoice/tax receipt and the related bank receipt for each expense"
+              invalid_format: "must be an image or a PDF. Received format: %{format}"
+              invalid_extension: "must have a valid extension: %{extensions}"
+              too_large: "cannot be larger than %{max_size}MB"
             calculation_date:
               blank: is required for car expenses
             departure:
@@ -602,12 +608,14 @@ en:
       project_placeholder: Project name (e.g. Microgrant Wiki Loves Puglia 2025)...
       status_label: Status
       select_status: Select status
-      attachment_label: Attachment
+      attachment_label: Receipt / Invoice
+      bank_receipt_label: Bank receipt / exchange rate receipt
       current_file: Current file
       view_file: View file
       replace_file: Replace file
       replace_file_help: Upload a new file to replace the existing one
       attachment_help: Upload receipt or invoice (image or PDF) or electronic invoice (.xml, .xml.p7m)
+      bank_receipt_help: Attach bank receipt if the expense was made in foreign currency. The bank receipt alone is not a valid supporting document for the reimboursement request.
       car_calculation_title: Car reimbursement calculation
       car_calculation_help_html: Use <a href="%{url}" target="_blank" class="alert-link">%{url}</a> to calculate the required values.
       calculation_date_label: Calculation date
@@ -645,6 +653,7 @@ en:
       car_no_attachment: Car expenses are automatically calculated and do not require attachments.
       electronic_invoice: Electronic invoice
       attachment: Attachment
+      bank_receipt_title: Bank receipt (for staff or for exchange rate)
       amount_details: Amount details
       expense_amount: 'Expense amount:'
       invoice_converted: Invoice converted to PDF
@@ -718,6 +727,7 @@ en:
         view_xml_title: View original XML file
         pdf: PDF
         xml: XML
+        bank_receipt: Bank receipt
         no_attachment: No attachment
         none: No expenses in this reimbursement.
         requested_of: requested of € %{amount}
@@ -1083,9 +1093,7 @@ en:
     content_html: |-
       <p class="mb-2">The following new features have been introduced:</p>
       <ul class="mb-0 ps-3">
-        <li class="mb-2"><strong>One reimbursement, one project and one fund:</strong> each reimbursement request is now associated directly with a single project and a single fund.</li>
-        <li class="mb-2"><strong>Draft status:</strong> new reimbursement requests are created in draft status and can be edited before final submission.</li>
-        <li><strong>English translation:</strong> the interface is now also available in English, selectable from the top menu.</li>
+        <li class="mb-2"><strong>Bank receipt / exchange rate receipt:</strong> you can attach, other than the main receipt, a bank receipt for each expense (e.g. if the expense was paid in a foreign currency or for employee / collaborator roles).</li>
       </ul>
 
 

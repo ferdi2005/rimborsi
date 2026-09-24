@@ -53,6 +53,15 @@ class User < ApplicationRecord
     default_account.present?
   end
 
+  # Metodi per la gestione delle novità (whats_new)
+  def seen_latest_whats_new?
+    seen_whats_new_version == Rimborsi::VERSION
+  end
+
+  def dismiss_whats_new!(version = Rimborsi::VERSION)
+    update_column(:seen_whats_new_version, version.to_s)
+  end
+
   # Metodo per verificare se l'utente può essere eliminato
   def can_be_deleted?
     reimboursements.count == 0

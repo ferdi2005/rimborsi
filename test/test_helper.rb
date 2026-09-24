@@ -1,5 +1,7 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
+
+ActiveRecord::Migration.maintain_test_schema = false
 require "rails/test_help"
 
 module ActiveSupport

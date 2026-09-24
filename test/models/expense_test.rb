@@ -190,4 +190,104 @@ class ExpenseTest < ActiveSupport::TestCase
     file.close
     file.unlink
   end
+
+  test "bank receipt attachment is optional for non-employee roles" do
+    expense = Expense.new(
+      purpose: "Volunteer expense",
+      amount: 50.0,
+      date: Date.current,
+      fund: @fund,
+      reimboursement: @reimboursement
+    )
+
+    file = Tempfile.new([ "test_receipt", ".pdf" ])
+    file.write("%PDF-1.4 test")
+    file.rewind
+
+    expense.attachment.attach(
+      io: file,
+      filename: "receipt.pdf",
+      content_type: "application/pdf"
+    )
+
+    assert expense.valid?, "Expense should be valid without bank receipt for volunteer role"
+
+    file.close
+    file.unlink
+  end
+
+  test "bank receipt attachment is mandatory for employee_collaborator role" do
+    @reimboursement.update_column(:role, "employee_collaborator")
+
+    expense = Expense.new(
+      purpose: "Employee expense",
+      amount: 50.0,
+      date: Date.current,
+      fund: @fund,
+      reimboursement: @reimboursement
+    )
+
+    file = Tempfile.new([ "test_receipt", ".pdf" ])
+    file.write("%PDF-1.4 test")
+    file.rewind
+
+    expense.attachment.attach(
+      io: file,
+      filename: "receipt.pdf",
+      content_type: "application/pdf"
+    )
+
+    assert_not expense.valid?, "Expense should be invalid without bank receipt for employee_collaborator"
+    assert expense.errors[:bank_receipt_attachment].present?
+    assert_includes expense.errors[:bank_receipt_attachment].first, "TUIR"
+
+    bank_receipt_file = Tempfile.new([ "bank_receipt", ".pdf" ])
+    bank_receipt_file.write("%PDF-1.4 bank receipt")
+    bank_receipt_file.rewind
+
+    expense.bank_receipt_attachment.attach(
+      io: bank_receipt_file,
+      filename: "bank_receipt.pdf",
+      content_type: "application/pdf"
+    )
+
+    assert expense.valid?, "Expense should be valid when bank receipt is attached"
+
+    file.close
+    file.unlink
+    bank_receipt_file.close
+    bank_receipt_file.unlink
+  end
+
+  test "historical persisted expenses already submitted without bank receipt remain valid" do
+    @reimboursement.update_column(:role, "employee_collaborator")
+    @reimboursement.update_column(:status, 0) # created
+
+    expense = Expense.new(
+      purpose: "Old Employee expense",
+      amount: 50.0,
+      date: Date.current,
+      fund: @fund,
+      reimboursement: @reimboursement
+    )
+
+    file = Tempfile.new([ "test_receipt", ".pdf" ])
+    file.write("%PDF-1.4 test")
+    file.rewind
+
+    expense.attachment.attach(
+      io: file,
+      filename: "receipt.pdf",
+      content_type: "application/pdf"
+    )
+
+    # Salviamo saltando la validazione (simulando una spesa creata prima dell'introduzione della regola)
+    expense.save!(validate: false)
+
+    # Quando l'oggetto persisted viene ricaricato e validato, non deve fallire
+    assert expense.valid?, "Historical persisted expense should remain valid"
+
+    file.close
+    file.unlink
+  end
 end
